@@ -12,11 +12,14 @@ public class Client {
 
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            ClientMetadataInterface stub = (ClientMetadataInterface) registry.lookup("ClientMetadataServer");
+            ClientMetadataInterface stub = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
 
-            String path_to_look = "/courses";
-            String response = stub.find(path_to_look);
+            String response = stub.lstat("/lol");
             System.out.println("response: " + response);
+//
+//            String path_to_look = "/courses";
+//            String response = stub.find(path_to_look);
+//            System.out.println("response: " + response);
 
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
