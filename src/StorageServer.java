@@ -1,33 +1,29 @@
-import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 
-public class StorageServer {
+public class StorageServer implements ClienteStorageInterface {
 
-    public String myPath;
-    public String host;
-    public StorageMetadataInterface stub;
+    public static String myPath;
+    public static String host;
+    public static StorageMetadataInterface stub;
 
-    public StorageServer() {
+    public StorageServer() {}
+
+    public static void main(String[] args) {
 
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            this.stub = (StorageMetadataInterface) registry.lookup("StorageMetadataInterface");
-
+            stub = (StorageMetadataInterface) registry.lookup("StorageMetadataInterface");
 
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
         }
 
-    }
-
-    public void main(String[] args) {
-
-        this.myPath = args[0];
-        this.host = (args.length < 1) ? "localhost" : args[1];
+        myPath = args[0];
+        host = (args.length < 1) ? "localhost" : args[1];
 
     }
 
@@ -60,7 +56,7 @@ public class StorageServer {
 
     public void init(String local_path, String filesystem_path){
         try {
-            Boolean response = stub.add_storage_server(this.host, this.myPath);
+            Boolean response = stub.add_storage_server(host, myPath);
             System.out.println("response: " + response);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -69,7 +65,7 @@ public class StorageServer {
     }
     public void close(){
         try{
-            Boolean response = stub.del_storage_server(this.myPath);
+            Boolean response = stub.del_storage_server(myPath);
             System.out.println("response: " + response);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -77,4 +73,23 @@ public class StorageServer {
         }
     }
 
+    @Override
+    public boolean create(String path) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean create(String path, byte[] blob) throws IOException {
+        return false;
+    }
+
+    @Override
+    public boolean del(String path) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public byte[] get(String path) throws RemoteException {
+        return new byte[0];
+    }
 }
