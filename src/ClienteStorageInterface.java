@@ -1,16 +1,13 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
-import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.sql.Blob;
 
 public interface ClienteStorageInterface extends Remote {
 
-    Boolean create(String path) throws RemoteException; // creates a directory
-    Boolean create(String path, Blob blob) throws RemoteException; // creates a file
+    boolean create(String path) throws RemoteException; // creates a directory
+    boolean create(String path, byte[] blob) throws IOException; // creates a file
 
-    Boolean del(String path);
-    Boolean get(String path);
+    boolean del(String path) throws RemoteException;
+    byte[] get(String path) throws RemoteException;
 
 }

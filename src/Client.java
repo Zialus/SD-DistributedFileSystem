@@ -1,13 +1,10 @@
 import java.net.URL;
-import java.nio.file.Path;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class Client {
 
     private Client() {}
-
-    private URL StorageImUsing;
 
     public static void main(String[] args) {
 
