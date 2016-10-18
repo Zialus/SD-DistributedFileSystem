@@ -2,20 +2,32 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static java.lang.Math.random;
 
 public class StorageServer implements ClienteStorageInterface {
 
     public static String myPath;
     public static String host;
-    public static StorageMetadataInterface stub;
+    public static StorageMetadataInterface stubStorageMetadata;
 
     public StorageServer() {}
 
     public static void main(String[] args) {
 
         try {
+
+            StorageServer obj1 = new StorageServer();
+            ClienteStorageInterface stub = (ClienteStorageInterface) UnicastRemoteObject.exportObject(obj1, 0);
+
             Registry registry = LocateRegistry.getRegistry(host);
-            stub = (StorageMetadataInterface) registry.lookup("StorageMetadataInterface");
+            stubStorageMetadata = (StorageMetadataInterface) registry.lookup("StorageMetadataInterface");
+            String ServerName = "StorageServer" + ThreadLocalRandom.current().nextInt(0,1001);
+            registry.bind(ServerName, stub);
+
+            System.out.print(ServerName + " is ready");
 
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -23,7 +35,7 @@ public class StorageServer implements ClienteStorageInterface {
         }
 
         myPath = args[0];
-        host = (args.length < 1) ? "localhost" : args[1];
+        host = (args.length <= 1) ? "localhost" : args[1];
 
     }
 
@@ -56,7 +68,7 @@ public class StorageServer implements ClienteStorageInterface {
 
     public void init(String local_path, String filesystem_path){
         try {
-            Boolean response = stub.add_storage_server(host, myPath);
+            Boolean response = stubStorageMetadata.add_storage_server(host, myPath);
             System.out.println("response: " + response);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -65,7 +77,7 @@ public class StorageServer implements ClienteStorageInterface {
     }
     public void close(){
         try{
-            Boolean response = stub.del_storage_server(myPath);
+            Boolean response = stubStorageMetadata.del_storage_server(myPath);
             System.out.println("response: " + response);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());

@@ -1,26 +1,31 @@
 import java.io.File;
-import java.nio.file.Path;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.LinkedList;
 
 public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface{
 
-    public MetadataServer() {}
+    public static LinkedList<StorageServer> StorageServerList = new LinkedList<StorageServer>();
 
+    public MetadataServer() {}
 
     public static void main(String args[]) {
 
         try {
-            MetadataServer obj = new MetadataServer();
-            ClientMetadataInterface stub = (ClientMetadataInterface) UnicastRemoteObject.exportObject(obj, 0);
 
-            // Bind the remote object's stub in the registry
+            MetadataServer obj1 = new MetadataServer();
+            ClientMetadataInterface stub1 = (ClientMetadataInterface) UnicastRemoteObject.exportObject(obj1, 0);
+
+            MetadataServer obj2 = new MetadataServer();
+            StorageMetadataInterface stub2 = (StorageMetadataInterface) UnicastRemoteObject.exportObject(obj2, 0);
+
             Registry registry = LocateRegistry.getRegistry();
-            registry.bind("ClientMetadataInterface", stub);
+            registry.bind("ClientMetadataInterface", stub1);
+            registry.bind("StorageMetadataInterface", stub2);
 
-            System.err.println("Server ready");
+            System.out.println("Server ready");
 
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
