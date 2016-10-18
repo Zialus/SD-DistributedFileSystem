@@ -5,9 +5,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static java.lang.Math.random;
-
-public class StorageServer implements ClienteStorageInterface {
+public class StorageServer implements ClientStorageInterface {
 
     public static String myPath;
     public static String host;
@@ -20,7 +18,7 @@ public class StorageServer implements ClienteStorageInterface {
         try {
 
             StorageServer obj1 = new StorageServer();
-            ClienteStorageInterface stub = (ClienteStorageInterface) UnicastRemoteObject.exportObject(obj1, 0);
+            ClientStorageInterface stub = (ClientStorageInterface) UnicastRemoteObject.exportObject(obj1, 0);
 
             Registry registry = LocateRegistry.getRegistry(host);
             stubStorageMetadata = (StorageMetadataInterface) registry.lookup("StorageMetadataInterface");

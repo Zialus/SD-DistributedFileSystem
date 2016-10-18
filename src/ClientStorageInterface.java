@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface ClienteStorageInterface extends Remote {
+public interface ClientStorageInterface extends Remote {
 
     boolean create(String path) throws RemoteException; // creates a directory
     boolean create(String path, byte[] blob) throws IOException; // creates a file
