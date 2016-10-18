@@ -3,37 +3,45 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class StorageServer implements ClientStorageInterface {
 
-    public static String myPath;
-    public static String host;
+    public static String localPath;
+    public static String globalPath;
+    public static String ServerName;
+
+    public static String MetaDataHostName;
     public static StorageMetadataInterface stubStorageMetadata;
 
-    public StorageServer() {}
+
+    public StorageServer(){}
 
     public static void main(String[] args) {
 
+        localPath = args[0];
+        globalPath = args[1];
+        MetaDataHostName = (args.length <= 2) ? "localhost" : args[2];
+
         try {
 
-            StorageServer obj1 = new StorageServer();
-            ClientStorageInterface stub = (ClientStorageInterface) UnicastRemoteObject.exportObject(obj1, 0);
+            StorageServer objStorageServer = new StorageServer();
+            ClientStorageInterface stub = (ClientStorageInterface) UnicastRemoteObject.exportObject(objStorageServer, 0);
 
-            Registry registry = LocateRegistry.getRegistry(host);
+            Registry registry = LocateRegistry.getRegistry(MetaDataHostName);
             stubStorageMetadata = (StorageMetadataInterface) registry.lookup("StorageMetadataInterface");
-            String ServerName = "StorageServer" + ThreadLocalRandom.current().nextInt(0,1001);
+
+            ServerName = stubStorageMetadata.giveMeAnID();
             registry.bind(ServerName, stub);
 
-            System.out.print(ServerName + " is ready");
+            System.out.println(ServerName + " is ready");
+            System.out.println("My path is " + localPath);
 
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
         }
 
-        myPath = args[0];
-        host = (args.length <= 1) ? "localhost" : args[1];
+
 
     }
 
@@ -64,9 +72,9 @@ public class StorageServer implements ClientStorageInterface {
 //        return serverPath;
 //    }
 
-    public void init(String local_path, String filesystem_path){
+    public void init(String local_path, String globalPath){
         try {
-            Boolean response = stubStorageMetadata.add_storage_server(host, myPath);
+            Boolean response = stubStorageMetadata.add_storage_server(MetaDataHostName, globalPath);
             System.out.println("response: " + response);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -75,7 +83,7 @@ public class StorageServer implements ClientStorageInterface {
     }
     public void close(){
         try{
-            Boolean response = stubStorageMetadata.del_storage_server(myPath);
+            Boolean response = stubStorageMetadata.del_storage_server(localPath);
             System.out.println("response: " + response);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -83,22 +91,18 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-    @Override
     public boolean create(String path) throws RemoteException {
         return false;
     }
 
-    @Override
     public boolean create(String path, byte[] blob) throws IOException {
         return false;
     }
 
-    @Override
     public boolean del(String path) throws RemoteException {
         return false;
     }
 
-    @Override
     public byte[] get(String path) throws RemoteException {
         return new byte[0];
     }

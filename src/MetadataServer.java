@@ -3,11 +3,14 @@ import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface{
 
-    public static LinkedList<StorageServer> StorageServerList = new LinkedList<StorageServer>();
+    public static int globalMachineCounter = 0;
+
+    public static HashMap<String,String> StorageServerList = new HashMap<>();
 
     public MetadataServer() {}
 
@@ -33,6 +36,11 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         }
     }
 
+    public String giveMeAnID(){
+        globalMachineCounter++;
+        return "Machine"+globalMachineCounter;
+    }
+
     public String find(String path) {
         return null;
     }
@@ -55,20 +63,20 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         return output;
     }
 
-    public boolean add_storage_server(String host, String top_of_the_subtree)  {
-        return false;
+    public boolean add_storage_server(String machine, String top_of_the_subtree)  {
+
+        StorageServerList.put(top_of_the_subtree, machine);
+        return true;
     }
 
     public boolean del_storage_server(String top_of_the_subtree)  {
         return false;
     }
 
-    @Override
     public boolean add_storage_item(byte[] item) throws RemoteException {
         return false;
     }
 
-    @Override
     public boolean del_storage_item(byte[] item) throws RemoteException {
         return false;
     }

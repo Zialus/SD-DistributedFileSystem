@@ -11,4 +11,6 @@ public interface StorageMetadataInterface extends Remote {
     boolean add_storage_item(byte[] item) throws RemoteException;
 
     boolean del_storage_item(byte[] item) throws RemoteException;
+
+    String giveMeAnID() throws RemoteException ;
 }
