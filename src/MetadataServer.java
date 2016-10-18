@@ -4,7 +4,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface{
 
@@ -42,7 +41,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public String find(String path) {
-        return null;
+        return StorageServerList.get(path);
     }
 
     public String lstat(String path) throws RemoteException {
