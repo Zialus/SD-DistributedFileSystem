@@ -18,7 +18,7 @@ public class Client {
             String response = stubClientMetadataInterface.lstat("/lol");
             System.out.println("response: " + response);
 
-            String ServerImUsing = stubClientMetadataInterface.find("/courses");
+            String ServerImUsing = stubClientMetadataInterface.find("/A");
             System.out.println("server: " + ServerImUsing);
 
             ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);

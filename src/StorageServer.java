@@ -1,3 +1,5 @@
+import com.sun.corba.se.spi.activation.Server;
+
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -35,6 +37,10 @@ public class StorageServer implements ClientStorageInterface {
 
             System.out.println(ServerName + " is ready");
             System.out.println("My path is " + localPath);
+
+
+            Boolean response = stubStorageMetadata.add_storage_server(ServerName, globalPath);
+            System.out.println("response: " + response);
 
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -74,7 +80,7 @@ public class StorageServer implements ClientStorageInterface {
 
     public void init(String local_path, String globalPath){
         try {
-            Boolean response = stubStorageMetadata.add_storage_server(MetaDataHostName, globalPath);
+            Boolean response = stubStorageMetadata.add_storage_server(ServerName, globalPath);
             System.out.println("response: " + response);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
