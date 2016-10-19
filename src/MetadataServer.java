@@ -65,7 +65,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     public boolean add_storage_server(String machine, String top_of_the_subtree)  {
 
         StorageServerList.put(top_of_the_subtree, machine);
-        System.out.print("I added machine " + machine + " on the sub-tree " + top_of_the_subtree);
+        System.out.println("I added machine " + machine + " on the sub-tree " + top_of_the_subtree);
         return true;
     }
 

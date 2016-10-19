@@ -1,12 +1,13 @@
-import com.sun.corba.se.spi.activation.Server;
-
+import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 
 public class StorageServer implements ClientStorageInterface {
+
 
     public static String localPath;
     public static String globalPath;
@@ -20,9 +21,14 @@ public class StorageServer implements ClientStorageInterface {
 
     public static void main(String[] args) {
 
-        localPath = args[0];
-        globalPath = args[1];
-        MetaDataHostName = (args.length <= 2) ? "localhost" : args[2];
+        Scanner in = new Scanner(System.in);
+        System.out.print("Insert Local Path: ");
+        localPath = in.next();
+        System.out.print("Insert Global Path: ");
+        globalPath = in.next();
+        System.out.print("Insert Meadata Server hostname(if left blank localhost will be used : ");
+//        MetaDataHostName = (tmp.equals("")) ? "localhost" : tmp;
+        MetaDataHostName = in.next();
 
         try {
 
@@ -87,6 +93,7 @@ public class StorageServer implements ClientStorageInterface {
             e.printStackTrace();
         }
     }
+
     public void close(){
         try{
             Boolean response = stubStorageMetadata.del_storage_server(localPath);
@@ -98,7 +105,23 @@ public class StorageServer implements ClientStorageInterface {
     }
 
     public boolean create(String path) throws RemoteException {
-        return false;
+        File directory = new File(path);
+
+        // if the directory does not exist, create it
+        System.out.println("creating directory: " + directory.toString());
+
+        boolean result = false;
+
+        try{
+            result = directory.mkdir();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        if(result) {
+            System.out.println("DIR created");
+        }
+        return result;
     }
 
     public boolean create(String path, byte[] blob) throws IOException {
