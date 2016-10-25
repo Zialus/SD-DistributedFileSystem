@@ -7,13 +7,15 @@ import java.util.HashMap;
 
 public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface{
 
-    public static int globalMachineCounter = 0;
+    public FileSystemTree fileSystem;
+
+    public int globalMachineCounter = 0;
 
     public static HashMap<String,String> StorageServerList = new HashMap<>();
 
     public MetadataServer() {}
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         try {
 
@@ -62,6 +64,34 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         return output;
     }
 
+
+//    public String cd(String dir, String serverPath) throws RemoteException {
+//
+//        if(dir.equals("..")){
+//            String [] fields = serverPath.split("/");
+//            serverPath = "";
+//            for(int i =0; i < fields.length - 1; i++){
+//                if(!fields[i].equals(""))
+//                    serverPath = serverPath +"/" + fields[i];
+//            }
+//        }
+//        else{
+//            File folder = new File(serverPath);
+//            File[] listOfFiles = folder.listFiles();
+//
+//            for (int i = 0; i < listOfFiles.length; i++) {
+//                if(listOfFiles[i].isDirectory()){
+//                    if(dir.equals(listOfFiles[i].getName())){
+//                        serverPath = serverPath + "/" + dir;
+//                        return serverPath;
+//                    }
+//                }
+//            }
+//            return "NA";
+//        }
+//        return serverPath;
+//    }
+
     public boolean add_storage_server(String machine, String top_of_the_subtree)  {
 
         StorageServerList.put(top_of_the_subtree, machine);
@@ -73,11 +103,11 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         return false;
     }
 
-    public boolean add_storage_item(byte[] item) throws RemoteException {
+    public boolean add_storage_item(String item) throws RemoteException {
         return false;
     }
 
-    public boolean del_storage_item(byte[] item) throws RemoteException {
+    public boolean del_storage_item(String item) throws RemoteException {
         return false;
     }
 }
