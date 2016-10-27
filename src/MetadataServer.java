@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
@@ -11,7 +12,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     public int globalMachineCounter = 0;
 
-    public static HashMap<String,String> StorageServerList = new HashMap<>();
+    public HashMap<String,String> StorageServerList = new HashMap<>();
 
     public MetadataServer() {}
 
@@ -43,7 +44,9 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public String find(String path) {
-        return StorageServerList.get(path);
+        Pair pair = fileSystem.find(path);
+
+        return pair.path;
     }
 
     public String lstat(String path) throws RemoteException {

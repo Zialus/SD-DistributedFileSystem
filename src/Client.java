@@ -2,6 +2,7 @@
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client {
@@ -13,16 +14,23 @@ public class Client {
 
     private Client() {}
 
-    public static String processInput(String inputCmd) throws RemoteException {
+    public static String processInput(String[] inputCmd) throws RemoteException {
         String outPut ="YOU FUCKED UP";
-        if (inputCmd.equals("cd")){
-            outPut = "ola";
+
+        if (inputCmd[0].equals("cd")){
+            String whereImGoing = inputCmd[1];
+            CurrentDirectory = whereImGoing;
+            ServerImUsing = stubClientMetadataInterface.find(whereImGoing);
+            outPut = "Successfully changed to directory " + whereImGoing;
         }
-        if (inputCmd.equals("pwd")){
+        if (inputCmd[0].equals("pwd")){
             outPut = CurrentDirectory;
         }
-        if (inputCmd.equals("ls")){
-            outPut = stubClientMetadataInterface.lstat(".");
+        if (inputCmd[0].equals("ls")){
+
+            String directoryToBeListed = (inputCmd.length < 2) ? "." : inputCmd[1];
+
+            outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
         }
 
         return outPut;
@@ -30,10 +38,10 @@ public class Client {
 
     public static void main(String[] args) {
 
-        String host = (args.length < 1) ? "localhost" : args[0];
+        String rmiHost = (args.length < 1) ? "localhost" : args[0];
 
         try {
-            Registry registry = LocateRegistry.getRegistry(host);
+            Registry registry = LocateRegistry.getRegistry(rmiHost);
 
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
 
@@ -57,13 +65,13 @@ public class Client {
 
         Scanner stdin = new Scanner(System.in);
 
-        String cmd;
 
         try {
             System.out.print(CurrentDirectory+"> ");
             while(stdin.hasNextLine()){
-                cmd = stdin.nextLine();
-                String outPut = processInput(cmd);
+                String fullCmd = stdin.nextLine();
+                String[] cmdList = fullCmd.split(" ");
+                String outPut = processInput(cmdList);
                 System.out.println(outPut);
                 System.out.print(CurrentDirectory+"> ");
 

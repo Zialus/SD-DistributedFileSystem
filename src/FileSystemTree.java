@@ -1,4 +1,6 @@
-import java.util.ArrayList;
+
+
+import java.util.HashMap;
 
 public class FileSystemTree {
 
@@ -9,17 +11,14 @@ public class FileSystemTree {
         private FileNode parentDir;
 
         public boolean isDirectory;
-        public ArrayList<FileNode> children;
+        public HashMap<String,FileNode> children;
         public String myStorageServer;
 
-        public FileNode(String name, FileNode parentDir, boolean isDir, String myStorageServer) {
+        public FileNode(String name, FileNode parentDir, boolean isDirectory, String myStorageServer) {
             this.name = name;
-            this.isDirectory = isDir;
+            this.isDirectory = isDirectory;
             this.parentDir = parentDir;
             this.myStorageServer = myStorageServer;
-            if (isDir) {
-                this.children = new ArrayList<FileNode>();
-            }
         }
 
         public FileNode getParentDirectory() {
@@ -33,15 +32,31 @@ public class FileSystemTree {
     }
 
     public FileSystemTree() {
-        // every file system should have a root folder
         this.root = new FileNode("/", null, true, null);
     }
 
     public void addToFileSystem(String name, FileNode dirPath, boolean isDir, String StorageServer) {
 
         FileNode f = new FileNode(name, dirPath, isDir, StorageServer);
-        dirPath.children.add(f);
+        dirPath.children.put(f.name, f);
 
+    }
+
+    public Pair find(String path){
+
+        String[] pathParts = path.split("/");
+
+        FileNode currentNode = root;
+        for (String part : pathParts) {
+            currentNode = currentNode.children.get(part);
+            if (currentNode == null){
+                return new Pair(false, null);
+            }
+        }
+
+
+
+        return new Pair(true, path);
     }
 
 
