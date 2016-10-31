@@ -62,7 +62,7 @@ public class StorageServer implements ClientStorageInterface {
             Boolean response = stubStorageMetadata.add_storage_server(ServerName, globalPath);
             System.out.println("Init Response: " + response);
 
-            sendMyMetaData();
+            sendMyMetaData("");
 
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -100,13 +100,14 @@ public class StorageServer implements ClientStorageInterface {
         return result;
     }
 
-    public static boolean sendMyMetaData(){
-        File myLocalPath = new File(localPath);
+    public static boolean sendMyMetaData(String path){
+
+        File myLocalPath = new File(localPath + "/"+ path);
         File[] listOfFiles = myLocalPath.listFiles();
 
         for (File f : listOfFiles) {
             try {
-                String adjustedFilePath = globalPath + "/" + f.getName();
+                String adjustedFilePath = globalPath + "/" + path + "/" + f.getName();
                 stubStorageMetadata.add_storage_item(adjustedFilePath);
                 System.out.println(adjustedFilePath);
             } catch (Exception e) {
