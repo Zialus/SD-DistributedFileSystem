@@ -107,6 +107,8 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public boolean add_storage_item(String item) throws RemoteException {
+
+
         return false;
     }
 
