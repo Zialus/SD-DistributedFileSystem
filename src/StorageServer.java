@@ -108,7 +108,8 @@ public class StorageServer implements ClientStorageInterface {
         for (File f : listOfFiles) {
             try {
                 String adjustedFilePath = globalPath + "/" + path + "/" + f.getName();
-                stubStorageMetadata.add_storage_item(adjustedFilePath);
+                boolean isDirectory = f.isDirectory();
+                stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
                 System.out.println(adjustedFilePath);
             } catch (Exception e) {
                 System.err.println("Exception: " + e.toString());

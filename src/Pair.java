@@ -1,9 +1,9 @@
-public class Pair {
+class Pair {
     boolean bool;
-    String path;
+    FileNode node;
 
-    Pair(boolean b, String s){
+    Pair(boolean b, FileNode n){
         this.bool = b;
-        this.path = s;
+        this.node = n;
     }
 }

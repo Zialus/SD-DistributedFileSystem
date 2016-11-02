@@ -1,4 +1,6 @@
 
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.io.File;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
@@ -46,7 +48,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     public String find(String path) {
         Pair pair = fileSystem.find(path);
 
-        return pair.path;
+        return pair.node.name;
     }
 
     public String lstat(String path) throws RemoteException {
@@ -106,7 +108,34 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         return false;
     }
 
-    public boolean add_storage_item(String item) throws RemoteException {
+
+    public boolean add_storage_item(String item, String serverName, boolean isDirectory) throws RemoteException {
+
+        String[] pathElements = item.split("/");
+
+        int lastElement = pathElements.length-1;
+
+        if (pathElements.length < 2) {
+            fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root,isDirectory, serverName);
+        } else {
+
+            int lastSplit;
+
+            if (isDirectory) {
+                lastSplit = item.lastIndexOf("/");
+                lastSplit = item.lastIndexOf("",lastSplit);
+            } else {
+                lastSplit = item.lastIndexOf("/");
+            }
+
+            String parentPath = item.substring(0,lastSplit);
+            Pair maybeFoundParentNode = fileSystem.find(parentPath);
+
+            FileNode parentNode = maybeFoundParentNode.node;
+
+            fileSystem.addToFileSystem(pathElements[lastElement], parentNode,isDirectory, serverName);
+
+        }
 
 
         return false;
