@@ -114,24 +114,36 @@ public class StorageServer implements ClientStorageInterface {
 
         File[] listOfFiles = myLocalPath.listFiles();
 
-        for (File f : listOfFiles) {
 
-            try {
-                String adjustedFilePath = globalPath +"/" + path + "/" + f.getName();
-                boolean isDirectory = f.isDirectory();
-                System.out.println("BBBBEFORE " + adjustedFilePath);
-                stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
-                System.out.println("AAAAAFTER " + adjustedFilePath);
-            } catch (Exception e) {
-                System.err.println("Exception: " + e.toString());
-                e.printStackTrace();
+        if (listOfFiles != null) {
+            for (File f : listOfFiles) {
+
+                try {
+                    String adjustedFilePath;
+                    if(path.equals("")) {
+                        adjustedFilePath = globalPath +"/" + f.getName();
+                    }
+                    else {
+                        adjustedFilePath = globalPath + "/" + path + "/" + f.getName();
+                    }
+                    boolean isDirectory = f.isDirectory();
+                    System.out.println("BBBBEFORE " + adjustedFilePath);
+                    stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
+                    System.out.println("AAAAAFTER " + adjustedFilePath);
+
+                } catch (Exception e) {
+                    System.err.println("Exception: " + e.toString());
+                    e.printStackTrace();
+                }
+
+                if(f.isDirectory()){
+                    boolean response = sendMetaDataOfDirectory(f.getName());
+                }
+
             }
-
-            if(f.isDirectory()){
-                boolean response = sendMetaDataOfDirectory(f.getName());
-            }
-
         }
+
+        System.out.println("ja foste nulled");
 
 
         return true;

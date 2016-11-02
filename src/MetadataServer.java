@@ -130,16 +130,16 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
             int lastSplit;
 
-            if (isDirectory) {
+//            if (isDirectory) {
+//                lastSplit = item.lastIndexOf("/");
+//                lastSplit = item.lastIndexOf("/",lastSplit);
+//            } else {
                 lastSplit = item.lastIndexOf("/");
-                lastSplit = item.lastIndexOf("",lastSplit);
-            } else {
-                lastSplit = item.lastIndexOf("/");
-            }
+//            }
 
 
             System.out.println("item = "+ item);
-            String parentPath = item.substring(0,lastSplit-1);
+            String parentPath = item.substring(0,lastSplit);
             System.out.println("parentPath = " + parentPath);
             Pair maybeFoundParentNode = fileSystem.find(parentPath);
 
