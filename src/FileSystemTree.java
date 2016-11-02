@@ -19,7 +19,7 @@ public class FileSystemTree {
     }
 
     public Pair find(String path){
-
+        System.out.println("AHLAAA AKBAR BOOOOOOOM");
         String[] pathParts = path.split("/");
 
         FileNode currentNode = root;
@@ -28,7 +28,7 @@ public class FileSystemTree {
             if (currentNode == null){
                 return new Pair(false, null);
             }
-            if (currentNode.name == part){
+            if (currentNode.name.equals(part)){
                 return new Pair(true, currentNode);
             }
         }

@@ -13,6 +13,7 @@ public class FileNode {
         this.isDirectory = isDirectory;
         this.parentDir = parentDir;
         this.myStorageServer = myStorageServer;
+        this.children = new HashMap<>();
     }
 
     public FileNode getParentDirectory() {

@@ -6,11 +6,12 @@ import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface{
 
-    public FileSystemTree fileSystem;
+    public FileSystemTree fileSystem = new FileSystemTree();
 
     public int globalMachineCounter = 0;
 
@@ -112,6 +113,14 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     public boolean add_storage_item(String item, String serverName, boolean isDirectory) throws RemoteException {
 
         String[] pathElements = item.split("/");
+        // copy without first element
+        pathElements = Arrays.copyOfRange(pathElements, 1, pathElements.length);
+
+        System.out.println("-----------------------");
+        for (String path: pathElements) {
+            System.out.println("->> " + path);
+        }
+        System.out.println("-----------------------");
 
         int lastElement = pathElements.length-1;
 
@@ -128,13 +137,21 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
                 lastSplit = item.lastIndexOf("/");
             }
 
-            String parentPath = item.substring(0,lastSplit);
+
+            System.out.println("item = "+ item);
+            String parentPath = item.substring(0,lastSplit-1);
+            System.out.println("parentPath = " + parentPath);
             Pair maybeFoundParentNode = fileSystem.find(parentPath);
 
-            FileNode parentNode = maybeFoundParentNode.node;
+            boolean didYouFindIt = maybeFoundParentNode.bool;
+            if(didYouFindIt) {
+                FileNode parentNode = maybeFoundParentNode.node;
 
-            fileSystem.addToFileSystem(pathElements[lastElement], parentNode,isDirectory, serverName);
-
+                fileSystem.addToFileSystem(pathElements[lastElement], parentNode, isDirectory, serverName);
+            }
+            else{
+                fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root, isDirectory, serverName);
+            }
         }
 
 

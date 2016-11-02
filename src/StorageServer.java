@@ -22,13 +22,18 @@ public class StorageServer implements ClientStorageInterface {
 
         Scanner in = new Scanner(System.in);
         System.out.print("Insert Local Path: ");
-        String localPathAtStartup = in.next();
+        //String localPathAtStartup = in.next();
+        String localPathAtStartup = args[0];
+
         System.out.print("Insert Global Path: ");
-        globalPath = in.next();
-        in.nextLine();
+        //globalPath = in.next();
+        globalPath= args[1];
+        //in.nextLine();
 
         System.out.print("Insert MetadataServer hostname(if left blank localhost will be used) : ");
-        String MetaDataHostNameTEMP = in.nextLine();
+        //String MetaDataHostNameTEMP = in.nextLine();
+        String MetaDataHostNameTEMP = args[2];
+
         MetaDataHostName = (MetaDataHostNameTEMP.equals("")) ? "localhost" : MetaDataHostNameTEMP;
 
         try {
@@ -59,10 +64,11 @@ public class StorageServer implements ClientStorageInterface {
     public static void init(String local_path, String globalPath){
         try {
             localPath = local_path;
+            System.out.println("\nLOCALPATH = " + localPath);
             Boolean response = stubStorageMetadata.add_storage_server(ServerName, globalPath);
             System.out.println("Init Response: " + response);
 
-            sendMyMetaData("");
+            sendMetaDataOfDirectory("");
 
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -100,21 +106,31 @@ public class StorageServer implements ClientStorageInterface {
         return result;
     }
 
-    public static boolean sendMyMetaData(String path){
+    public static boolean sendMetaDataOfDirectory(String path){
 
-        File myLocalPath = new File(localPath + "/"+ path);
+        File myLocalPath = new File(localPath + "/" + path);
+
+        System.out.println(myLocalPath.getPath());
+
         File[] listOfFiles = myLocalPath.listFiles();
 
         for (File f : listOfFiles) {
+
             try {
-                String adjustedFilePath = globalPath + "/" + path + "/" + f.getName();
+                String adjustedFilePath = globalPath +"/" + path + "/" + f.getName();
                 boolean isDirectory = f.isDirectory();
+                System.out.println("BBBBEFORE " + adjustedFilePath);
                 stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
-                System.out.println(adjustedFilePath);
+                System.out.println("AAAAAFTER " + adjustedFilePath);
             } catch (Exception e) {
                 System.err.println("Exception: " + e.toString());
                 e.printStackTrace();
             }
+
+            if(f.isDirectory()){
+                boolean response = sendMetaDataOfDirectory(f.getName());
+            }
+
         }
 
 
