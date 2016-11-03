@@ -1,6 +1,5 @@
 
-import com.sun.org.apache.regexp.internal.RE;
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
@@ -54,20 +53,19 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     public String lstat(String path) throws RemoteException {
 
-        String output = "";
-        File folder = new File(path);
-        File[] listOfFiles = folder.listFiles();
+        StringBuilder output = new StringBuilder(".\n");
 
-        if (listOfFiles != null) {
-            for (File listOfFile : listOfFiles) {
-                output = output + listOfFile.getName() + "\n";
-            }
-        }
-        else{
-            output = "No files.\n";
-        }
+        Pair didYouFindIt = fileSystem.find(path);
 
-        return output;
+        FileNode dirToBeListed = didYouFindIt.node;
+
+
+        dirToBeListed.children.entrySet().forEach(entry -> {
+            System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
+            output.append( entry.getKey() + "\n");
+        });
+
+        return new String(output);
     }
 
 

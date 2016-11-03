@@ -45,6 +45,8 @@ public class Client {
 
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
 
+            System.out.println("KAKAKAKAK");
+
             ServerImUsing = stubClientMetadataInterface.find("/A");
             System.out.println("server: " + ServerImUsing);
 
@@ -53,7 +55,7 @@ public class Client {
             boolean answer = stubClientStorageInterface.create("/Users/rmf/AAAAA/lol");
             System.out.println("answer: " + answer);
 
-
+            System.out.println("WTFFFF!!!!!");
             String response = stubClientMetadataInterface.lstat("/A");
             System.out.println("response: " + response);
 
