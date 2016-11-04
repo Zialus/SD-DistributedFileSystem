@@ -15,10 +15,29 @@ public class StorageServer implements ClientStorageInterface {
     public static String MetaDataHostName;
     public static StorageMetadataInterface stubStorageMetadata;
 
+
+    public static void exit(Registry registry, StorageServer objStorageServer) {
+        try{
+            // Unregister ourself
+            registry.unbind(ServerName);
+
+            // Unexport; this will also remove us from the RMI runtime
+            UnicastRemoteObject.unexportObject(objStorageServer, true);
+
+            System.out.println("Unbinded and exited.");
+        }
+        catch(Exception e){
+            System.err.println("Server exception: " + e.toString());
+            e.printStackTrace();
+        }
+    }
+
+
     public static void main(String[] args) {
 
         // Call close method when Storage Server shuts down
         Runtime.getRuntime().addShutdownHook(new Thread(StorageServer::close));
+
 
         Scanner in = new Scanner(System.in);
         System.out.print("Insert Local Path: ");
@@ -48,6 +67,9 @@ public class StorageServer implements ClientStorageInterface {
 
             // Initialize the storage server by adding its directories to the MetaDataServer
             init(localPathAtStartup, globalPath);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry,objStorageServer)));
+
 
             System.out.println(ServerName + " is ready");
             System.out.println("My path is " + localPath);

@@ -41,18 +41,17 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
 
         try {
+            MetadataServer objClientMetaInterface = new MetadataServer();
+            ClientMetadataInterface stubClientMetaInterface = (ClientMetadataInterface) UnicastRemoteObject.exportObject(objClientMetaInterface, 0);
 
-            MetadataServer obj1 = new MetadataServer();
-            ClientMetadataInterface stub1 = (ClientMetadataInterface) UnicastRemoteObject.exportObject(obj1, 0);
-
-            MetadataServer obj2 = new MetadataServer();
-            StorageMetadataInterface stub2 = (StorageMetadataInterface) UnicastRemoteObject.exportObject(obj2, 0);
+            MetadataServer objStorageMetaInterface = new MetadataServer();
+            StorageMetadataInterface stubStorageMetaInterface = (StorageMetadataInterface) UnicastRemoteObject.exportObject(objStorageMetaInterface, 0);
 
             Registry registry = LocateRegistry.getRegistry();
-            registry.bind("ClientMetadataInterface", stub1);
-            registry.bind("StorageMetadataInterface", stub2);
+            registry.bind("ClientMetadataInterface", stubClientMetaInterface);
+            registry.bind("StorageMetadataInterface", stubStorageMetaInterface);
 
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry,obj1,obj2)));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry,objClientMetaInterface,objStorageMetaInterface)));
 
             System.out.println("Server ready");
 
@@ -70,7 +69,12 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     public String find(String path) {
         Pair pair = fileSystem.find(path);
 
-        return pair.node.name;
+        if (pair.bool) {
+            return pair.node.myStorageServer;
+        }
+        else{
+            return "fuck you....";
+        }
     }
 
     public String lstat(String path) throws RemoteException {
@@ -121,6 +125,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     public boolean add_storage_server(String machine, String top_of_the_subtree)  {
 
         StorageServerList.put(top_of_the_subtree, machine);
+        fileSystem.addToFileSystem(top_of_the_subtree, fileSystem.root, true, machine);
         System.out.println("I added machine " + machine + " on the sub-tree " + top_of_the_subtree);
         return true;
     }
@@ -136,11 +141,11 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         // copy without first element
         pathElements = Arrays.copyOfRange(pathElements, 1, pathElements.length);
 
-        System.out.println("-----------------------");
-        for (String path: pathElements) {
-            System.out.println("->> " + path);
-        }
-        System.out.println("-----------------------");
+//        System.out.println("-----------------------");
+//        for (String path: pathElements) {
+//            System.out.println("->> " + path);
+//        }
+//        System.out.println("-----------------------");
 
         int lastElement = pathElements.length-1;
 
@@ -158,9 +163,9 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 //            }
 
 
-            System.out.println("item = "+ item);
+//            System.out.println("item = "+ item);
             String parentPath = item.substring(0,lastSplit);
-            System.out.println("parentPath = " + parentPath);
+//            System.out.println("parentPath = " + parentPath);
             Pair maybeFoundParentNode = fileSystem.find(parentPath);
 
             boolean didYouFindIt = maybeFoundParentNode.bool;
