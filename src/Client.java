@@ -19,10 +19,16 @@ public class Client {
 
         if (inputCmd[0].equals("cd")){
             String whereImGoing = inputCmd[1];
-            CurrentDirectory = whereImGoing;
-            ServerImUsing = stubClientMetadataInterface.find(whereImGoing);
-            System.out.println("SERVING I'M USING "+ ServerImUsing);
-            outPut = "Successfully changed to directory " + whereImGoing;
+            String ServerImUsingTEMP = stubClientMetadataInterface.find(whereImGoing);
+
+            if (ServerImUsingTEMP.equals("")) {
+                outPut = "Can't find directory " + whereImGoing;
+            } else {
+                CurrentDirectory = whereImGoing;
+                System.out.println("SERVING I'M USING "+ ServerImUsing);
+                outPut = "Successfully changed to directory " + whereImGoing;
+            }
+
         }
         if (inputCmd[0].equals("pwd")){
             outPut = CurrentDirectory;

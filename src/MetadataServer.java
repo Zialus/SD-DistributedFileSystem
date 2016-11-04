@@ -69,16 +69,11 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         System.out.println("tryimgtofind " + path);
         Pair pair = fileSystem.find(path);
 
-        if(pair.node == null){
-            System.out.println("NULLLL CRLH");
-        }
-
-        if (pair.bool == true) {
-            System.out.println("hhhghgghghhghggh");
+        if (pair.bool) {
             return pair.node.myStorageServer;
         }
         else{
-            return "fuck you....";
+            return "";
         }
     }
 
