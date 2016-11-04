@@ -18,7 +18,27 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     public MetadataServer() {}
 
+    public static void exit(Registry registry, MetadataServer obj1, MetadataServer obj2) {
+        try{
+            // Unregister ourself
+            registry.unbind("ClientMetadataInterface");
+            registry.unbind("StorageMetadataInterface");
+
+            // Unexport; this will also remove us from the RMI runtime
+            UnicastRemoteObject.unexportObject(obj1, true);
+            UnicastRemoteObject.unexportObject(obj2, true);
+
+            System.out.println("Unbinded and exited.");
+        }
+        catch(Exception e){
+            System.err.println("Server exception: " + e.toString());
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
+
+
 
         try {
 
@@ -31,6 +51,8 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             Registry registry = LocateRegistry.getRegistry();
             registry.bind("ClientMetadataInterface", stub1);
             registry.bind("StorageMetadataInterface", stub2);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry,obj1,obj2)));
 
             System.out.println("Server ready");
 
