@@ -15,28 +15,29 @@ public class FileSystemTree {
     public void addToFileSystem(String name, FileNode dirPath, boolean isDir, String StorageServer) {
 
         FileNode f = new FileNode(name, dirPath, isDir, StorageServer);
-        System.out.println("added child -------" + f.name);
+        System.out.println("added child -------" + f.name + " with parent " + dirPath.name);
         dirPath.children.put(f.name, f);
 
     }
 
     public Pair find(String path){
-        System.out.println("AHLAAA AKBAR BOOOOOOOM");
+        System.out.println("trying to find: " + path);
         String[] pathParts = path.split("/");
         pathParts = Arrays.copyOfRange(pathParts, 1, pathParts.length);
 
-
+        int pathPartsLeft = pathParts.length-1;
         FileNode currentNode = root;
         for (String part : pathParts) {
 
-
+            System.out.println("part !!!!! " + part);
             currentNode = currentNode.children.get(part);
             if (currentNode == null){
                 return new Pair(false, null);
             }
-            if (currentNode.name.equals(part)){
+            if (currentNode.name.equals(part) && pathPartsLeft == 0 ){
                 return new Pair(true, currentNode);
             }
+            pathPartsLeft--;
         }
 
         return new Pair(false, null);

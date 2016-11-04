@@ -86,7 +86,7 @@ public class StorageServer implements ClientStorageInterface {
     public static void init(String local_path, String globalPath){
         try {
             localPath = local_path;
-            System.out.println("\nLOCALPATH = " + localPath);
+            System.out.println("LOCALPATH = " + localPath);
             Boolean response = stubStorageMetadata.add_storage_server(ServerName, globalPath);
             System.out.println("Init Response: " + response);
 
@@ -149,9 +149,7 @@ public class StorageServer implements ClientStorageInterface {
                         adjustedFilePath = globalPath + "/" + path + "/" + f.getName();
                     }
                     boolean isDirectory = f.isDirectory();
-                    System.out.println("BBBBEFORE " + adjustedFilePath);
                     stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
-                    System.out.println("AAAAAFTER " + adjustedFilePath);
 
                 } catch (Exception e) {
                     System.err.println("Exception: " + e.toString());
@@ -164,9 +162,9 @@ public class StorageServer implements ClientStorageInterface {
 
             }
         }
-
-        System.out.println("ja foste nulled");
-
+        else {
+            System.out.println("ja foste nulled");
+        }
 
         return true;
     }

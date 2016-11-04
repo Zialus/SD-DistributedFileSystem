@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface{
 
-    public FileSystemTree fileSystem = new FileSystemTree();
+    public static FileSystemTree fileSystem = new FileSystemTree();
 
     public int globalMachineCounter = 0;
 
@@ -37,8 +37,6 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public static void main(String[] args) {
-
-
 
         try {
             MetadataServer objClientMetaInterface = new MetadataServer();
@@ -67,6 +65,8 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public String find(String path) {
+
+        System.out.println("tryimgtofind " + path);
         Pair pair = fileSystem.find(path);
 
         if (pair.bool) {
@@ -78,13 +78,15 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public String lstat(String path) throws RemoteException {
-
         StringBuilder output = new StringBuilder(".\n");
 
-        Pair didYouFindIt = fileSystem.find(path);
-
-        FileNode dirToBeListed = didYouFindIt.node;
-
+        FileNode dirToBeListed;
+        if (path.equals("/") ) {
+            dirToBeListed = fileSystem.root;
+        } else {
+            Pair didYouFindIt = fileSystem.find(path);
+            dirToBeListed = didYouFindIt.node;
+        }
 
         dirToBeListed.children.entrySet().forEach(entry -> {
             System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
@@ -122,10 +124,16 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 //        return serverPath;
 //    }
 
-    public boolean add_storage_server(String machine, String top_of_the_subtree)  {
+    public boolean add_storage_server(String machine, String top_of_the_subtree) throws RemoteException {
 
         StorageServerList.put(top_of_the_subtree, machine);
-        fileSystem.addToFileSystem(top_of_the_subtree, fileSystem.root, true, machine);
+
+        add_storage_item(top_of_the_subtree,machine,true);
+
+//        String slashFreeDirName = top_of_the_subtree.substring(1); // take out the "/"
+//
+//        System.out.println("slashSolo " + slashFreeDirName);
+//        fileSystem.addToFileSystem(slashFreeDirName, fileSystem.root, true, machine);
         System.out.println("I added machine " + machine + " on the sub-tree " + top_of_the_subtree);
         return true;
     }
@@ -149,7 +157,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
         int lastElement = pathElements.length-1;
 
-        if (pathElements.length < 2) {
+        if (pathElements.length == 1) {
             fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root,isDirectory, serverName);
         } else {
 
@@ -162,10 +170,11 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
                 lastSplit = item.lastIndexOf("/");
 //            }
 
-
-//            System.out.println("item = "+ item);
+            System.out.println("66666666666666666666");
+            System.out.println("item = "+ item);
             String parentPath = item.substring(0,lastSplit);
-//            System.out.println("parentPath = " + parentPath);
+            System.out.println("parentPath = " + parentPath);
+            System.out.println("99999999999999999999");
             Pair maybeFoundParentNode = fileSystem.find(parentPath);
 
             boolean didYouFindIt = maybeFoundParentNode.bool;
@@ -175,7 +184,8 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
                 fileSystem.addToFileSystem(pathElements[lastElement], parentNode, isDirectory, serverName);
             }
             else{
-                fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root, isDirectory, serverName);
+                System.out.println("get fucked m8");
+                //fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root, isDirectory, serverName);
             }
         }
 

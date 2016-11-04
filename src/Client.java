@@ -30,7 +30,16 @@ public class Client {
 
             String directoryToBeListed = (inputCmd.length < 2) ? "." : inputCmd[1];
 
-            outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
+            if(directoryToBeListed.equals(".")){
+                outPut = stubClientMetadataInterface.lstat(CurrentDirectory);
+            }
+            else if(!directoryToBeListed.startsWith("/")){
+                outPut = stubClientMetadataInterface.lstat(CurrentDirectory+"/"+directoryToBeListed);
+
+            }
+            else {
+                outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
+            }
         }
 
         return outPut;
@@ -52,7 +61,7 @@ public class Client {
 
             stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
 
-            boolean answer = stubClientStorageInterface.create("/Users/rmf/AAAAA/lol");
+            boolean answer = stubClientStorageInterface.create("/home/tiago/johncena");
             System.out.println("answer: " + answer);
 
             System.out.println("WTFFFF!!!!!");
