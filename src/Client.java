@@ -21,6 +21,7 @@ public class Client {
             String whereImGoing = inputCmd[1];
             CurrentDirectory = whereImGoing;
             ServerImUsing = stubClientMetadataInterface.find(whereImGoing);
+            System.out.println("SERVING I'M USING "+ ServerImUsing);
             outPut = "Successfully changed to directory " + whereImGoing;
         }
         if (inputCmd[0].equals("pwd")){
