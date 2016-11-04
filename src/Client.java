@@ -1,13 +1,10 @@
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -17,8 +14,8 @@ public class Client {
     public static String CurrentDirectory = "/";
     public static ClientStorageInterface stubClientStorageInterface;
     public static ClientMetadataInterface stubClientMetadataInterface;
-    public static HashMap<String,String> configs = new HashMap<>();
-
+    public static HashMap<String,String> configsMap = new HashMap<>();
+    public static String configFile;
 
     private Client() {}
 
@@ -119,6 +116,14 @@ public class Client {
 
         if (inputCmd[0].equals("open")){
 
+            String fileToOpen = inputCmd[1];
+
+            int lastDot = fileToOpen.lastIndexOf(".");
+            String extension = fileToOpen.substring(lastDot, fileToOpen.length()-1 );
+
+            String appToOpenThisExtension = configsMap.get(extension);
+
+            Process process = Runtime.getRuntime().exec(appToOpenThisExtension + " " + fileToOpen);
 
         }
 
@@ -127,9 +132,11 @@ public class Client {
 
     public static void main(String[] args) {
 
-        String rmiHost = (args.length < 1) ? "localhost" : args[0];
-
         try {
+
+            configFile = args[0];
+            String rmiHost = (args.length < 2) ? "localhost" : args[1];
+
             Registry registry = LocateRegistry.getRegistry(rmiHost);
 
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
