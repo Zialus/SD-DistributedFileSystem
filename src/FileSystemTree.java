@@ -20,6 +20,22 @@ public class FileSystemTree {
 
     }
 
+    public void printNode(FileNode node){
+
+        while (node != null) {
+            node.children.entrySet().forEach(entry -> {
+                printNode(entry.getValue());
+                System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue() + " Parent" + entry.getValue().getParentDirectory().name);
+            });
+        }
+
+    }
+    public void printTree(){
+
+        printNode(root);
+
+    }
+
     public Pair find(String path){
         System.out.println("trying to find: " + path);
         String[] pathParts = path.split("/");
