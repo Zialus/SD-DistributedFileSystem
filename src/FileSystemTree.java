@@ -37,6 +37,11 @@ public class FileSystemTree {
     }
 
     public Pair find(String path){
+
+        if (path.equals("/")){
+            return new Pair(true,root);
+        }
+
         System.out.println("trying to find: " + path);
         String[] pathParts = path.split("/");
         pathParts = Arrays.copyOfRange(pathParts, 1, pathParts.length);

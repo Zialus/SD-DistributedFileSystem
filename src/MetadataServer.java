@@ -145,9 +145,14 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     public boolean add_storage_item(String item, String serverName, boolean isDirectory) throws RemoteException {
 
-        String[] pathElements = item.split("/");
-        // copy without first element
-        pathElements = Arrays.copyOfRange(pathElements, 1, pathElements.length);
+        if (item.equals("/")){
+            fileSystem.root.myStorageServer = serverName;
+            return true;
+        } else {
+
+            String[] pathElements = item.split("/");
+            // copy without first element
+            pathElements = Arrays.copyOfRange(pathElements, 1, pathElements.length);
 
 //        System.out.println("-----------------------");
 //        for (String path: pathElements) {
@@ -155,42 +160,34 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 //        }
 //        System.out.println("-----------------------");
 
-        int lastElement = pathElements.length-1;
+            int lastElement = pathElements.length - 1;
 
-        if (pathElements.length == 1) {
-            fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root,isDirectory, serverName);
-        } else {
+            if (pathElements.length == 1) {
+                fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root, isDirectory, serverName);
+            } else {
 
-            int lastSplit;
+                int lastSplit;
 
-//            if (isDirectory) {
-//                lastSplit = item.lastIndexOf("/");
-//                lastSplit = item.lastIndexOf("/",lastSplit);
-//            } else {
                 lastSplit = item.lastIndexOf("/");
-//            }
 
-            System.out.println("66666666666666666666");
-            System.out.println("item = "+ item);
-            String parentPath = item.substring(0,lastSplit);
-            System.out.println("parentPath = " + parentPath);
-            System.out.println("99999999999999999999");
-            Pair maybeFoundParentNode = fileSystem.find(parentPath);
+                String parentPath = item.substring(0, lastSplit);
 
-            boolean didYouFindIt = maybeFoundParentNode.bool;
-            if(didYouFindIt) {
-                FileNode parentNode = maybeFoundParentNode.node;
+                Pair maybeFoundParentNode = fileSystem.find(parentPath);
 
-                fileSystem.addToFileSystem(pathElements[lastElement], parentNode, isDirectory, serverName);
+                boolean didYouFindIt = maybeFoundParentNode.bool;
+                if (didYouFindIt) {
+                    FileNode parentNode = maybeFoundParentNode.node;
+
+                    fileSystem.addToFileSystem(pathElements[lastElement], parentNode, isDirectory, serverName);
+                } else {
+                    System.out.println("get fucked m8");
+                    //fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root, isDirectory, serverName);
+                }
             }
-            else{
-                System.out.println("get fucked m8");
-                //fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root, isDirectory, serverName);
-            }
+
+
+            return false;
         }
-
-
-        return false;
     }
 
     public boolean del_storage_item(String item) throws RemoteException {

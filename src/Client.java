@@ -1,8 +1,14 @@
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Client {
@@ -11,19 +17,43 @@ public class Client {
     public static String CurrentDirectory = "/";
     public static ClientStorageInterface stubClientStorageInterface;
     public static ClientMetadataInterface stubClientMetadataInterface;
+    public static HashMap<String,String> configs = new HashMap<>();
+
 
     private Client() {}
 
-    public static String processInput(String[] inputCmd) throws RemoteException {
+    public static void processConfigFile() {
+
+
+    }
+
+    public static String processInput(String[] inputCmd) throws IOException {
         String outPut ="YOU FUCKED UP";
 
         if (inputCmd[0].equals("cd")){
+
             String whereImGoing = inputCmd[1];
+
+            if (whereImGoing.endsWith("..") && !CurrentDirectory.equals("/") ){
+                int lastSlash = CurrentDirectory.lastIndexOf("/");
+                CurrentDirectory = CurrentDirectory.substring(lastSlash);
+            }
+
+            if(!whereImGoing.startsWith("/")){
+
+                if (CurrentDirectory.equals("/")){
+                    whereImGoing =  "/" + whereImGoing;
+                } else {
+                    whereImGoing = CurrentDirectory + "/" + whereImGoing;
+                }
+            }
+
             String ServerImUsingTEMP = stubClientMetadataInterface.find(whereImGoing);
 
             if (ServerImUsingTEMP.equals("")) {
                 outPut = "Can't find directory " + whereImGoing;
             } else {
+                ServerImUsing = ServerImUsingTEMP;
                 CurrentDirectory = whereImGoing;
                 System.out.println("SERVING I'M USING "+ ServerImUsing);
                 outPut = "Successfully changed to directory " + whereImGoing;
@@ -49,6 +79,49 @@ public class Client {
             }
         }
 
+        if (inputCmd[0].equals("put")){
+
+            if (inputCmd.length != 3){
+                outPut = "oops..";
+            } else {
+
+                Path pathOfFileToBeSent = Paths.get(inputCmd[1]);
+                String pathWhereServerReceivesFiles = inputCmd[2];
+
+                byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
+
+                stubClientStorageInterface.create(pathWhereServerReceivesFiles, bytesToBeSent);
+
+                outPut = "File sent successfully";
+            }
+
+        }
+
+        if (inputCmd[0].equals("get")){
+
+            if (inputCmd.length != 3){
+                outPut = "oops..";
+            } else {
+
+                String pathToGetFilesFrom = inputCmd[1];
+                String pathWhereClientReceivesFiles = inputCmd[2];
+
+                byte[] bytesToBeReceived;
+
+                bytesToBeReceived = stubClientStorageInterface.get(pathToGetFilesFrom);
+
+                Files.write(Paths.get(pathWhereClientReceivesFiles), bytesToBeReceived);
+
+                outPut = "File received successfully";
+            }
+
+        }
+
+        if (inputCmd[0].equals("open")){
+
+
+        }
+
         return outPut;
     };
 
@@ -61,9 +134,7 @@ public class Client {
 
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
 
-            System.out.println("KAKAKAKAK");
-
-            ServerImUsing = stubClientMetadataInterface.find("/A");
+            ServerImUsing = stubClientMetadataInterface.find("/");
             System.out.println("server: " + ServerImUsing);
 
             stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
@@ -71,9 +142,10 @@ public class Client {
             boolean answer = stubClientStorageInterface.create("/home/tiago/johncena");
             System.out.println("answer: " + answer);
 
-            System.out.println("WTFFFF!!!!!");
-            String response = stubClientMetadataInterface.lstat("/A");
+
+            String response = stubClientMetadataInterface.lstat("/");
             System.out.println("response: " + response);
+            System.out.println("--------");
 
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
