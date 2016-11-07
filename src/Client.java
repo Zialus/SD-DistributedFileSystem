@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
@@ -16,6 +17,10 @@ public class Client {
     public static ClientMetadataInterface stubClientMetadataInterface;
     public static HashMap<String,String> configsMap = new HashMap<>();
     public static String configFile;
+    public static String CacheDir;
+    public static Registry registry;
+
+
 
     private Client() {}
 
@@ -24,7 +29,7 @@ public class Client {
 
     }
 
-    public static String processInput(String[] inputCmd) throws IOException {
+    public static String processInput(String[] inputCmd) throws IOException, NotBoundException {
         String outPut ="YOU FUCKED UP";
 
         if (inputCmd[0].equals("cd")){
@@ -100,14 +105,23 @@ public class Client {
                 outPut = "oops..";
             } else {
 
-                String pathToGetFilesFrom = inputCmd[1];
+                String pathToGetFileFrom = inputCmd[1];
                 String pathWhereClientReceivesFiles = inputCmd[2];
+
+                int indexLastSlash = pathToGetFileFrom.lastIndexOf("/");
+                int length = pathToGetFileFrom.length();
+                String fileToBeGotten = pathToGetFileFrom.substring(indexLastSlash+1,length);
 
                 byte[] bytesToBeReceived;
 
-                bytesToBeReceived = stubClientStorageInterface.get(pathToGetFilesFrom);
+                ServerImUsing = stubClientMetadataInterface.find(pathToGetFileFrom);
 
-                Files.write(Paths.get(pathWhereClientReceivesFiles), bytesToBeReceived);
+                stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
+
+                bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
+
+                System.out.println(pathWhereClientReceivesFiles + "/" + fileToBeGotten + " LALALA " + pathWhereClientReceivesFiles + " ELELELELELELEL " + pathToGetFileFrom);
+                Files.write(Paths.get(pathWhereClientReceivesFiles + fileToBeGotten), bytesToBeReceived);
 
                 outPut = "File received successfully";
             }
@@ -123,7 +137,7 @@ public class Client {
 
             String appToOpenThisExtension = configsMap.get(extension);
 
-            Process process = Runtime.getRuntime().exec(appToOpenThisExtension + " " + fileToOpen);
+            Runtime.getRuntime().exec(appToOpenThisExtension + " " + fileToOpen);
 
         }
 
@@ -132,12 +146,15 @@ public class Client {
 
     public static void main(String[] args) {
 
+
+        configFile = args[0];
+        String rmiHost = (args.length < 2) ? "localhost" : args[1];
+
+
+
         try {
 
-            configFile = args[0];
-            String rmiHost = (args.length < 2) ? "localhost" : args[1];
-
-            Registry registry = LocateRegistry.getRegistry(rmiHost);
+            registry = LocateRegistry.getRegistry(rmiHost);
 
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
 

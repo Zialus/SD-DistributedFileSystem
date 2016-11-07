@@ -1,5 +1,8 @@
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -136,6 +139,9 @@ public class StorageServer implements ClientStorageInterface {
 
         File[] listOfFiles = myLocalPath.listFiles();
 
+        if (globalPath.equals("/")){
+            globalPath = "";
+        }
 
         if (listOfFiles != null) {
             for (File f : listOfFiles) {
@@ -143,12 +149,13 @@ public class StorageServer implements ClientStorageInterface {
                 try {
                     String adjustedFilePath;
                     if(path.equals("")) {
-                        adjustedFilePath = globalPath +"/" + f.getName();
+                        adjustedFilePath = globalPath + "/" + f.getName();
                     }
                     else {
                         adjustedFilePath = globalPath + "/" + path + "/" + f.getName();
                     }
                     boolean isDirectory = f.isDirectory();
+
                     stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
 
                 } catch (Exception e) {
@@ -169,15 +176,43 @@ public class StorageServer implements ClientStorageInterface {
         return true;
     }
 
-    public boolean create(String path, byte[] blob) throws IOException {
-        return false;
+    public boolean create(String globalPath, byte[] blob) throws IOException {
+
+
+            String pathToPutFileIn = globalToLocal(globalPath);
+            
+            int indexLastSlash = pathToPutFileIn.lastIndexOf("/");
+            int length = pathToPutFileIn.length();
+            String fileToBeGotten = pathToPutFileIn.substring(indexLastSlash+1,length);
+
+            Files.write(Paths.get(pathToPutFileIn + fileToBeGotten), blob);
+
+            System.out.println("File received successfully");
+
+            return true;
     }
 
     public boolean del(String path) throws RemoteException {
         return false;
     }
 
-    public byte[] get(String path) throws RemoteException {
-        return new byte[0];
+    public String globalToLocal(String fullGlobalPath){
+
+        int indexEndGlobal = fullGlobalPath.lastIndexOf(globalPath);
+        String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal,fullGlobalPath.length());
+
+        String output = localPath + relevantPartOfTheString;
+
+        return output;
+    }
+
+    public byte[] get(String pathInGlobalServer) throws IOException {
+
+        String pathInLocalServer = globalToLocal(pathInGlobalServer);
+        Path fileToSend = Paths.get(pathInLocalServer);
+
+        byte[] bytesToBeSent = Files.readAllBytes(fileToSend);
+
+        return bytesToBeSent;
     }
 }
