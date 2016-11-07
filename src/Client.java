@@ -1,15 +1,13 @@
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class Client {
@@ -37,10 +35,15 @@ public class Client {
 
     public static void addLineToHashMap(String line){
         List<String> items = Arrays.asList(line.split(("\\s+")));
-        String appPath = items.get(items.size() - 1);
+        ArrayList<String> itemsWithoutCommas = new ArrayList<String>();
+        for (String item: items) {
+            itemsWithoutCommas.add(item.replace(",", ""));
+        }
 
-        for (int i = 0; i < (items.size()-1); i++){
-            String extension = items.get(i);
+        String appPath = items.get(itemsWithoutCommas.size() - 1);
+
+        for (int i = 0; i < (itemsWithoutCommas.size()-1); i++){
+            String extension = itemsWithoutCommas.get(i);
             configsMap.put(extension,appPath);
         }
     }
