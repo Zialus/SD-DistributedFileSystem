@@ -88,6 +88,10 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             dirToBeListed = didYouFindIt.node;
         }
 
+        if (dirToBeListed == null){
+            return "";
+        }
+
         dirToBeListed.children.entrySet().forEach(entry -> {
             System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
             output.append( entry.getKey() + "\n");

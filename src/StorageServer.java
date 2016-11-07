@@ -173,6 +173,10 @@ public class StorageServer implements ClientStorageInterface {
             System.out.println("ja foste nulled");
         }
 
+        if (globalPath.equals("")){
+            globalPath = "/";
+        }
+
         return true;
     }
 
@@ -198,10 +202,17 @@ public class StorageServer implements ClientStorageInterface {
 
     public String globalToLocal(String fullGlobalPath){
 
-        int indexEndGlobal = fullGlobalPath.lastIndexOf(globalPath);
+        System.out.println("BIIIITH " + fullGlobalPath);
+        int indexEndGlobal = fullGlobalPath.indexOf(globalPath);
+        System.out.println("BIIITCH2 " + globalPath + " " + indexEndGlobal);
+
         String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal,fullGlobalPath.length());
+        System.out.println("BIIITHC3 " + relevantPartOfTheString);
 
         String output = localPath + relevantPartOfTheString;
+
+        System.out.println("BIIITHC4 " + localPath + relevantPartOfTheString);
+
 
         return output;
     }

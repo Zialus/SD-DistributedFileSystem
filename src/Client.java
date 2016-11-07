@@ -1,4 +1,5 @@
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
@@ -18,7 +19,7 @@ public class Client {
     public static ClientMetadataInterface stubClientMetadataInterface;
     public static HashMap<String,String> configsMap = new HashMap<>();
     public static String configFile;
-    public static String CacheDir;
+    public static String CacheDir = "/var/rmiDFS";
     public static Registry registry;
 
 
@@ -29,6 +30,12 @@ public class Client {
 
         try (Stream<String> stream = Files.lines(Paths.get(configFile))) {
             stream.forEach(Client::addLineToHashMap);
+        }
+
+        for (Map.Entry<String, String> entry : configsMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            System.out.println("key:" + key + " value:" + value);
         }
 
     }
@@ -131,17 +138,27 @@ public class Client {
                 int indexLastSlash = pathToGetFileFrom.lastIndexOf("/");
                 int length = pathToGetFileFrom.length();
                 String fileToBeGotten = pathToGetFileFrom.substring(indexLastSlash+1,length);
+                String pathWhereFileIs = pathToGetFileFrom.substring(0,indexLastSlash);
 
                 byte[] bytesToBeReceived;
 
-                ServerImUsing = stubClientMetadataInterface.find(pathToGetFileFrom);
+                System.out.println("WTF IS GOING ON " + pathWhereFileIs);
+
+                ServerImUsing = stubClientMetadataInterface.find(pathWhereFileIs);
+
+                System.out.println("WTF IS GOING ON 2 " + ServerImUsing);
 
                 stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
 
+                System.out.println("WTF IS GOING ON 3 ");
+
                 bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
 
-                System.out.println(pathWhereClientReceivesFiles + "/" + fileToBeGotten + " LALALA " + pathWhereClientReceivesFiles + " ELELELELELELEL " + pathToGetFileFrom);
-                Files.write(Paths.get(pathWhereClientReceivesFiles + fileToBeGotten), bytesToBeReceived);
+                System.out.println("WTF IS GOING ON 4 ");
+
+                System.out.println(pathWhereClientReceivesFiles + "/" + fileToBeGotten + " LALALA " + pathWhereClientReceivesFiles + " LELELE " + pathToGetFileFrom);
+
+                Files.write(Paths.get(pathWhereClientReceivesFiles + "/" + fileToBeGotten), bytesToBeReceived);
 
                 outPut = "File received successfully";
             }
@@ -153,11 +170,33 @@ public class Client {
             String fileToOpen = inputCmd[1];
 
             int lastDot = fileToOpen.lastIndexOf(".");
-            String extension = fileToOpen.substring(lastDot, fileToOpen.length()-1 );
+            String extension = fileToOpen.substring(lastDot+1, fileToOpen.length() );
 
             String appToOpenThisExtension = configsMap.get(extension);
 
-            Runtime.getRuntime().exec(appToOpenThisExtension + " " + fileToOpen);
+
+            int indexLastSlash = fileToOpen.lastIndexOf("/");
+            int length = fileToOpen.length();
+            String fileToBeGotten = fileToOpen.substring(indexLastSlash+1,length);
+            String pathWhereFileIs = fileToOpen.substring(0,indexLastSlash);
+
+            byte[] bytesToBeReceived;
+
+
+            ServerImUsing = stubClientMetadataInterface.find(pathWhereFileIs);
+
+
+            stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
+
+
+            bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
+
+            File tempFile = File.createTempFile(fileToBeGotten,extension);
+
+            Files.write((tempFile.toPath()), bytesToBeReceived);
+
+            System.out.println("LETS OPEN IT " + appToOpenThisExtension + " " + tempFile.getPath());
+            Runtime.getRuntime().exec(appToOpenThisExtension + " " + tempFile.getPath());
 
         }
 
