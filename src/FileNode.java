@@ -24,5 +24,4 @@ public class FileNode {
         this.name = name;
     }
 
-
 }

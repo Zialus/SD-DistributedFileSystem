@@ -1,6 +1,4 @@
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
