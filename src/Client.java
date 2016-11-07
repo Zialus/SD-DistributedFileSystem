@@ -17,7 +17,7 @@ public class Client {
     public static ClientStorageInterface stubClientStorageInterface;
     public static ClientMetadataInterface stubClientMetadataInterface;
     public static HashMap<String,String> configsMap = new HashMap<>();
-    public static String configFile = "apps.conf";
+    public static String configFile;
     public static String CacheDir;
     public static Registry registry;
 
@@ -169,7 +169,6 @@ public class Client {
 
         configFile = args[0];
         String rmiHost = (args.length < 2) ? "localhost" : args[1];
-
 
 
         try {
