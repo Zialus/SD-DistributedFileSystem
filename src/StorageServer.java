@@ -179,17 +179,17 @@ public class StorageServer implements ClientStorageInterface {
     public boolean create(String globalPath, byte[] blob) throws IOException {
 
 
-            String pathToPutFileIn = globalToLocal(globalPath);
-            
-            int indexLastSlash = pathToPutFileIn.lastIndexOf("/");
-            int length = pathToPutFileIn.length();
-            String fileToBeGotten = pathToPutFileIn.substring(indexLastSlash+1,length);
+        String pathToPutFileIn = globalToLocal(globalPath);
 
-            Files.write(Paths.get(pathToPutFileIn + fileToBeGotten), blob);
+        int indexLastSlash = pathToPutFileIn.lastIndexOf("/");
+        int length = pathToPutFileIn.length();
+        String fileToBeGotten = pathToPutFileIn.substring(indexLastSlash+1,length);
 
-            System.out.println("File received successfully");
+        Files.write(Paths.get(pathToPutFileIn + fileToBeGotten), blob);
 
-            return true;
+        System.out.println("File received successfully");
+
+        return true;
     }
 
     public boolean del(String path) throws RemoteException {

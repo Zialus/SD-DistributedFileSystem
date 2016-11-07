@@ -6,8 +6,11 @@ import java.nio.file.Paths;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class Client {
 
@@ -16,7 +19,7 @@ public class Client {
     public static ClientStorageInterface stubClientStorageInterface;
     public static ClientMetadataInterface stubClientMetadataInterface;
     public static HashMap<String,String> configsMap = new HashMap<>();
-    public static String configFile;
+    public static String configFile = "apps.conf";
     public static String CacheDir;
     public static Registry registry;
 
@@ -24,10 +27,24 @@ public class Client {
 
     private Client() {}
 
-    public static void processConfigFile() {
+    public static void processConfigFile() throws IOException {
 
+        try (Stream<String> stream = Files.lines(Paths.get(configFile))) {
+            stream.forEach(Client::addLineToHashMap);
+        }
 
     }
+
+    public static void addLineToHashMap(String line){
+        List<String> items = Arrays.asList(line.split(("\\s+")));
+        String appPath = items.get(items.size() - 1);
+
+        for (int i = 0; i < (items.size()-1); i++){
+            String extension = items.get(i);
+            configsMap.put(extension,appPath);
+        }
+    }
+
 
     public static String processInput(String[] inputCmd) throws IOException, NotBoundException {
         String outPut ="YOU FUCKED UP";
@@ -142,7 +159,7 @@ public class Client {
         }
 
         return outPut;
-    };
+    }
 
     public static void main(String[] args) {
 
@@ -153,6 +170,8 @@ public class Client {
 
 
         try {
+
+            processConfigFile();
 
             registry = LocateRegistry.getRegistry(rmiHost);
 
