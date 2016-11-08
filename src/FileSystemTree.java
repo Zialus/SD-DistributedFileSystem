@@ -16,6 +16,12 @@ public class FileSystemTree {
 
     }
 
+    public void removeFromFileSystem(String fullPath) {
+        Pair p = find(fullPath);
+        p.node.parentDir.children.remove(p.node.name);
+        System.out.println("deleting child-------" + p.node.name + " with parent " + p.node.parentDir.name);
+    }
+
     public void printNode(FileNode node){
 
         while (node != null) {

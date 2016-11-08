@@ -2,7 +2,7 @@ import java.util.HashMap;
 
 public class FileNode {
     public String name;
-    private FileNode parentDir;
+    public FileNode parentDir;
 
     public boolean isDirectory;
     public HashMap<String,FileNode> children;

@@ -196,34 +196,46 @@ public class StorageServer implements ClientStorageInterface {
         return true;
     }
 
-    public boolean del(String path) throws RemoteException {
-        return false;
+    public boolean del(String pathInGlobalServer) throws RemoteException {
+        String pathInLocalServer = globalToLocal(pathInGlobalServer);
+        
+        File fileToBeDeleted = new File(pathInLocalServer);
+
+        boolean bool = fileToBeDeleted.delete();
+
+        stubStorageMetadata.del_storage_item(pathInGlobalServer);
+
+        return bool;
     }
 
     public String globalToLocal(String fullGlobalPath){
 
-        System.out.println("BIIIITH " + fullGlobalPath);
+        System.out.println("globalToLocalDEBUG1 " + fullGlobalPath);
+        
         int indexEndGlobal = fullGlobalPath.indexOf(globalPath);
-        System.out.println("BIIITCH2 " + globalPath + " " + indexEndGlobal);
-
+        
+        System.out.println("globalToLocalDEBUG2 " + globalPath + " " + indexEndGlobal);
+        
         String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal,fullGlobalPath.length());
-        System.out.println("BIIITHC3 " + relevantPartOfTheString);
-
+        
+        System.out.println("globalToLocalDEBUG3 " + relevantPartOfTheString);
+        
         String output = localPath + relevantPartOfTheString;
 
-        System.out.println("BIIITHC4 " + localPath + relevantPartOfTheString);
-
+        System.out.println("globalToLocalDEBUG4" + localPath + relevantPartOfTheString);
 
         return output;
     }
 
     public byte[] get(String pathInGlobalServer) throws IOException {
-
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
+        
         Path fileToSend = Paths.get(pathInLocalServer);
 
         byte[] bytesToBeSent = Files.readAllBytes(fileToSend);
 
         return bytesToBeSent;
     }
+
+
 }

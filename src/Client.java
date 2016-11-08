@@ -53,27 +53,33 @@ public class Client {
         }
     }
 
+    public static String pathSanitizer(String dirtyPath){
+
+        String cleanPath = dirtyPath;
+
+        if ( !CurrentDirectory.equals("/") ){
+            int lastSlash = CurrentDirectory.lastIndexOf("/");
+            CurrentDirectory = CurrentDirectory.substring(lastSlash);
+        }
+
+        if(!cleanPath.startsWith("/")){
+
+            if (CurrentDirectory.equals("/")){
+                cleanPath =  "/" + cleanPath;
+            } else {
+                cleanPath = CurrentDirectory + "/" + cleanPath;
+            }
+        }
+
+        return cleanPath;
+    }
 
     public static String processInput(String[] inputCmd) throws IOException, NotBoundException {
-        String outPut ="YOU FUCKED UP";
+        String outPut ="Nothing to report on";
 
         if (inputCmd[0].equals("cd")){
 
-            String whereImGoing = inputCmd[1];
-
-            if (whereImGoing.endsWith("..") && !CurrentDirectory.equals("/") ){
-                int lastSlash = CurrentDirectory.lastIndexOf("/");
-                CurrentDirectory = CurrentDirectory.substring(lastSlash);
-            }
-
-            if(!whereImGoing.startsWith("/")){
-
-                if (CurrentDirectory.equals("/")){
-                    whereImGoing =  "/" + whereImGoing;
-                } else {
-                    whereImGoing = CurrentDirectory + "/" + whereImGoing;
-                }
-            }
+            String whereImGoing = pathSanitizer(inputCmd[1]);
 
             String ServerImUsingTEMP = stubClientMetadataInterface.find(whereImGoing);
 
@@ -92,18 +98,20 @@ public class Client {
         }
         if (inputCmd[0].equals("ls")){
 
-            String directoryToBeListed = (inputCmd.length < 2) ? "." : inputCmd[1];
+            String directoryToBeListedTemp = (inputCmd.length < 2) ? "." : inputCmd[1];
 
+            String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
+
+            /*
             if(directoryToBeListed.equals(".")){
                 outPut = stubClientMetadataInterface.lstat(CurrentDirectory);
             }
             else if(!directoryToBeListed.startsWith("/")){
                 outPut = stubClientMetadataInterface.lstat(CurrentDirectory+"/"+directoryToBeListed);
+            } else { */
 
-            }
-            else {
                 outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
-            }
+            //}
         }
 
         if (inputCmd[0].equals("put")){
@@ -120,6 +128,20 @@ public class Client {
                 stubClientStorageInterface.create(pathWhereServerReceivesFiles, bytesToBeSent);
 
                 outPut = "File sent successfully";
+            }
+
+        }
+
+        if (inputCmd[0].equals("rm")){
+
+            if (inputCmd.length != 2){
+                outPut = "oops..";
+            } else {
+                String pathOfFileToBeDeleted = inputCmd[1];
+
+                stubClientStorageInterface.del(pathOfFileToBeDeleted);
+
+                outPut = "File deleted successfully";
             }
 
         }
@@ -203,10 +225,8 @@ public class Client {
 
     public static void main(String[] args) {
 
-
         configFile = args[0];
         String rmiHost = (args.length < 2) ? "localhost" : args[1];
-
 
         try {
 

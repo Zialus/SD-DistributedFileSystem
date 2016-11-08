@@ -193,6 +193,11 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public boolean del_storage_item(String item) throws RemoteException {
+
+        fileSystem.removeFromFileSystem(item);
+
         return false;
+
     }
+
 }
