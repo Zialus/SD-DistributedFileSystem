@@ -3,7 +3,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.*;
@@ -12,48 +14,52 @@ import java.util.stream.Stream;
 public class Client {
 
     public static String ServerImUsing;
-    public static String CurrentDirectory = "/";
+    public static String CurrentDirectory;
     public static ClientStorageInterface stubClientStorageInterface;
     public static ClientMetadataInterface stubClientMetadataInterface;
     public static HashMap<String,String> configsMap = new HashMap<>();
     public static String configFile;
-    public static String CacheDir = "/var/rmiDFS";
+    public static String CacheDir;
     public static Registry registry;
-
+    public static String rmiHost;
 
 
     private Client() {}
 
-    public static void processConfigFile() throws IOException {
+    private static void processConfigFile() throws IOException {
 
         try (Stream<String> stream = Files.lines(Paths.get(configFile))) {
             stream.forEach(Client::addLineToHashMap);
         }
 
+        // FOR DEBUG PURPOSES
         for (Map.Entry<String, String> entry : configsMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            System.out.println("key:" + key + " value:" + value);
+            System.out.println("Key->" + key + "|Value->" + value);
         }
 
     }
 
-    public static void addLineToHashMap(String line){
-        List<String> items = Arrays.asList(line.split(("\\s+")));
-        ArrayList<String> itemsWithoutCommas = new ArrayList<String>();
+    private static void addLineToHashMap(String line){
+        List<String> items = Arrays.asList(line.split("\\s+"));
+
+        ArrayList<String> itemsWithoutCommas = new ArrayList<>();
+
         for (String item: items) {
             itemsWithoutCommas.add(item.replace(",", ""));
         }
 
-        String appPath = items.get(itemsWithoutCommas.size() - 1);
+        int lastItemIndex = itemsWithoutCommas.size() - 1;
+        String appPath = items.get(lastItemIndex);
 
-        for (int i = 0; i < (itemsWithoutCommas.size()-1); i++){
+        for (int i = 0; i < lastItemIndex; i++){
             String extension = itemsWithoutCommas.get(i);
             configsMap.put(extension,appPath);
         }
     }
 
-    public static String pathSanitizer(String dirtyPath){
+    private static String pathSanitizer(String dirtyPath){
 
         String cleanPath = dirtyPath;
 
@@ -74,7 +80,7 @@ public class Client {
         return cleanPath;
     }
 
-    public static String processInput(String[] inputCmd) throws IOException, NotBoundException {
+    private static String processInput(String[] inputCmd) throws IOException, NotBoundException {
         String outPut ="Nothing to report on";
 
         if (inputCmd[0].equals("cd")){
@@ -110,7 +116,7 @@ public class Client {
                 outPut = stubClientMetadataInterface.lstat(CurrentDirectory+"/"+directoryToBeListed);
             } else { */
 
-                outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
+            outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
             //}
         }
 
@@ -225,55 +231,73 @@ public class Client {
 
     public static void main(String[] args) {
 
-        configFile = args[0];
-        String rmiHost = (args.length < 2) ? "localhost" : args[1];
+        if (args.length == 0) {
+            configFile = "apps.conf";
+            rmiHost = "localhost";
+        } else if (args.length == 2) {
+            configFile = args[0];
+            rmiHost = args[1];
+        } else {
+            System.err.println("Wrong number of arguments");
+            System.exit(1);
+        }
+
+        CurrentDirectory = "/";
 
         try {
-
             processConfigFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        try {
             registry = LocateRegistry.getRegistry(rmiHost);
 
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
 
+            System.out.println("----------------------------------------------------");
             ServerImUsing = stubClientMetadataInterface.find("/");
-            System.out.println("server: " + ServerImUsing);
+            System.out.println("Server where '/' is: " + ServerImUsing);
 
             stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
-
             boolean answer = stubClientStorageInterface.create("/home/tiago/johncena");
-            System.out.println("answer: " + answer);
-
+            System.out.println("Answer to create things: " + answer);
 
             String response = stubClientMetadataInterface.lstat("/");
-            System.out.println("response: " + response);
-            System.out.println("--------");
+            System.out.println("Response: " + response);
 
-        } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
+            System.out.println("----------------------------------------------------");
+
+        } catch (NotBoundException e) {
+            System.err.println("RMI Not Bound related exception: " + e.toString());
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            System.err.println("Remote related exception: " + e.toString());
             e.printStackTrace();
         }
-
 
         Scanner stdin = new Scanner(System.in);
 
+        System.out.print(CurrentDirectory+">>");
 
-        try {
-            System.out.print(CurrentDirectory+"> ");
-            while(stdin.hasNextLine()){
-                String fullCmd = stdin.nextLine();
-                String[] cmdList = fullCmd.split(" ");
-                String outPut = processInput(cmdList);
-                System.out.println(outPut);
-                System.out.print(CurrentDirectory+"> ");
-
+        while(stdin.hasNextLine()){
+            String fullCmd = stdin.nextLine();
+            String[] cmdList = fullCmd.split(" ");
+            String outPut;
+            try {
+                outPut = processInput(cmdList);
+            } catch (IOException e) {
+                e.printStackTrace();
+                outPut = "IO stuff happened";
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+                outPut = "RMI stuff happened";
             }
-        } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
-            e.printStackTrace();
+            System.out.println(outPut);
+            System.out.print(CurrentDirectory+">>");
+
         }
 
-
-
     }
+
 }

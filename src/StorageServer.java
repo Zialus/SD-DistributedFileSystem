@@ -111,8 +111,11 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-    public boolean create(String path) throws RemoteException {
-        File directory = new File(path);
+    public boolean create(String pathGlobal) throws RemoteException {
+
+        String localPath = globalToLocal(pathGlobal);
+
+        File directory = new File(localPath);
 
         // If the directory does not exist, create it
         System.out.println("creating directory: " + directory.toString());
