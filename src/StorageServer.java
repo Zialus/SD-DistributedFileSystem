@@ -134,8 +134,8 @@ public class StorageServer implements ClientStorageInterface {
         return result;
     }
 
-    public static boolean sendMetaDataOfDirectory(String path){
-
+    private static boolean sendMetaDataOfDirectory(String path){
+        String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + "/" + path);
 
         System.out.println(myLocalPath.getPath());
@@ -143,7 +143,7 @@ public class StorageServer implements ClientStorageInterface {
         File[] listOfFiles = myLocalPath.listFiles();
 
         if (globalPath.equals("/")){
-            globalPath = "";
+            globalPathAux = "";
         }
 
         if (listOfFiles != null) {
@@ -152,10 +152,10 @@ public class StorageServer implements ClientStorageInterface {
                 try {
                     String adjustedFilePath;
                     if(path.equals("")) {
-                        adjustedFilePath = globalPath + "/" + f.getName();
+                        adjustedFilePath = globalPathAux + "/" + f.getName();
                     }
                     else {
-                        adjustedFilePath = globalPath + "/" + path + "/" + f.getName();
+                        adjustedFilePath = globalPathAux + "/" + path + "/" + f.getName();
                     }
                     boolean isDirectory = f.isDirectory();
 
@@ -173,11 +173,7 @@ public class StorageServer implements ClientStorageInterface {
             }
         }
         else {
-            System.out.println("ja foste nulled");
-        }
-
-        if (globalPath.equals("")){
-            globalPath = "/";
+            System.out.println("This is just a file named " + myLocalPath);
         }
 
         return true;

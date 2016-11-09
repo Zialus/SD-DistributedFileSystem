@@ -85,39 +85,45 @@ public class Client {
 
         if (inputCmd[0].equals("cd")){
 
-            String whereImGoing = pathSanitizer(inputCmd[1]);
-
-            String ServerImUsingTEMP = stubClientMetadataInterface.find(whereImGoing);
-
-            if (ServerImUsingTEMP.equals("")) {
-                outPut = "Can't find directory " + whereImGoing;
+            if (inputCmd.length != 2){
+                outPut = "oops...wrong usage of cd";
             } else {
-                ServerImUsing = ServerImUsingTEMP;
-                CurrentDirectory = whereImGoing;
-                System.out.println("SERVING I'M USING "+ ServerImUsing);
-                outPut = "Successfully changed to directory " + whereImGoing;
+
+                String whereImGoing = pathSanitizer(inputCmd[1]);
+
+                String ServerImGoingToUse = stubClientMetadataInterface.find(whereImGoing);
+
+                if (ServerImGoingToUse.equals("")) {
+                    outPut = "Can't find directory " + whereImGoing;
+                } else {
+                    ServerImUsing = ServerImGoingToUse;
+                    CurrentDirectory = whereImGoing;
+                    System.out.println("SERVER I'M USING " + ServerImUsing);
+                    outPut = "Successfully changed directory to " + whereImGoing;
+                }
             }
 
         }
+
         if (inputCmd[0].equals("pwd")){
-            outPut = CurrentDirectory;
+
+            if (inputCmd.length != 1){
+                outPut = "oops...wrong usage of pwd";
+            } else {
+                outPut = CurrentDirectory;
+            }
         }
+
         if (inputCmd[0].equals("ls")){
 
-            String directoryToBeListedTemp = (inputCmd.length < 2) ? "." : inputCmd[1];
-
-            String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
-
-            /*
-            if(directoryToBeListed.equals(".")){
-                outPut = stubClientMetadataInterface.lstat(CurrentDirectory);
+            if (inputCmd.length > 2){
+                outPut = "oops...wrong usage of ls";
+            } else {
+                String directoryToBeListedTemp = (inputCmd.length == 1) ? "." : inputCmd[1];
+                String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
+                outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
             }
-            else if(!directoryToBeListed.startsWith("/")){
-                outPut = stubClientMetadataInterface.lstat(CurrentDirectory+"/"+directoryToBeListed);
-            } else { */
 
-            outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
-            //}
         }
 
         if (inputCmd[0].equals("put")){
@@ -141,13 +147,18 @@ public class Client {
         if (inputCmd[0].equals("rm")){
 
             if (inputCmd.length != 2){
-                outPut = "oops..";
+                outPut = "oops...wrong usage of rm";
             } else {
-                String pathOfFileToBeDeleted = inputCmd[1];
 
-                stubClientStorageInterface.del(pathOfFileToBeDeleted);
+                String pathOfFileToBeDeletedTEMP = inputCmd[1];
+                String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTEMP);
+                boolean answer = stubClientStorageInterface.del(pathOfFileToBeDeleted);
 
-                outPut = "File deleted successfully";
+                if (answer) {
+                    outPut = "File deleted successfully";
+                } else {
+                    outPut = "File not deleted successfully";
+                }
             }
 
         }
