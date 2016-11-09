@@ -59,17 +59,16 @@ public class Client {
         }
     }
 
-    private static String pathSanitizer(String dirtyPath){
-
+    public static String pathSanitizer(String dirtyPath){
+        //falta ver quando termina em "/"
         String cleanPath = dirtyPath;
+//
+//        if ( !CurrentDirectory.equals("/") ){
+//            int lastSlash = CurrentDirectory.lastIndexOf("/");
+//            CurrentDirectory = CurrentDirectory.substring(lastSlash);
+//        }
 
-        if ( !CurrentDirectory.equals("/") ){
-            int lastSlash = CurrentDirectory.lastIndexOf("/");
-            CurrentDirectory = CurrentDirectory.substring(lastSlash);
-        }
-
-        if(!cleanPath.startsWith("/")){
-
+        if(!cleanPath.startsWith("/") && !cleanPath.equals(".") && !cleanPath.equals("..")){
             if (CurrentDirectory.equals("/")){
                 cleanPath =  "/" + cleanPath;
             } else {
@@ -77,6 +76,36 @@ public class Client {
             }
         }
 
+        if(cleanPath.equals(".")){
+            cleanPath = CurrentDirectory;
+        }
+
+        if(cleanPath.contains("..")){
+            if(cleanPath.equals("..")){
+                int indexLastSlash = CurrentDirectory.lastIndexOf("/");
+                if(indexLastSlash > 0) {
+                    cleanPath = CurrentDirectory.substring(0, indexLastSlash);
+                }
+                else{
+                    cleanPath = "/";
+                }
+            }
+
+//            else{
+//                while (cleanPath.contains("..")){
+//                    int indexLastDots = cleanPath.lastIndexOf("..");
+//                    int indexLastSlash = cleanPath.substring(0, indexLastDots).lastIndexOf("/");
+//                    if(cleanPath.length() > indexLastDots+2 ){
+//                        String endOfPath = cleanPath.substring(indexLastSlash+2);
+//                        cleanPath = cleanPath.substring(0, indexLastSlash) + endOfPath;
+//                    }
+//                    else{
+//                        cleanPath = cleanPath.substring(0, indexLastSlash);
+//                    }
+//                }
+//            }
+        }
+        System.out.println("cleanPath -> " +  cleanPath);
         return cleanPath;
     }
 
@@ -243,7 +272,7 @@ public class Client {
     public static void main(String[] args) {
 
         if (args.length == 0) {
-            configFile = "apps.conf";
+            configFile = System.getProperty("user.dir") + "/../../../apps.conf";
             rmiHost = "localhost";
         } else if (args.length == 2) {
             configFile = args[0];
@@ -271,8 +300,12 @@ public class Client {
             System.out.println("Server where '/' is: " + ServerImUsing);
 
             stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
-            boolean answer = stubClientStorageInterface.create("/home/tiago/johncena");
+            boolean answer = stubClientStorageInterface.create("/tiago/johncena");
+            boolean answer2 = stubClientStorageInterface.create("/johncena1");
+
             System.out.println("Answer to create things: " + answer);
+            System.out.println("Answer to create things2: " + answer2);
+
 
             String response = stubClientMetadataInterface.lstat("/");
             System.out.println("Response: " + response);

@@ -173,7 +173,7 @@ public class StorageServer implements ClientStorageInterface {
             }
         }
         else {
-            System.out.println("This is just a file named " + myLocalPath);
+            System.out.println("This is just an empty directory " + myLocalPath);
         }
 
         return true;
