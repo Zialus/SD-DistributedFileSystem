@@ -98,44 +98,10 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         return new String(output);
     }
 
-
-//    public String cd(String dir, String serverPath) throws RemoteException {
-//
-//        if(dir.equals("..")){
-//            String [] fields = serverPath.split("/");
-//            serverPath = "";
-//            for(int i =0; i < fields.length - 1; i++){
-//                if(!fields[i].equals(""))
-//                    serverPath = serverPath +"/" + fields[i];
-//            }
-//        }
-//        else{
-//            File folder = new File(serverPath);
-//            File[] listOfFiles = folder.listFiles();
-//
-//            for (int i = 0; i < listOfFiles.length; i++) {
-//                if(listOfFiles[i].isDirectory()){
-//                    if(dir.equals(listOfFiles[i].getName())){
-//                        serverPath = serverPath + "/" + dir;
-//                        return serverPath;
-//                    }
-//                }
-//            }
-//            return "NA";
-//        }
-//        return serverPath;
-//    }
-
     public boolean add_storage_server(String machine, String top_of_the_subtree) throws RemoteException {
 
         StorageServerList.put(top_of_the_subtree, machine);
-
         add_storage_item(top_of_the_subtree,machine,true);
-
-//        String slashFreeDirName = top_of_the_subtree.substring(1); // take out the "/"
-//
-//        System.out.println("slashSolo " + slashFreeDirName);
-//        fileSystem.addToFileSystem(slashFreeDirName, fileSystem.root, true, machine);
         System.out.println("I added machine " + machine + " on the sub-tree " + top_of_the_subtree);
         return true;
     }

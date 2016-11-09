@@ -20,6 +20,9 @@ public class StorageServer implements ClientStorageInterface {
 
 
     public static void exit(Registry registry, StorageServer objStorageServer) {
+
+        removeMetadataOfDirectory("");
+
         try{
             // Unregister ourself
             registry.unbind(ServerName);
@@ -136,9 +139,9 @@ public class StorageServer implements ClientStorageInterface {
 
     private static boolean sendMetaDataOfDirectory(String path){
         String globalPathAux = globalPath;
-        File myLocalPath = new File(localPath + "/" + path);
+        File myLocalPath = new File(localPath + path);
 
-        System.out.println(myLocalPath.getPath());
+        System.out.println("ggtfftf " + myLocalPath.getPath());
 
         File[] listOfFiles = myLocalPath.listFiles();
 
@@ -149,25 +152,25 @@ public class StorageServer implements ClientStorageInterface {
         if (listOfFiles != null) {
             for (File f : listOfFiles) {
 
+
+                String adjustedFilePath;
+                if(path.equals("")) {
+                    adjustedFilePath = globalPathAux + "/" + f.getName();
+                }
+                else {
+                    adjustedFilePath = globalPathAux + path + "/" + f.getName();
+                }
+
+                boolean isDirectory = f.isDirectory();
                 try {
-                    String adjustedFilePath;
-                    if(path.equals("")) {
-                        adjustedFilePath = globalPathAux + "/" + f.getName();
-                    }
-                    else {
-                        adjustedFilePath = globalPathAux + "/" + path + "/" + f.getName();
-                    }
-                    boolean isDirectory = f.isDirectory();
-
                     stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
-
-                } catch (Exception e) {
-                    System.err.println("Exception: " + e.toString());
+                } catch (RemoteException e) {
                     e.printStackTrace();
                 }
 
                 if(f.isDirectory()){
-                    boolean response = sendMetaDataOfDirectory(f.getName());
+                    System.out.println("Vou chamar o sendMetada com o ->> " + adjustedFilePath);
+                    boolean response = sendMetaDataOfDirectory(adjustedFilePath);
                 }
 
             }
@@ -181,23 +184,30 @@ public class StorageServer implements ClientStorageInterface {
 
     public boolean create(String globalPath, byte[] blob) throws IOException {
 
+        int indexLastSlash = globalPath.lastIndexOf("/");
+        int length = globalPath.length();
+        String fileName = globalPath.substring(indexLastSlash+1,length);
+        String pathToPutTheFileIn = globalPath.substring(0, indexLastSlash);
 
-        String pathToPutFileIn = globalToLocal(globalPath);
+        System.out.println("Globalpath no create ->> " + pathToPutTheFileIn);
+        String localpathToPutFileIn = globalToLocal(pathToPutTheFileIn);
+        System.out.println("pathToPutFileIn no create ->> " + localpathToPutFileIn);
 
-        int indexLastSlash = pathToPutFileIn.lastIndexOf("/");
-        int length = pathToPutFileIn.length();
-        String fileToBeGotten = pathToPutFileIn.substring(indexLastSlash+1,length);
+        String finalName = localpathToPutFileIn + "/" + fileName;
 
-        Files.write(Paths.get(pathToPutFileIn + fileToBeGotten), blob);
+        Files.write(Paths.get(finalName), blob);
 
         System.out.println("File received successfully");
 
+        stubStorageMetadata.add_storage_item(finalName, ServerName, false);
         return true;
     }
 
+
+
     public boolean del(String pathInGlobalServer) throws RemoteException {
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
-        
+
         File fileToBeDeleted = new File(pathInLocalServer);
 
         boolean bool = fileToBeDeleted.delete();
@@ -207,18 +217,61 @@ public class StorageServer implements ClientStorageInterface {
         return bool;
     }
 
+    public static boolean removeMetadataOfDirectory(String path){
+        String globalPathAux = globalPath;
+        File myLocalPath = new File(localPath + path);
+
+        System.out.println("mylocalpath do remove " + myLocalPath.getPath());
+
+        File[] listOfFiles = myLocalPath.listFiles();
+
+        if (globalPath.equals("/")){
+            globalPathAux = "";
+        }
+
+        if (listOfFiles != null) {
+            for (File f : listOfFiles) {
+
+
+                String adjustedFilePath;
+                if(path.equals("")) {
+                    adjustedFilePath = globalPathAux + "/" + f.getName();
+                }
+                else {
+                    adjustedFilePath = globalPathAux + path + "/" + f.getName();
+                }
+
+                if(f.isDirectory()){
+                    System.out.println("Vou chamar o removeMetadataOfDirectory com o ->> " + adjustedFilePath);
+                    boolean response = removeMetadataOfDirectory(adjustedFilePath);
+                }
+
+                try {
+                    stubStorageMetadata.del_storage_item(adjustedFilePath);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+            System.out.println("This is just an empty directory " + myLocalPath);
+        }
+
+        return true;
+    }
+
     public String globalToLocal(String fullGlobalPath){
 
         System.out.println("globalToLocalDEBUG1 " + fullGlobalPath);
-        
+
         int indexEndGlobal = fullGlobalPath.indexOf(globalPath);
-        
+
         System.out.println("globalToLocalDEBUG2 " + globalPath + " " + indexEndGlobal);
-        
+
         String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal,fullGlobalPath.length());
-        
+
         System.out.println("globalToLocalDEBUG3 " + relevantPartOfTheString);
-        
+
         String output = localPath + relevantPartOfTheString;
 
         System.out.println("globalToLocalDEBUG4" + localPath + relevantPartOfTheString);
@@ -228,7 +281,7 @@ public class StorageServer implements ClientStorageInterface {
 
     public byte[] get(String pathInGlobalServer) throws IOException {
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
-        
+
         Path fileToSend = Paths.get(pathInLocalServer);
 
         byte[] bytesToBeSent = Files.readAllBytes(fileToSend);

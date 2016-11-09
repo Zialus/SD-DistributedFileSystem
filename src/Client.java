@@ -162,11 +162,18 @@ public class Client {
             } else {
 
                 Path pathOfFileToBeSent = Paths.get(inputCmd[1]);
-                String pathWhereServerReceivesFiles = inputCmd[2];
+                String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
+
+                int indexLastSlash = pathOfFileToBeSent.toString().lastIndexOf("/");
+                int length = pathOfFileToBeSent.toString().length();
+                String fileToBeSent = pathOfFileToBeSent.toString().substring(indexLastSlash+1,length);
+
 
                 byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
 
-                stubClientStorageInterface.create(pathWhereServerReceivesFiles, bytesToBeSent);
+                System.out.println("File comming from " + pathOfFileToBeSent+ " going too ---> " + pathWhereServerReceivesFiles);
+
+                stubClientStorageInterface.create(pathWhereServerReceivesFiles + "/" + fileToBeSent, bytesToBeSent);
 
                 outPut = "File sent successfully";
             }
@@ -198,7 +205,7 @@ public class Client {
                 outPut = "oops..";
             } else {
 
-                String pathToGetFileFrom = inputCmd[1];
+                String pathToGetFileFrom = pathSanitizer(inputCmd[1]);
                 String pathWhereClientReceivesFiles = inputCmd[2];
 
                 int indexLastSlash = pathToGetFileFrom.lastIndexOf("/");
@@ -208,21 +215,21 @@ public class Client {
 
                 byte[] bytesToBeReceived;
 
-                System.out.println("WTF IS GOING ON " + pathWhereFileIs);
+//                System.out.println("WTF IS GOING ON " + pathWhereFileIs);
 
                 ServerImUsing = stubClientMetadataInterface.find(pathWhereFileIs);
 
-                System.out.println("WTF IS GOING ON 2 " + ServerImUsing);
+//                System.out.println("WTF IS GOING ON 2 " + ServerImUsing);
 
                 stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
 
-                System.out.println("WTF IS GOING ON 3 ");
+//                System.out.println("WTF IS GOING ON 3 ");
 
                 bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
 
-                System.out.println("WTF IS GOING ON 4 ");
+//                System.out.println("WTF IS GOING ON 4 ");
 
-                System.out.println(pathWhereClientReceivesFiles + "/" + fileToBeGotten + " LALALA " + pathWhereClientReceivesFiles + " LELELE " + pathToGetFileFrom);
+                System.out.println("File comming from " + pathWhereFileIs+ "/" + fileToBeGotten + " going too ---> " + pathWhereClientReceivesFiles  + "/"+fileToBeGotten);
 
                 Files.write(Paths.get(pathWhereClientReceivesFiles + "/" + fileToBeGotten), bytesToBeReceived);
 
