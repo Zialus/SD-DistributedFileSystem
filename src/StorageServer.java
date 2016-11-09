@@ -22,7 +22,11 @@ public class StorageServer implements ClientStorageInterface {
     public static void exit(Registry registry, StorageServer objStorageServer) {
 
         removeMetadataOfDirectory("");
-
+        try {
+            stubStorageMetadata.del_storage_server(globalPath);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         try{
             // Unregister ourself
             registry.unbind(ServerName);

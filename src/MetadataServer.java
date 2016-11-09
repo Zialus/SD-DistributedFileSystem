@@ -106,8 +106,12 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         return true;
     }
 
-    public boolean del_storage_server(String top_of_the_subtree)  {
-        return false;
+    public boolean del_storage_server(String top_of_the_subtree) throws RemoteException {
+        String machine = StorageServerList.get(top_of_the_subtree);
+        StorageServerList.remove(top_of_the_subtree);
+        del_storage_item(top_of_the_subtree);
+        System.out.println("I added machine " + machine + " on the sub-tree " + top_of_the_subtree);
+        return true;
     }
 
 

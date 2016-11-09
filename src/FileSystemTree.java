@@ -18,6 +18,11 @@ public class FileSystemTree {
 
     public void removeFromFileSystem(String fullPath) {
         Pair p = find(fullPath);
+
+        if(!p.bool){
+            System.out.println("ggfgfr " + fullPath);
+        }
+        System.out.println("vaidarmerda ->" + p.node.parentDir.name + "|||| no fim vem o filho " + p.node.name);
         p.node.parentDir.children.remove(p.node.name);
         System.out.println("deleting child-------" + p.node.name + " with parent " + p.node.parentDir.name);
     }
