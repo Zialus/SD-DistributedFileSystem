@@ -76,7 +76,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public String lstat(String path) throws RemoteException {
-        StringBuilder output = new StringBuilder(".\n");
+        StringBuilder output = new StringBuilder(".\n..\n");
 
         FileNode dirToBeListed;
         if (path.equals("/") ) {

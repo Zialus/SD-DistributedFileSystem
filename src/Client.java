@@ -23,6 +23,9 @@ public class Client {
     public static Registry registry;
     public static String rmiHost;
 
+    //color for output
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     private Client() {}
 
@@ -62,11 +65,6 @@ public class Client {
     public static String pathSanitizer(String dirtyPath){
         //falta ver quando termina em "/"
         String cleanPath = dirtyPath;
-//
-//        if ( !CurrentDirectory.equals("/") ){
-//            int lastSlash = CurrentDirectory.lastIndexOf("/");
-//            CurrentDirectory = CurrentDirectory.substring(lastSlash);
-//        }
 
         if(!cleanPath.startsWith("/") && !cleanPath.equals(".") && !cleanPath.equals("..")){
             if (CurrentDirectory.equals("/")){
@@ -105,7 +103,7 @@ public class Client {
 //                }
 //            }
         }
-        System.out.println("cleanPath -> " +  cleanPath);
+//        System.out.println("cleanPath -> " +  cleanPath);
         return cleanPath;
     }
 
@@ -146,11 +144,14 @@ public class Client {
         if (inputCmd[0].equals("ls")){
 
             if (inputCmd.length > 2){
-                outPut = "oops...wrong usage of ls";
+                outPut = "Incorrect use of ls command";
             } else {
                 String directoryToBeListedTemp = (inputCmd.length == 1) ? "." : inputCmd[1];
                 String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
                 outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
+                if (outPut.equals("")){
+                    outPut = inputCmd[1] +  ": no such file or directory";
+                }
             }
 
         }
@@ -158,7 +159,7 @@ public class Client {
         if (inputCmd[0].equals("put")){
 
             if (inputCmd.length != 3){
-                outPut = "oops..";
+                outPut = "Incorrect use of put command";
             } else {
 
                 Path pathOfFileToBeSent = Paths.get(inputCmd[1]);
@@ -256,21 +257,25 @@ public class Client {
             byte[] bytesToBeReceived;
 
 
-            ServerImUsing = stubClientMetadataInterface.find(pathWhereFileIs);
+//            ServerImUsing = stubClientMetadataInterface.find(pathWhereFileIs);
+            ServerImUsing = stubClientMetadataInterface.find(fileToOpen);
+            if(!ServerImUsing.equals("")) {
+                System.out.println("SERVER I'M USING " + ServerImUsing);
 
+                stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
 
-            stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
+                bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
 
+                File tempFile = File.createTempFile(fileToBeGotten, extension);
 
-            bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
+                Files.write((tempFile.toPath()), bytesToBeReceived);
 
-            File tempFile = File.createTempFile(fileToBeGotten,extension);
-
-            Files.write((tempFile.toPath()), bytesToBeReceived);
-
-            System.out.println("LETS OPEN IT " + appToOpenThisExtension + " " + tempFile.getPath());
-            Runtime.getRuntime().exec(appToOpenThisExtension + " " + tempFile.getPath());
-
+                System.out.println("LETS OPEN IT " + appToOpenThisExtension + " " + tempFile.getPath());
+                Runtime.getRuntime().exec(appToOpenThisExtension + " " + tempFile.getPath());
+            }
+            else{
+                outPut = inputCmd[1] +  ": no such file or directory";
+            }
         }
 
         return outPut;
@@ -302,22 +307,22 @@ public class Client {
 
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
 
-            System.out.println("----------------------------------------------------");
+//            System.out.println("----------------------------------------------------");
             ServerImUsing = stubClientMetadataInterface.find("/");
-            System.out.println("Server where '/' is: " + ServerImUsing);
+//            System.out.println("Server where '/' is: " + ServerImUsing);
 
             stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
-            boolean answer = stubClientStorageInterface.create("/tiago/johncena");
-            boolean answer2 = stubClientStorageInterface.create("/johncena1");
+//            boolean answer = stubClientStorageInterface.create("/tiago/johncena");
+//            boolean answer2 = stubClientStorageInterface.create("/johncena1");
+//
+//            System.out.println("Answer to create things: " + answer);
+//            System.out.println("Answer to create things2: " + answer2);
 
-            System.out.println("Answer to create things: " + answer);
-            System.out.println("Answer to create things2: " + answer2);
 
-
-            String response = stubClientMetadataInterface.lstat("/");
-            System.out.println("Response: " + response);
-
-            System.out.println("----------------------------------------------------");
+//            String response = stubClientMetadataInterface.lstat("/");
+//            System.out.println("Response: " + response);
+//
+//            System.out.println("----------------------------------------------------");
 
         } catch (NotBoundException e) {
             System.err.println("RMI Not Bound related exception: " + e.toString());
@@ -329,7 +334,8 @@ public class Client {
 
         Scanner stdin = new Scanner(System.in);
 
-        System.out.print(CurrentDirectory+">>");
+//        System.out.print(CurrentDirectory+">>");
+        System.out.print(ANSI_GREEN + CurrentDirectory+ " $ " + ANSI_RESET);
 
         while(stdin.hasNextLine()){
             String fullCmd = stdin.nextLine();
@@ -345,7 +351,7 @@ public class Client {
                 outPut = "RMI stuff happened";
             }
             System.out.println(outPut);
-            System.out.print(CurrentDirectory+">>");
+            System.out.print(ANSI_GREEN + CurrentDirectory+ " $ " + ANSI_RESET);
 
         }
 
