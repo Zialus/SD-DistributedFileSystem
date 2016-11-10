@@ -42,7 +42,6 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-
     public static void main(String[] args) {
 
         // Call close method when Storage Server shuts down
@@ -201,9 +200,9 @@ public class StorageServer implements ClientStorageInterface {
 
         Files.write(Paths.get(finalName), blob);
 
-        System.out.println("File received successfully");
-
-        stubStorageMetadata.add_storage_item(finalName, ServerName, false);
+//        System.out.println("File received successfully");
+        System.out.println("FINALNAME " + finalName);
+        stubStorageMetadata.add_storage_item(globalPath, ServerName, false);
         return true;
     }
 

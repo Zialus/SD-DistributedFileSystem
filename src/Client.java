@@ -169,6 +169,9 @@ public class Client {
                 int length = pathOfFileToBeSent.toString().length();
                 String fileToBeSent = pathOfFileToBeSent.toString().substring(indexLastSlash+1,length);
 
+                ServerImUsing = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
+                System.out.println("SERVERIMUSING " + ServerImUsing);
+                stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
 
                 byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
 
@@ -241,23 +244,19 @@ public class Client {
 
         if (inputCmd[0].equals("open")){
 
-            String fileToOpen = inputCmd[1];
+            String fileToOpen = pathSanitizer(inputCmd[1]);
 
             int lastDot = fileToOpen.lastIndexOf(".");
             String extension = fileToOpen.substring(lastDot+1, fileToOpen.length() );
 
             String appToOpenThisExtension = configsMap.get(extension);
 
-
             int indexLastSlash = fileToOpen.lastIndexOf("/");
             int length = fileToOpen.length();
             String fileToBeGotten = fileToOpen.substring(indexLastSlash+1,length);
-            String pathWhereFileIs = fileToOpen.substring(0,indexLastSlash);
 
             byte[] bytesToBeReceived;
 
-
-//            ServerImUsing = stubClientMetadataInterface.find(pathWhereFileIs);
             ServerImUsing = stubClientMetadataInterface.find(fileToOpen);
             if(!ServerImUsing.equals("")) {
                 System.out.println("SERVER I'M USING " + ServerImUsing);
@@ -277,6 +276,54 @@ public class Client {
                 outPut = inputCmd[1] +  ": no such file or directory";
             }
         }
+
+        if (inputCmd[0].equals("mv")){
+            if(inputCmd.length != 3){
+                outPut = "Incorrect usage of command mv";
+            }
+            else {
+                String fileToOpen = pathSanitizer(inputCmd[1]);
+
+                int lastDot = fileToOpen.lastIndexOf(".");
+                String extension = fileToOpen.substring(lastDot + 1, fileToOpen.length());
+
+                int indexLastSlash = fileToOpen.lastIndexOf("/");
+                int length = fileToOpen.length();
+                String fileToBeGotten = fileToOpen.substring(indexLastSlash + 1, length);
+
+                byte[] bytesToBeReceived;
+
+                ServerImUsing = stubClientMetadataInterface.find(fileToOpen);
+                if (!ServerImUsing.equals("")) {
+                    System.out.println("SERVER I'M USING " + ServerImUsing);
+
+                    stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
+
+                    bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
+
+                    File tempFile = File.createTempFile(fileToBeGotten, extension);
+
+                    Files.write((tempFile.toPath()), bytesToBeReceived);
+
+                    Path pathOfFileToBeSent = Paths.get(tempFile.toString());
+                    String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
+
+                    int indexLastSlash2 = pathOfFileToBeSent.toString().lastIndexOf("/");
+                    int length2 = pathOfFileToBeSent.toString().length();
+                    String fileToBeSent = pathOfFileToBeSent.toString().substring(indexLastSlash2 + 1, length2);
+
+
+                    byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
+
+                    System.out.println("File comming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
+
+                    stubClientStorageInterface.create(pathWhereServerReceivesFiles + "/" + fileToBeSent, bytesToBeSent);
+
+                    boolean answer = stubClientStorageInterface.del(fileToOpen);
+                }
+            }
+        }
+
 
         return outPut;
     }
