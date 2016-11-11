@@ -1,3 +1,5 @@
+package FCUP;
+
 import java.util.Arrays;
 
 public class FileSystemTree {

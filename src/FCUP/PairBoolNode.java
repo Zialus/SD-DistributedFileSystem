@@ -1,3 +1,5 @@
+package FCUP;
+
 public class PairBoolNode {
     public final boolean bool;
     public FileNode node;

@@ -1,3 +1,5 @@
+package FCUP;
+
 import java.util.HashMap;
 
 public class FileNode {
