@@ -11,7 +11,7 @@ public class FileSystemTree {
     public void addToFileSystem(String name, FileNode dirPath, boolean isDir, String StorageServer) {
 
         FileNode f = new FileNode(name, dirPath, isDir, StorageServer);
-        System.out.println("added child -------" + f.name + " with parent " + dirPath.name);
+        System.out.println("added child -> " + f.name + " -> with parent " + dirPath.name);
         dirPath.children.put(f.name, f);
 
     }
@@ -20,36 +20,21 @@ public class FileSystemTree {
         PairBoolNode p = find(fullPath);
 
         if(!p.bool){
-            System.out.println("ggfgfr " + fullPath);
+            System.out.println("You are trying to remove something that doesn't exist in the filesystem | Path-> " + fullPath);
+        } else if (p.node.parentDir != null){
+            p.node.parentDir.children.remove(p.node.name);
+        } else {
+            System.out.println("I'm an orphan and my name is -> " + p.node.name);
+            p.node = null;
         }
-        System.out.println("vaidarmerda ->" + p.node.parentDir.name + "|||| no fim vem o filho " + p.node.name);
-        p.node.parentDir.children.remove(p.node.name);
-        System.out.println("deleting child-------" + p.node.name + " with parent " + p.node.parentDir.name);
-    }
-
-    public void printNode(FileNode node){
-
-        while (node != null) {
-            node.children.entrySet().forEach(entry -> {
-                printNode(entry.getValue());
-                System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue() + " Parent" + entry.getValue().getParentDirectory().name);
-            });
-        }
-
-    }
-    public void printTree(){
-
-        printNode(root);
-
     }
 
     public PairBoolNode find(String path){
-
-        if (path.equals("/")){
+        if ("/".equals(path)){
             return new PairBoolNode(true,root);
         }
 
-        System.out.println("trying to find: " + path);
+        System.out.println("Trying to find: " + path);
         String[] pathParts = path.split("/");
         pathParts = Arrays.copyOfRange(pathParts, 1, pathParts.length);
 
@@ -73,6 +58,3 @@ public class FileSystemTree {
 
 
 }
-
-
-

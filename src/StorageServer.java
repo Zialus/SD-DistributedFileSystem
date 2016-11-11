@@ -20,11 +20,7 @@ public class StorageServer implements ClientStorageInterface {
 
         close();
         removeMetadataOfDirectory("");
-        try {
-            stubStorageMetadata.del_storage_server(globalPath);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+
         try{
             // Unregister this Storage Server
             registry.unbind(ServerName);
@@ -57,14 +53,13 @@ public class StorageServer implements ClientStorageInterface {
             registry.bind(ServerName, stubClientStorage);
 
             // Initialize the storage server by adding its directories to the MetaDataServer
+            System.out.println("LOCALPATH = " + localPathAtStartup + " GLOBALPATH = " + globalPath);
             init(localPathAtStartup, globalPath);
 
             // Call exit method when Storage Server shuts down
             Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry,objStorageServer)));
 
             System.out.println(ServerName + " is ready");
-            System.out.println("My path is " + localPath);
-
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
@@ -78,12 +73,9 @@ public class StorageServer implements ClientStorageInterface {
     private static void init(String local_path, String globalPath){
         try {
             localPath = local_path;
-            System.out.println("LOCALPATH = " + localPath);
-            Boolean response = stubStorageMetadata.add_storage_server(ServerName, globalPath);
-            System.out.println("Init Response: " + response);
-
+            stubStorageMetadata.add_storage_server(ServerName, globalPath);
+            stubStorageMetadata.add_storage_item("/",ServerName,true);
             sendMetaDataOfDirectory("");
-
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
@@ -92,8 +84,7 @@ public class StorageServer implements ClientStorageInterface {
 
     private static void close(){
         try{
-            Boolean response = stubStorageMetadata.del_storage_server(localPath);
-            System.out.println("Close Response: " + response);
+            stubStorageMetadata.del_storage_server(globalPath);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
@@ -104,7 +95,7 @@ public class StorageServer implements ClientStorageInterface {
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + path);
 
-        System.out.println("ggtfftf " + myLocalPath.getPath());
+        System.out.println("Sending to metaData the local path " + myLocalPath.getPath());
 
         File[] listOfFiles = myLocalPath.listFiles();
 
@@ -126,13 +117,14 @@ public class StorageServer implements ClientStorageInterface {
 
                 boolean isDirectory = f.isDirectory();
                 try {
+                    System.out.println("Sending to MetaData the global path " + adjustedFilePath);
                     stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
 
                 if(f.isDirectory()){
-                    System.out.println("Vou chamar o sendMetada com o ->> " + adjustedFilePath);
+                    System.out.println("Calling sendMetada() with ajustedFilePath ->> " + adjustedFilePath);
                     sendMetaDataOfDirectory(adjustedFilePath);
                 }
 
@@ -209,7 +201,7 @@ public class StorageServer implements ClientStorageInterface {
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + path);
 
-        System.out.println("mylocalpath do remove " + myLocalPath.getPath());
+        System.out.println("Going to remove metadata of " + myLocalPath.getPath());
 
         File[] listOfFiles = myLocalPath.listFiles();
 
@@ -219,7 +211,6 @@ public class StorageServer implements ClientStorageInterface {
 
         if (listOfFiles != null) {
             for (File f : listOfFiles) {
-
 
                 String adjustedFilePath;
                 if(path.equals("")) {
@@ -235,6 +226,7 @@ public class StorageServer implements ClientStorageInterface {
                 }
 
                 try {
+                    System.out.println("2nd CASE Vou chamar o removeMetadataOfDirectory com o ->> " + adjustedFilePath);
                     stubStorageMetadata.del_storage_item(adjustedFilePath);
                 } catch (RemoteException e) {
                     e.printStackTrace();

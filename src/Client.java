@@ -338,8 +338,8 @@ public class Client {
 
     public static void main(String[] args) {
 
-        if (args.length == 0) {
-            configFile = System.getProperty("user.dir") + "/../../../apps.conf";
+        if (args.length == 1) {
+            configFile = args[0];
             rmiHost = "localhost";
         } else if (args.length == 2) {
             configFile = args[0];
