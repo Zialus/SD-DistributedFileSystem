@@ -1,4 +1,4 @@
-package FCUP;
+package fcup;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

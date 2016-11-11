@@ -1,4 +1,4 @@
-package FCUP;
+package fcup;
 
 import java.io.File;
 import java.io.IOException;
@@ -206,7 +206,7 @@ public class StorageServer implements ClientStorageInterface {
 
         File[] listOfFiles = myLocalPath.listFiles();
 
-        if (globalPath.equals("/")){
+        if ("/".equals(globalPath)){
             globalPathAux = "";
         }
 
@@ -214,7 +214,7 @@ public class StorageServer implements ClientStorageInterface {
             for (File f : listOfFiles) {
 
                 String adjustedFilePath;
-                if(path.equals("")) {
+                if("".equals(path)) {
                     adjustedFilePath = globalPathAux + "/" + f.getName();
                 }
                 else {

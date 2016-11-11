@@ -1,3 +1,3 @@
-package FCUP;
+package fcup;
 
 public enum FileType{DIRECTORY, FILE, NULL}

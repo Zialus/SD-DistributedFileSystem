@@ -1,4 +1,4 @@
-package FCUP;
+package fcup;
 
 public class PairBoolNode {
     public final boolean bool;

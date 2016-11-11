@@ -1,4 +1,4 @@
-package FCUP;
+package fcup;
 
 import java.io.File;
 import java.io.IOException;
@@ -171,7 +171,7 @@ public class Client {
                     String pathOfFileToBeDeletedTEMP = inputCmd[1];
                     String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTEMP);
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathOfFileToBeDeleted);
-                    if(!ServerImGoingToUse.equals("")) {
+                    if(!"".equals(ServerImGoingToUse)) {
                         ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
                         boolean answer = stubClientStorageInterface.del(pathOfFileToBeDeleted);
 
@@ -342,6 +342,7 @@ public class Client {
                 break;
             default:
                 outPut = inputCmd[0] + ": command not found";
+                break;
         }
 
 

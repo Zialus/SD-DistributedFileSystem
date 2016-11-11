@@ -1,4 +1,4 @@
-package FCUP;
+package fcup;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
