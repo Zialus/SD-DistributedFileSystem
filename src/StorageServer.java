@@ -91,7 +91,7 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-    private static boolean sendMetaDataOfDirectory(String path){
+    private static void sendMetaDataOfDirectory(String path){
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + path);
 
@@ -133,8 +133,6 @@ public class StorageServer implements ClientStorageInterface {
         else {
             System.out.println("This is just an empty directory " + myLocalPath);
         }
-
-        return true;
     }
 
     public boolean create(String pathGlobal) throws RemoteException {
@@ -143,27 +141,22 @@ public class StorageServer implements ClientStorageInterface {
 
         File directory = new File(localPath);
 
-        // If the directory does not exist, create it
-        System.out.println("creating directory: " + directory.toString());
+        System.out.println("Creating directory: " + directory.toString());
 
-        boolean result = false;
 
-        try{
-            result = directory.mkdir();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        if(result) {
-            System.out.println("DIR created");
-        }
-        System.out.println("Final Name: " + directory.toString() + "File received successfully");
+        boolean mkdir = directory.mkdir();
 
-        stubStorageMetadata.add_storage_item(pathGlobal, ServerName, true);
-        return result;
+        if (mkdir){
+            System.out.println("Directory" +  directory.toString() + "created successfully");
+            stubStorageMetadata.add_storage_item(pathGlobal, ServerName, true);
+            return true;
+        } else {
+            System.out.println("Directory" +  directory.toString() + "could not be created");
+            return false;
+        }
     }
 
-    public boolean create(String globalPath, byte[] blob) throws IOException {
+    public boolean create(String globalPath, byte[] blob) {
 
         int indexLastSlash = globalPath.lastIndexOf("/");
         int length = globalPath.length();
@@ -171,16 +164,22 @@ public class StorageServer implements ClientStorageInterface {
         String pathToPutTheFileIn = globalPath.substring(0, indexLastSlash);
 
         System.out.println("globalPath no create ->> " + pathToPutTheFileIn);
-        String localpathToPutFileIn = globalToLocal(pathToPutTheFileIn);
-        System.out.println("pathToPutFileIn no create ->> " + localpathToPutFileIn);
+        String localPathToPutFileIn = globalToLocal(pathToPutTheFileIn);
+        System.out.println("pathToPutFileIn no create ->> " + localPathToPutFileIn);
 
-        String finalName = localpathToPutFileIn + "/" + fileName;
+        String finalName = localPathToPutFileIn + "/" + fileName;
 
-        Files.write(Paths.get(finalName), blob);
+        try {
+            Files.write(Paths.get(finalName), blob);
+            System.out.println("Final Name: " + finalName + "File received successfully");
+            stubStorageMetadata.add_storage_item(globalPath, ServerName, false);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Final Name: " + finalName + "File could not be received");
+            return false;
+        }
 
-        System.out.println("Final Name: " + finalName + "File received successfully");
-        stubStorageMetadata.add_storage_item(globalPath, ServerName, false);
-        return true;
     }
 
 
@@ -197,7 +196,7 @@ public class StorageServer implements ClientStorageInterface {
         return bool;
     }
 
-    private static boolean removeMetadataOfDirectory(String path){
+    private static void removeMetadataOfDirectory(String path){
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + path);
 
@@ -237,7 +236,6 @@ public class StorageServer implements ClientStorageInterface {
             System.out.println("This is just an empty directory " + myLocalPath);
         }
 
-        return true;
     }
 
     private String globalToLocal(String fullGlobalPath){

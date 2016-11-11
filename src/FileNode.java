@@ -1,11 +1,11 @@
 import java.util.HashMap;
 
 public class FileNode {
-    public String name;
-    public FileNode parentDir;
+    public final String name;
+    public final FileNode parentDir;
 
-    public boolean isDirectory;
-    public HashMap<String,FileNode> children;
+    public final boolean isDirectory;
+    public final HashMap<String,FileNode> children;
     public String myStorageServer;
 
     public FileNode(String name, FileNode parentDir, boolean isDirectory, String myStorageServer) {
@@ -14,14 +14,6 @@ public class FileNode {
         this.parentDir = parentDir;
         this.myStorageServer = myStorageServer;
         this.children = new HashMap<>();
-    }
-
-    public FileNode getParentDirectory() {
-        return this.parentDir;
-    }
-
-    public void rename(String name) {
-        this.name = name;
     }
 
 }

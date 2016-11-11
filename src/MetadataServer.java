@@ -7,11 +7,11 @@ import java.util.HashMap;
 
 public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface{
 
-    private static FileSystemTree fileSystem = new FileSystemTree();
+    private static final FileSystemTree fileSystem = new FileSystemTree();
 
     private int globalMachineCounter = 0;
 
-    private HashMap<String,String> StorageServerList = new HashMap<>();
+    private final HashMap<String,String> StorageServerList = new HashMap<>();
 
     private static void exit(Registry registry, MetadataServer obj1, MetadataServer obj2) {
         try{

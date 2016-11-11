@@ -15,7 +15,7 @@ public class Client {
 
     private static String CurrentDirectory;
     private static ClientMetadataInterface stubClientMetadataInterface;
-    private static HashMap<String,String> configsMap = new HashMap<>();
+    private static final HashMap<String,String> configsMap = new HashMap<>();
     private static String configFile;
     private static Registry registry;
     private static String rmiHost;
@@ -149,9 +149,14 @@ public class Client {
 
                     System.out.println("File comming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
 
-                    stubClientStorageInterface.create(pathWhereServerReceivesFiles + "/" + fileToBeSent, bytesToBeSent);
+                    boolean maybeCreated = stubClientStorageInterface.create(pathWhereServerReceivesFiles + "/" + fileToBeSent, bytesToBeSent);
 
-                    outPut = "File sent successfully";
+                    if (maybeCreated) {
+                        outPut = "File sent successfully";
+                    } else {
+                        outPut = "File could not be sent";
+                    }
+
                 }
 
                 break;
@@ -227,9 +232,13 @@ public class Client {
                     if(!ServerImGoingToUse.equals("")) {
                         ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
-                        stubClientStorageInterface.create(pathWhereDirWillBeCreated + "/" + dirName);
+                        boolean maybeCreated = stubClientStorageInterface.create(pathWhereDirWillBeCreated + "/" + dirName);
 
-                        outPut = "Dir " + pathWhereDirWillBeCreated + "/" + dirName + " created successfully";
+                        if (maybeCreated) {
+                            outPut = "Dir " + pathWhereDirWillBeCreated + "/" + dirName + " created successfully";
+                        } else {
+                            outPut = "Dir " + pathWhereDirWillBeCreated + "/" + dirName + " could not be created!";
+                        }
                     }
                     else{
                         outPut = pathWhereDirWillBeCreated + ": no such file or directory";
@@ -275,7 +284,7 @@ public class Client {
                 if (inputCmd.length != 3) {
                     outPut = "Incorrect use of command mv";
                 } else {
-                    String fileInDestiny = "";
+                    String fileInDestiny;
                     String fileToMove = pathSanitizer(inputCmd[1]);
                     String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
 

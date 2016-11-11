@@ -1,5 +1,5 @@
 public class PairBoolNode {
-    boolean bool;
+    final boolean bool;
     FileNode node;
 
     PairBoolNode(boolean b, FileNode n){

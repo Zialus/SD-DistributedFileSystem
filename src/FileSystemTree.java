@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class FileSystemTree {
 
-    public FileNode root; // root folder
+    public final FileNode root; // root folder
 
     public FileSystemTree() {
         this.root = new FileNode("/", null, true, null);

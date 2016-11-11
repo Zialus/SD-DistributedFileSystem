@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 public interface ClientStorageInterface extends Remote {
 
     boolean create(String path) throws RemoteException; // creates a directory
-    boolean create(String path, byte[] blob) throws IOException; // creates a file
+    boolean create(String path, byte[] blob); // creates a file
 
     boolean del(String path) throws RemoteException;
     byte[] get(String path) throws IOException;
