@@ -17,7 +17,7 @@ public class FileSystemTree {
     }
 
     public void removeFromFileSystem(String fullPath) {
-        Pair p = find(fullPath);
+        PairBoolNode p = find(fullPath);
 
         if(!p.bool){
             System.out.println("ggfgfr " + fullPath);
@@ -43,10 +43,10 @@ public class FileSystemTree {
 
     }
 
-    public Pair find(String path){
+    public PairBoolNode find(String path){
 
         if (path.equals("/")){
-            return new Pair(true,root);
+            return new PairBoolNode(true,root);
         }
 
         System.out.println("trying to find: " + path);
@@ -60,15 +60,15 @@ public class FileSystemTree {
             System.out.println("part !!!!! " + part);
             currentNode = currentNode.children.get(part);
             if (currentNode == null){
-                return new Pair(false, null);
+                return new PairBoolNode(false, null);
             }
             if (currentNode.name.equals(part) && pathPartsLeft == 0 ){
-                return new Pair(true, currentNode);
+                return new PairBoolNode(true, currentNode);
             }
             pathPartsLeft--;
         }
 
-        return new Pair(false, null);
+        return new PairBoolNode(false, null);
     }
 
 

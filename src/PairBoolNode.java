@@ -1,8 +1,8 @@
-class Pair {
+public class PairBoolNode {
     boolean bool;
     FileNode node;
 
-    Pair(boolean b, FileNode n){
+    PairBoolNode(boolean b, FileNode n){
         this.bool = b;
         this.node = n;
     }

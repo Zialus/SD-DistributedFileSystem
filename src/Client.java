@@ -49,23 +49,12 @@ public class Client {
     private static String pathSanitizer(String dirtyPath){
         String cleanPath = dirtyPath;
 
-        if(cleanPath.endsWith("/") && !cleanPath.equals("/")){
-            cleanPath = cleanPath.substring(0, cleanPath.length()-1);
-        }
-
-        if(!cleanPath.startsWith("/") && !cleanPath.equals(".") && !cleanPath.equals("..")){
-            if (CurrentDirectory.equals("/")){
-                cleanPath =  "/" + cleanPath;
-            } else {
-                cleanPath = CurrentDirectory + "/" + cleanPath;
-            }
-        }
 
         if(cleanPath.equals(".")){
             cleanPath = CurrentDirectory;
         }
 
-        if(cleanPath.equals("..")){
+        else if(cleanPath.equals("..")){
             int indexLastSlash = CurrentDirectory.lastIndexOf("/");
             if(indexLastSlash > 0) {
                 cleanPath = CurrentDirectory.substring(0, indexLastSlash);
@@ -73,18 +62,22 @@ public class Client {
             else{
                 cleanPath = "/";
             }
-        }
-
-
-        if(cleanPath.contains("..") || cleanPath.contains(".")){
-            File f = new File(cleanPath);
-            try {
-                cleanPath = f.getCanonicalPath();
-            } catch (IOException e) {
-                e.printStackTrace();
+        } else if(!cleanPath.startsWith("/")){
+            if (CurrentDirectory.equals("/")){
+                cleanPath =  "/" + cleanPath;
+            } else {
+                cleanPath = CurrentDirectory + "/" + cleanPath;
             }
-
         }
+
+        File f = new File(cleanPath);
+        try {
+            cleanPath = f.getCanonicalPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         return cleanPath;
     }
 
@@ -218,7 +211,8 @@ public class Client {
                 }
 
                 break;
-            case "mdkir":
+
+            case "mkdir":
                 if (inputCmd.length != 2) {
                     outPut = "Incorrect use of mkdir command";
                 } else {
@@ -230,15 +224,16 @@ public class Client {
                     String dirName = pathOfDirectoryToBeCreated.substring(indexLastSlash + 1, length);
 
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereDirWillBeCreated);
-                    System.out.println("SERVERIMUSING " + ServerImGoingToUse);
-                    ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+                    if(!ServerImGoingToUse.equals("")) {
+                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
-                    System.out.println("File coming from ");
+                        stubClientStorageInterface.create(pathWhereDirWillBeCreated + "/" + dirName);
 
-                    stubClientStorageInterface.create(pathWhereDirWillBeCreated + "/" + dirName);
-
-                    outPut = "File sent successfully";
-
+                        outPut = "Dir " + pathWhereDirWillBeCreated + "/" + dirName + " created successfully";
+                    }
+                    else{
+                        outPut = pathWhereDirWillBeCreated + ": no such file or directory";
+                    }
                 }
                 break;
             case "open":
@@ -275,10 +270,12 @@ public class Client {
                     outPut = inputCmd[1] + ": no such file or directory";
                 }
                 break;
+
             case "mv":
                 if (inputCmd.length != 3) {
                     outPut = "Incorrect use of command mv";
                 } else {
+                    String fileInDestiny = "";
                     String fileToMove = pathSanitizer(inputCmd[1]);
                     String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
 
@@ -291,8 +288,11 @@ public class Client {
                     String fileToBeGottenMV = fileToMove.substring(indexLastSlashMV + 1, lengthMV);
 
                     String ServerComingFrom = stubClientMetadataInterface.find(fileToMove);
+
+                    FileType filetype = stubClientMetadataInterface.findInfo(pathWhereServerReceivesFiles);
                     String ServerGoingTo = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
-                    if (!ServerComingFrom.equals("")) {
+
+                    if (!ServerComingFrom.equals("") && !ServerGoingTo.equals("")) {
                         System.out.println("SERVER I'M USING " + ServerComingFrom);
 
                         ClientStorageInterface stubClientStorageInterfaceFrom = (ClientStorageInterface) registry.lookup(ServerComingFrom);
@@ -304,21 +304,29 @@ public class Client {
 
                         Files.write((tempFile.toPath()), bytesToBeReceivedMV);
 
+
+
                         Path pathOfFileToBeSent = Paths.get(tempFile.toString());
-
-
-
-                        int indexLastSlash2 = pathOfFileToBeSent.toString().lastIndexOf("/");
-                        int length2 = pathOfFileToBeSent.toString().length();
-                        String fileToBeSent = pathOfFileToBeSent.toString().substring(indexLastSlash2 + 1, length2);
-
                         byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
+
+                        if(filetype == FileType.FILE || filetype == FileType.NULL){
+                            System.out.println("ENTREI AQUI -> " + filetype.toString());
+                            int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf("/");
+                            int length2 = pathWhereServerReceivesFiles.length();
+                            fileInDestiny = pathWhereServerReceivesFiles.substring(indexLastSlash2 + 1, length2);
+                        }
+                        else{
+                            fileInDestiny = fileToBeGottenMV;
+                        }
+
 
                         System.out.println("File comming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
 
-                        stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + "/" + fileToBeGottenMV, bytesToBeSent);
+                        stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + "/" + fileInDestiny  , bytesToBeSent);
 
                         stubClientStorageInterfaceFrom.del(fileToMove);
+
+                        outPut = "File moved to " + pathWhereServerReceivesFiles + "/" + fileInDestiny;
                     }
                 }
                 break;

@@ -165,7 +165,9 @@ public class StorageServer implements ClientStorageInterface {
         if(result) {
             System.out.println("DIR created");
         }
-        stubStorageMetadata.add_storage_item(globalPath, ServerName, true);
+        System.out.println("Final Name: " + directory.toString() + "File received successfully");
+
+        stubStorageMetadata.add_storage_item(pathGlobal, ServerName, true);
         return result;
     }
 

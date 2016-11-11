@@ -63,14 +63,29 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public String find(String path) {
-
-        Pair pair = fileSystem.find(path);
+        PairBoolNode pair = fileSystem.find(path);
 
         if (pair.bool) {
-            return pair.node.myStorageServer;
+                return pair.node.myStorageServer;
         }
         else{
             return "";
+        }
+    }
+
+
+    public FileType findInfo(String path) throws RemoteException {
+        PairBoolNode pair = fileSystem.find(path);
+
+        if (pair.bool) {
+            if (pair.node.isDirectory) {
+                return FileType.DIRECTORY;
+            } else {
+                return FileType.FILE;
+            }
+        }
+        else{
+            return FileType.NULL;
         }
     }
 
@@ -82,7 +97,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         if (path.equals("/") ) {
             dirToBeListed = fileSystem.root;
         } else {
-            Pair didYouFindIt = fileSystem.find(path);
+            PairBoolNode didYouFindIt = fileSystem.find(path);
             dirToBeListed = didYouFindIt.node;
         }
 
@@ -141,7 +156,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
                 String parentPath = item.substring(0, lastSplit);
 
-                Pair maybeFoundParentNode = fileSystem.find(parentPath);
+                PairBoolNode maybeFoundParentNode = fileSystem.find(parentPath);
 
                 boolean didYouFindIt = maybeFoundParentNode.bool;
                 if (didYouFindIt) {
