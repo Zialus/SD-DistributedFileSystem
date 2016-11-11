@@ -263,7 +263,7 @@ public class Client {
                 byte[] bytesToBeReceived;
 
                 String ServerImGoingToUse = stubClientMetadataInterface.find(fileToOpen);
-                if (!ServerImGoingToUse.equals("")) {
+                if (!"".equals(ServerImGoingToUse)) {
                     System.out.println("SERVER I'M USING " + ServerImGoingToUse);
 
                     ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
