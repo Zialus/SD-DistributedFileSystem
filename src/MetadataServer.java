@@ -90,9 +90,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             return "";
         }
 
-        dirToBeListed.children.entrySet().forEach(entry -> {
-            output.append( entry.getKey() + "\n");
-        });
+        dirToBeListed.children.entrySet().forEach(entry -> output.append(entry.getKey()).append("\n"));
 
         return new String(output);
     }

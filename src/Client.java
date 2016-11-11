@@ -8,13 +8,12 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Client {
 
-    public static String ServerImUsing;
     public static String CurrentDirectory;
-    public static ClientStorageInterface stubClientStorageInterface;
     public static ClientMetadataInterface stubClientMetadataInterface;
     public static HashMap<String,String> configsMap = new HashMap<>();
     public static String configFile;
@@ -37,11 +36,7 @@ public class Client {
     private static void addLineToHashMap(String line){
         List<String> items = Arrays.asList(line.split("\\s+"));
 
-        ArrayList<String> itemsWithoutCommas = new ArrayList<>();
-
-        for (String item: items) {
-            itemsWithoutCommas.add(item.replace(",", ""));
-        }
+        ArrayList<String> itemsWithoutCommas = items.stream().map(item -> item.replace(",", "")).collect(Collectors.toCollection(ArrayList::new));
 
         int lastItemIndex = itemsWithoutCommas.size() - 1;
         String appPath = items.get(lastItemIndex);
@@ -111,7 +106,6 @@ public class Client {
                     if (ServerImGoingToUse.equals("")) {
                         outPut = "Can't find directory " + whereImGoing;
                     } else {
-                        ServerImUsing = ServerImGoingToUse;
                         CurrentDirectory = whereImGoing;
                         outPut = "Changed to directory " + whereImGoing;
                     }
@@ -155,9 +149,9 @@ public class Client {
                     int length = pathOfFileToBeSent.toString().length();
                     String fileToBeSent = pathOfFileToBeSent.toString().substring(indexLastSlash + 1, length);
 
-                    ServerImUsing = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
-                    System.out.println("SERVERIMUSING " + ServerImUsing);
-                    stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
+                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
+                    System.out.println("SERVERIMUSING " + ServerImGoingToUse);
+                    ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                     byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
 
@@ -179,6 +173,7 @@ public class Client {
                     String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTEMP);
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathOfFileToBeDeleted);
                     if(!ServerImGoingToUse.equals("")) {
+                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
                         boolean answer = stubClientStorageInterface.del(pathOfFileToBeDeleted);
 
                         if (answer) {
@@ -210,19 +205,11 @@ public class Client {
 
                     byte[] bytesToBeReceived;
 
-//                System.out.println("WTF IS GOING ON " + pathWhereFileIs);
+                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereFileIs);
 
-                    ServerImUsing = stubClientMetadataInterface.find(pathWhereFileIs);
-
-//                System.out.println("WTF IS GOING ON 2 " + ServerImUsing);
-
-                    stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
-
-//                System.out.println("WTF IS GOING ON 3 ");
+                    ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                     bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
-
-//                System.out.println("WTF IS GOING ON 4 ");
 
                     System.out.println("File comming from " + pathWhereFileIs + "/" + fileToBeGotten + " going too ---> " + pathWhereClientReceivesFiles + "/" + fileToBeGotten);
 
@@ -248,11 +235,11 @@ public class Client {
 
                 byte[] bytesToBeReceived;
 
-                ServerImUsing = stubClientMetadataInterface.find(fileToOpen);
-                if (!ServerImUsing.equals("")) {
-                    System.out.println("SERVER I'M USING " + ServerImUsing);
+                String ServerImGoingToUse = stubClientMetadataInterface.find(fileToOpen);
+                if (!ServerImGoingToUse.equals("")) {
+                    System.out.println("SERVER I'M USING " + ServerImGoingToUse);
 
-                    stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
+                    ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                     bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
 
@@ -272,6 +259,7 @@ public class Client {
                     outPut = "Incorrect use of command mv";
                 } else {
                     String fileToMove = pathSanitizer(inputCmd[1]);
+                    String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
 
                     int lastDotMV = fileToMove.lastIndexOf(".");
                     String extensionMV = fileToMove.substring(lastDotMV + 1, fileToMove.length());
@@ -281,20 +269,23 @@ public class Client {
 
                     String fileToBeGottenMV = fileToMove.substring(indexLastSlashMV + 1, lengthMV);
 
-                    ServerImUsing = stubClientMetadataInterface.find(fileToMove);
-                    if (!ServerImUsing.equals("")) {
-                        System.out.println("SERVER I'M USING " + ServerImUsing);
+                    String ServerComingFrom = stubClientMetadataInterface.find(fileToMove);
+                    String ServerGoingTo = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
+                    if (!ServerComingFrom.equals("")) {
+                        System.out.println("SERVER I'M USING " + ServerComingFrom);
 
-                        stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
+                        ClientStorageInterface stubClientStorageInterfaceFrom = (ClientStorageInterface) registry.lookup(ServerComingFrom);
+                        ClientStorageInterface stubClientStorageInterfaceTo = (ClientStorageInterface) registry.lookup(ServerGoingTo);
 
-                        byte[] bytesToBeReceivedMV = stubClientStorageInterface.get(fileToMove);
+                        byte[] bytesToBeReceivedMV = stubClientStorageInterfaceFrom.get(fileToMove);
 
                         File tempFile = File.createTempFile(fileToBeGottenMV, extensionMV);
 
                         Files.write((tempFile.toPath()), bytesToBeReceivedMV);
 
                         Path pathOfFileToBeSent = Paths.get(tempFile.toString());
-                        String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
+
+
 
                         int indexLastSlash2 = pathOfFileToBeSent.toString().lastIndexOf("/");
                         int length2 = pathOfFileToBeSent.toString().length();
@@ -304,9 +295,9 @@ public class Client {
 
                         System.out.println("File comming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
 
-                        stubClientStorageInterface.create(pathWhereServerReceivesFiles + "/" + fileToBeSent, bytesToBeSent);
+                        stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + "/" + fileToBeGottenMV, bytesToBeSent);
 
-                        boolean answer = stubClientStorageInterface.del(fileToMove);
+                        boolean answer = stubClientStorageInterfaceFrom.del(fileToMove);
                     }
                 }
                 break;
@@ -341,17 +332,6 @@ public class Client {
             registry = LocateRegistry.getRegistry(rmiHost);
 
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
-
-            ServerImUsing = stubClientMetadataInterface.find("/");
-
-            stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
-//            boolean answer = stubClientStorageInterface.create("/tiago/johncena");
-//            boolean answer2 = stubClientStorageInterface.create("/johncena1");
-//
-//            System.out.println("Answer to create things: " + answer);
-//            System.out.println("Answer to create things2: " + answer2);
-
-
 
         } catch (NotBoundException e) {
             System.err.println("RMI Not Bound related exception: " + e.toString());

@@ -21,6 +21,7 @@ public class StorageServer implements ClientStorageInterface {
 
     public static void exit(Registry registry, StorageServer objStorageServer) {
 
+        close();
         removeMetadataOfDirectory("");
         try {
             stubStorageMetadata.del_storage_server(globalPath);
@@ -28,10 +29,10 @@ public class StorageServer implements ClientStorageInterface {
             e.printStackTrace();
         }
         try{
-            // Unregister ourself
+            // Unregister this Storage Server
             registry.unbind(ServerName);
 
-            // Unexport; this will also remove us from the RMI runtime
+            // Un-export; this will also remove us from the RMI runtime
             UnicastRemoteObject.unexportObject(objStorageServer, true);
 
             System.out.println("Unbinded and exited.");
@@ -44,25 +45,9 @@ public class StorageServer implements ClientStorageInterface {
 
     public static void main(String[] args) {
 
-        // Call close method when Storage Server shuts down
-        Runtime.getRuntime().addShutdownHook(new Thread(StorageServer::close));
-
-
-        Scanner in = new Scanner(System.in);
-        System.out.print("Insert Local Path: ");
-        //String localPathAtStartup = in.next();
         String localPathAtStartup = args[0];
-
-        System.out.print("Insert Global Path: ");
-        //globalPath = in.next();
-        globalPath= args[1];
-        //in.nextLine();
-
-        System.out.print("Insert MetadataServer hostname(if left blank localhost will be used) : ");
-        //String MetaDataHostNameTEMP = in.nextLine();
-        String MetaDataHostNameTEMP = args[2];
-
-        MetaDataHostName = (MetaDataHostNameTEMP.equals("")) ? "localhost" : MetaDataHostNameTEMP;
+        globalPath = args[1];
+        String MetaDataHostName = args[2];
 
         try {
             StorageServer objStorageServer = new StorageServer();
@@ -77,8 +62,8 @@ public class StorageServer implements ClientStorageInterface {
             // Initialize the storage server by adding its directories to the MetaDataServer
             init(localPathAtStartup, globalPath);
 
+            // Call exit method when Storage Server shuts down
             Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry,objStorageServer)));
-
 
             System.out.println(ServerName + " is ready");
             System.out.println("My path is " + localPath);
@@ -86,6 +71,7 @@ public class StorageServer implements ClientStorageInterface {
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
+            System.exit(1);
         }
 
 
