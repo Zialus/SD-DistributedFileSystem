@@ -100,29 +100,6 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-    public boolean create(String pathGlobal) throws RemoteException {
-
-        String localPath = globalToLocal(pathGlobal);
-
-        File directory = new File(localPath);
-
-        // If the directory does not exist, create it
-        System.out.println("creating directory: " + directory.toString());
-
-        boolean result = false;
-
-        try{
-            result = directory.mkdir();
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        if(result) {
-            System.out.println("DIR created");
-        }
-        return result;
-    }
-
     private static boolean sendMetaDataOfDirectory(String path){
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + path);
@@ -168,6 +145,30 @@ public class StorageServer implements ClientStorageInterface {
         return true;
     }
 
+    public boolean create(String pathGlobal) throws RemoteException {
+
+        String localPath = globalToLocal(pathGlobal);
+
+        File directory = new File(localPath);
+
+        // If the directory does not exist, create it
+        System.out.println("creating directory: " + directory.toString());
+
+        boolean result = false;
+
+        try{
+            result = directory.mkdir();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        if(result) {
+            System.out.println("DIR created");
+        }
+        stubStorageMetadata.add_storage_item(globalPath, ServerName, true);
+        return result;
+    }
+
     public boolean create(String globalPath, byte[] blob) throws IOException {
 
         int indexLastSlash = globalPath.lastIndexOf("/");
@@ -175,7 +176,7 @@ public class StorageServer implements ClientStorageInterface {
         String fileName = globalPath.substring(indexLastSlash+1,length);
         String pathToPutTheFileIn = globalPath.substring(0, indexLastSlash);
 
-        System.out.println("Globalpath no create ->> " + pathToPutTheFileIn);
+        System.out.println("globalPath no create ->> " + pathToPutTheFileIn);
         String localpathToPutFileIn = globalToLocal(pathToPutTheFileIn);
         System.out.println("pathToPutFileIn no create ->> " + localpathToPutFileIn);
 
@@ -183,8 +184,7 @@ public class StorageServer implements ClientStorageInterface {
 
         Files.write(Paths.get(finalName), blob);
 
-//        System.out.println("File received successfully");
-        System.out.println("FINALNAME " + finalName);
+        System.out.println("Final Name: " + finalName + "File received successfully");
         stubStorageMetadata.add_storage_item(globalPath, ServerName, false);
         return true;
     }
