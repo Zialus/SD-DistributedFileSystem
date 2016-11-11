@@ -7,19 +7,16 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Scanner;
 
 public class StorageServer implements ClientStorageInterface {
 
-    public static String localPath;
-    public static String globalPath;
-    public static String ServerName;
+    private static String localPath;
+    private static String globalPath;
+    private static String ServerName;
 
-    public static String MetaDataHostName;
-    public static StorageMetadataInterface stubStorageMetadata;
+    private static StorageMetadataInterface stubStorageMetadata;
 
-
-    public static void exit(Registry registry, StorageServer objStorageServer) {
+    private static void exit(Registry registry, StorageServer objStorageServer) {
 
         close();
         removeMetadataOfDirectory("");
@@ -47,13 +44,13 @@ public class StorageServer implements ClientStorageInterface {
 
         String localPathAtStartup = args[0];
         globalPath = args[1];
-        String MetaDataHostName = args[2];
+        String metaDataHostName = args[2];
 
         try {
             StorageServer objStorageServer = new StorageServer();
             ClientStorageInterface stubClientStorage = (ClientStorageInterface) UnicastRemoteObject.exportObject(objStorageServer, 0);
 
-            Registry registry = LocateRegistry.getRegistry(MetaDataHostName);
+            Registry registry = LocateRegistry.getRegistry(metaDataHostName);
             stubStorageMetadata = (StorageMetadataInterface) registry.lookup("StorageMetadataInterface");
 
             ServerName = stubStorageMetadata.giveMeAnID();
@@ -78,7 +75,7 @@ public class StorageServer implements ClientStorageInterface {
     }
 
 
-    public static void init(String local_path, String globalPath){
+    private static void init(String local_path, String globalPath){
         try {
             localPath = local_path;
             System.out.println("LOCALPATH = " + localPath);
@@ -93,7 +90,7 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-    public static void close(){
+    private static void close(){
         try{
             Boolean response = stubStorageMetadata.del_storage_server(localPath);
             System.out.println("Close Response: " + response);
@@ -159,7 +156,7 @@ public class StorageServer implements ClientStorageInterface {
 
                 if(f.isDirectory()){
                     System.out.println("Vou chamar o sendMetada com o ->> " + adjustedFilePath);
-                    boolean response = sendMetaDataOfDirectory(adjustedFilePath);
+                    sendMetaDataOfDirectory(adjustedFilePath);
                 }
 
             }
@@ -206,7 +203,7 @@ public class StorageServer implements ClientStorageInterface {
         return bool;
     }
 
-    public static boolean removeMetadataOfDirectory(String path){
+    private static boolean removeMetadataOfDirectory(String path){
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + path);
 
@@ -232,7 +229,7 @@ public class StorageServer implements ClientStorageInterface {
 
                 if(f.isDirectory()){
                     System.out.println("Vou chamar o removeMetadataOfDirectory com o ->> " + adjustedFilePath);
-                    boolean response = removeMetadataOfDirectory(adjustedFilePath);
+                    removeMetadataOfDirectory(adjustedFilePath);
                 }
 
                 try {
@@ -249,7 +246,7 @@ public class StorageServer implements ClientStorageInterface {
         return true;
     }
 
-    public String globalToLocal(String fullGlobalPath){
+    private String globalToLocal(String fullGlobalPath){
 
         System.out.println("globalToLocalDEBUG1 " + fullGlobalPath);
 
@@ -273,9 +270,7 @@ public class StorageServer implements ClientStorageInterface {
 
         Path fileToSend = Paths.get(pathInLocalServer);
 
-        byte[] bytesToBeSent = Files.readAllBytes(fileToSend);
-
-        return bytesToBeSent;
+        return Files.readAllBytes(fileToSend);
     }
 
 

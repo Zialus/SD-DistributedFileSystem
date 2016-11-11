@@ -13,17 +13,16 @@ import java.util.stream.Stream;
 
 public class Client {
 
-    public static String CurrentDirectory;
-    public static ClientMetadataInterface stubClientMetadataInterface;
-    public static HashMap<String,String> configsMap = new HashMap<>();
-    public static String configFile;
-    public static String CacheDir;
-    public static Registry registry;
-    public static String rmiHost;
+    private static String CurrentDirectory;
+    private static ClientMetadataInterface stubClientMetadataInterface;
+    private static HashMap<String,String> configsMap = new HashMap<>();
+    private static String configFile;
+    private static Registry registry;
+    private static String rmiHost;
 
-    //color for output
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_RESET = "\u001B[0m";
+    // Color for output
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_RESET = "\u001B[0m";
 
     private Client() {}
 
@@ -47,7 +46,7 @@ public class Client {
         }
     }
 
-    public static String pathSanitizer(String dirtyPath){
+    private static String pathSanitizer(String dirtyPath){
         String cleanPath = dirtyPath;
 
         if(cleanPath.endsWith("/") && !cleanPath.equals("/")){
@@ -219,7 +218,29 @@ public class Client {
                 }
 
                 break;
+            case "mdkir":
+                if (inputCmd.length != 2) {
+                    outPut = "Incorrect use of mkdir command";
+                } else {
+                    String pathOfDirectoryToBeCreated = pathSanitizer(inputCmd[1]);
 
+                    int indexLastSlash = pathOfDirectoryToBeCreated.lastIndexOf("/");
+                    int length = pathOfDirectoryToBeCreated.length();
+                    String pathWhereDirWillBeCreated = pathOfDirectoryToBeCreated.substring(0, indexLastSlash);
+                    String dirName = pathOfDirectoryToBeCreated.substring(indexLastSlash + 1, length);
+
+                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereDirWillBeCreated);
+                    System.out.println("SERVERIMUSING " + ServerImGoingToUse);
+                    ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+
+                    System.out.println("File coming from ");
+
+                    stubClientStorageInterface.create(pathWhereDirWillBeCreated + "/" + dirName);
+
+                    outPut = "File sent successfully";
+
+                }
+                break;
             case "open":
 
                 String fileToOpen = pathSanitizer(inputCmd[1]);
@@ -297,7 +318,7 @@ public class Client {
 
                         stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + "/" + fileToBeGottenMV, bytesToBeSent);
 
-                        boolean answer = stubClientStorageInterfaceFrom.del(fileToMove);
+                        stubClientStorageInterfaceFrom.del(fileToMove);
                     }
                 }
                 break;
