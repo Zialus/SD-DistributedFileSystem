@@ -50,11 +50,11 @@ public class Client {
         String cleanPath = dirtyPath;
 
 
-        if(cleanPath.equals(".")){
+        if(".".equals(cleanPath)){
             cleanPath = CurrentDirectory;
         }
 
-        else if(cleanPath.equals("..")){
+        else if("..".equals(cleanPath)){
             int indexLastSlash = CurrentDirectory.lastIndexOf("/");
             if(indexLastSlash > 0) {
                 cleanPath = CurrentDirectory.substring(0, indexLastSlash);
@@ -63,7 +63,7 @@ public class Client {
                 cleanPath = "/";
             }
         } else if(!cleanPath.startsWith("/")){
-            if (CurrentDirectory.equals("/")){
+            if ("/".equals(CurrentDirectory)){
                 cleanPath =  "/" + cleanPath;
             } else {
                 cleanPath = CurrentDirectory + "/" + cleanPath;
@@ -82,7 +82,7 @@ public class Client {
     }
 
     private static String processInput(String[] inputCmd) throws IOException, NotBoundException {
-        String outPut = inputCmd[0] + ": command not found";
+        String outPut = "";
 
         switch (inputCmd[0]) {
             case "cd":
@@ -95,7 +95,7 @@ public class Client {
 
                     String ServerImGoingToUse = stubClientMetadataInterface.find(whereImGoing);
 
-                    if (ServerImGoingToUse.equals("")) {
+                    if ("".equals(ServerImGoingToUse)) {
                         outPut = "Can't find directory " + whereImGoing;
                     } else {
                         CurrentDirectory = whereImGoing;
@@ -122,7 +122,7 @@ public class Client {
                     String directoryToBeListedTemp = (inputCmd.length == 1) ? "." : inputCmd[1];
                     String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
                     outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
-                    if (outPut.equals("")) {
+                    if ("".equals(outPut)) {
                         outPut = inputCmd[1] + ": no such file or directory";
                     }
                 }
@@ -229,7 +229,7 @@ public class Client {
                     String dirName = pathOfDirectoryToBeCreated.substring(indexLastSlash + 1, length);
 
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereDirWillBeCreated);
-                    if(!ServerImGoingToUse.equals("")) {
+                    if( !("".equals(ServerImGoingToUse)) ) {
                         ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                         boolean maybeCreated = stubClientStorageInterface.create(pathWhereDirWillBeCreated + "/" + dirName);
@@ -301,8 +301,7 @@ public class Client {
                     FileType filetype = stubClientMetadataInterface.findInfo(pathWhereServerReceivesFiles);
                     String ServerGoingTo = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
 
-                    if (!ServerComingFrom.equals("") && !ServerGoingTo.equals("")) {
-                        System.out.println("SERVER I'M USING " + ServerComingFrom);
+                    if (!("".equals(ServerComingFrom)) && !("".equals(ServerGoingTo))){
 
                         ClientStorageInterface stubClientStorageInterfaceFrom = (ClientStorageInterface) registry.lookup(ServerComingFrom);
                         ClientStorageInterface stubClientStorageInterfaceTo = (ClientStorageInterface) registry.lookup(ServerGoingTo);
@@ -339,6 +338,8 @@ public class Client {
                     }
                 }
                 break;
+            default:
+                outPut = inputCmd[0] + ": command not found";
         }
 
 

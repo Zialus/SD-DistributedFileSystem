@@ -99,7 +99,7 @@ public class StorageServer implements ClientStorageInterface {
 
         File[] listOfFiles = myLocalPath.listFiles();
 
-        if (globalPath.equals("/")){
+        if ("/".equals(globalPath)){
             globalPathAux = "";
         }
 
@@ -108,7 +108,7 @@ public class StorageServer implements ClientStorageInterface {
 
 
                 String adjustedFilePath;
-                if(path.equals("")) {
+                if("".equals(path)) {
                     adjustedFilePath = globalPathAux + "/" + f.getName();
                 }
                 else {

@@ -89,7 +89,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
         FileNode dirToBeListed;
 
-        if (path.equals("/") ) {
+        if ("/".equals(path) ) {
             dirToBeListed = fileSystem.root;
         } else {
             PairBoolNode didYouFindIt = fileSystem.find(path);
@@ -121,7 +121,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     public void add_storage_item(String item, String serverName, boolean isDirectory) throws RemoteException {
 
-        if (item.equals("/")){
+        if ("/".equals(item)){
             fileSystem.root.myStorageServer = serverName;
         } else {
             String[] pathElements = item.split("/");

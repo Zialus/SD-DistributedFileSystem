@@ -1,6 +1,6 @@
 public class PairBoolNode {
-    final boolean bool;
-    FileNode node;
+    public final boolean bool;
+    public FileNode node;
 
     PairBoolNode(boolean b, FileNode n){
         this.bool = b;
