@@ -29,18 +29,9 @@ public class Client {
     private Client() {}
 
     private static void processConfigFile() throws IOException {
-
         try (Stream<String> stream = Files.lines(Paths.get(configFile))) {
             stream.forEach(Client::addLineToHashMap);
         }
-
-        // FOR DEBUG PURPOSES
-        for (Map.Entry<String, String> entry : configsMap.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            System.out.println("Key->" + key + "|Value->" + value);
-        }
-
     }
 
     private static void addLineToHashMap(String line){
@@ -62,8 +53,11 @@ public class Client {
     }
 
     public static String pathSanitizer(String dirtyPath){
-        //falta ver quando termina em "/"
         String cleanPath = dirtyPath;
+
+        if(cleanPath.endsWith("/") && !cleanPath.equals("/")){
+            cleanPath = cleanPath.substring(0, cleanPath.length()-1);
+        }
 
         if(!cleanPath.startsWith("/") && !cleanPath.equals(".") && !cleanPath.equals("..")){
             if (CurrentDirectory.equals("/")){
@@ -77,43 +71,37 @@ public class Client {
             cleanPath = CurrentDirectory;
         }
 
-        if(cleanPath.contains("..")){
-            if(cleanPath.equals("..")){
-                int indexLastSlash = CurrentDirectory.lastIndexOf("/");
-                if(indexLastSlash > 0) {
-                    cleanPath = CurrentDirectory.substring(0, indexLastSlash);
-                }
-                else{
-                    cleanPath = "/";
-                }
+        if(cleanPath.equals("..")){
+            int indexLastSlash = CurrentDirectory.lastIndexOf("/");
+            if(indexLastSlash > 0) {
+                cleanPath = CurrentDirectory.substring(0, indexLastSlash);
+            }
+            else{
+                cleanPath = "/";
+            }
+        }
+
+
+        if(cleanPath.contains("..") || cleanPath.contains(".")){
+            File f = new File(cleanPath);
+            try {
+                cleanPath = f.getCanonicalPath();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-//            else{
-//                while (cleanPath.contains("..")){
-//                    int indexLastDots = cleanPath.lastIndexOf("..");
-//                    int indexLastSlash = cleanPath.substring(0, indexLastDots).lastIndexOf("/");
-//                    if(cleanPath.length() > indexLastDots+2 ){
-//                        String endOfPath = cleanPath.substring(indexLastSlash+2);
-//                        cleanPath = cleanPath.substring(0, indexLastSlash) + endOfPath;
-//                    }
-//                    else{
-//                        cleanPath = cleanPath.substring(0, indexLastSlash);
-//                    }
-//                }
-//            }
         }
-//        System.out.println("cleanPath -> " +  cleanPath);
         return cleanPath;
     }
 
     private static String processInput(String[] inputCmd) throws IOException, NotBoundException {
-        String outPut ="Nothing to report on";
+        String outPut = inputCmd[0] + ": command not found";
 
         switch (inputCmd[0]) {
             case "cd":
 
                 if (inputCmd.length != 2) {
-                    outPut = "oops...wrong usage of cd";
+                    outPut = "Incorrect use of cd command";
                 } else {
 
                     String whereImGoing = pathSanitizer(inputCmd[1]);
@@ -125,20 +113,21 @@ public class Client {
                     } else {
                         ServerImUsing = ServerImGoingToUse;
                         CurrentDirectory = whereImGoing;
-                        System.out.println("SERVER I'M USING " + ServerImUsing);
-                        outPut = "Successfully changed directory to " + whereImGoing;
+                        outPut = "Changed to directory " + whereImGoing;
                     }
                 }
 
                 break;
+
             case "pwd":
 
                 if (inputCmd.length != 1) {
-                    outPut = "oops...wrong usage of pwd";
+                    outPut = "Incorrect use of pwd command";
                 } else {
                     outPut = CurrentDirectory;
                 }
                 break;
+
             case "ls":
 
                 if (inputCmd.length > 2) {
@@ -183,25 +172,32 @@ public class Client {
             case "rm":
 
                 if (inputCmd.length != 2) {
-                    outPut = "oops...wrong usage of rm";
+                    outPut = "Incorrect use of rm command";
                 } else {
 
                     String pathOfFileToBeDeletedTEMP = inputCmd[1];
                     String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTEMP);
-                    boolean answer = stubClientStorageInterface.del(pathOfFileToBeDeleted);
+                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathOfFileToBeDeleted);
+                    if(!ServerImGoingToUse.equals("")) {
+                        boolean answer = stubClientStorageInterface.del(pathOfFileToBeDeleted);
 
-                    if (answer) {
-                        outPut = "File deleted successfully";
-                    } else {
-                        outPut = "File not deleted successfully";
+                        if (answer) {
+                            outPut = "File deleted successfully";
+                        } else {
+                            outPut = "File not deleted successfully";
+                        }
+                    }
+                    else {
+                        outPut = pathOfFileToBeDeleted + ": no such file or directory";
                     }
                 }
 
                 break;
+
             case "get":
 
                 if (inputCmd.length != 3) {
-                    outPut = "oops..";
+                    outPut = "Incorrect use of get command";
                 } else {
 
                     String pathToGetFileFrom = pathSanitizer(inputCmd[1]);
@@ -236,6 +232,7 @@ public class Client {
                 }
 
                 break;
+
             case "open":
 
                 String fileToOpen = pathSanitizer(inputCmd[1]);
@@ -263,15 +260,16 @@ public class Client {
 
                     Files.write((tempFile.toPath()), bytesToBeReceived);
 
-                    System.out.println("LETS OPEN IT " + appToOpenThisExtension + " " + tempFile.getPath());
                     Runtime.getRuntime().exec(appToOpenThisExtension + " " + tempFile.getPath());
+
+                    outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
                 } else {
                     outPut = inputCmd[1] + ": no such file or directory";
                 }
                 break;
             case "mv":
                 if (inputCmd.length != 3) {
-                    outPut = "Incorrect usage of command mv";
+                    outPut = "Incorrect use of command mv";
                 } else {
                     String fileToMove = pathSanitizer(inputCmd[1]);
 
@@ -344,9 +342,7 @@ public class Client {
 
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
 
-//            System.out.println("----------------------------------------------------");
             ServerImUsing = stubClientMetadataInterface.find("/");
-//            System.out.println("Server where '/' is: " + ServerImUsing);
 
             stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImUsing);
 //            boolean answer = stubClientStorageInterface.create("/tiago/johncena");
@@ -356,10 +352,6 @@ public class Client {
 //            System.out.println("Answer to create things2: " + answer2);
 
 
-//            String response = stubClientMetadataInterface.lstat("/");
-//            System.out.println("Response: " + response);
-//
-//            System.out.println("----------------------------------------------------");
 
         } catch (NotBoundException e) {
             System.err.println("RMI Not Bound related exception: " + e.toString());
@@ -371,7 +363,6 @@ public class Client {
 
         Scanner stdin = new Scanner(System.in);
 
-//        System.out.print(CurrentDirectory+">>");
         System.out.print(ANSI_GREEN + CurrentDirectory+ " $ " + ANSI_RESET);
 
         while(stdin.hasNextLine()){

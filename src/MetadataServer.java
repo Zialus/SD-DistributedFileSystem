@@ -64,7 +64,6 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     public String find(String path) {
 
-        System.out.println("tryimgtofind " + path);
         Pair pair = fileSystem.find(path);
 
         if (pair.bool) {
@@ -79,6 +78,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         StringBuilder output = new StringBuilder(".\n..\n");
 
         FileNode dirToBeListed;
+
         if (path.equals("/") ) {
             dirToBeListed = fileSystem.root;
         } else {
@@ -91,7 +91,6 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         }
 
         dirToBeListed.children.entrySet().forEach(entry -> {
-            System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
             output.append( entry.getKey() + "\n");
         });
 
