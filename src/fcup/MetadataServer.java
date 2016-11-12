@@ -46,7 +46,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry,objClientMetaInterface,objStorageMetaInterface)));
 
-            System.out.println("Server ready");
+            System.out.println("MetaData Server ready");
 
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());

@@ -107,8 +107,6 @@ public class StorageServer implements ClientStorageInterface {
 
         if (listOfFiles != null) {
             for (File f : listOfFiles) {
-
-
                 String adjustedFilePath;
                 if("".equals(path)) {
                     adjustedFilePath = globalPathAux + "/" + f.getName();
@@ -119,7 +117,6 @@ public class StorageServer implements ClientStorageInterface {
 
                 boolean isDirectory = f.isDirectory();
                 try {
-                    System.out.println("Sending to MetaData the global path " + adjustedFilePath);
                     stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -133,7 +130,7 @@ public class StorageServer implements ClientStorageInterface {
             }
         }
         else {
-            System.out.println("This is just an empty directory " + myLocalPath);
+            System.out.println("Directory " + myLocalPath + " is empty");
         }
     }
 
@@ -165,9 +162,7 @@ public class StorageServer implements ClientStorageInterface {
         String fileName = globalPath.substring(indexLastSlash+1,length);
         String pathToPutTheFileIn = globalPath.substring(0, indexLastSlash);
 
-        System.out.println("globalPath no create ->> " + pathToPutTheFileIn);
         String localPathToPutFileIn = globalToLocal(pathToPutTheFileIn);
-        System.out.println("pathToPutFileIn no create ->> " + localPathToPutFileIn);
 
         String finalName = localPathToPutFileIn + "/" + fileName;
 
@@ -222,12 +217,10 @@ public class StorageServer implements ClientStorageInterface {
                 }
 
                 if(f.isDirectory()){
-                    System.out.println("Vou chamar o removeMetadataOfDirectory com o ->> " + adjustedFilePath);
                     removeMetadataOfDirectory(adjustedFilePath);
                 }
 
                 try {
-                    System.out.println("2nd CASE Vou chamar o removeMetadataOfDirectory com o ->> " + adjustedFilePath);
                     stubStorageMetadata.del_storage_item(adjustedFilePath);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -241,21 +234,11 @@ public class StorageServer implements ClientStorageInterface {
     }
 
     private String globalToLocal(String fullGlobalPath){
-
-        System.out.println("globalToLocalDEBUG1 " + fullGlobalPath);
-
         int indexEndGlobal = fullGlobalPath.indexOf(globalPath);
-
-        System.out.println("globalToLocalDEBUG2 " + globalPath + " " + indexEndGlobal);
 
         String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal,fullGlobalPath.length());
 
-        System.out.println("globalToLocalDEBUG3 " + relevantPartOfTheString);
-
         String output = localPath + relevantPartOfTheString;
-
-        System.out.println("globalToLocalDEBUG4" + localPath + relevantPartOfTheString);
-
         return output;
     }
 

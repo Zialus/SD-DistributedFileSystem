@@ -11,7 +11,6 @@ public class FileSystemTree {
     }
 
     public void addToFileSystem(String name, FileNode dirPath, boolean isDir, String StorageServer) {
-
         FileNode f = new FileNode(name, dirPath, isDir, StorageServer);
         System.out.println("added child -> " + f.name + " -> with parent " + dirPath.name);
         dirPath.children.put(f.name, f);
@@ -42,9 +41,8 @@ public class FileSystemTree {
 
         int pathPartsLeft = pathParts.length-1;
         FileNode currentNode = root;
-        for (String part : pathParts) {
 
-            System.out.println("part !!!!! " + part);
+        for (String part : pathParts) {
             currentNode = currentNode.children.get(part);
             if (currentNode == null){
                 return new PairBoolNode(false, null);
