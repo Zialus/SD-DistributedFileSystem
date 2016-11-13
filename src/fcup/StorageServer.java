@@ -13,7 +13,9 @@ import java.rmi.server.UnicastRemoteObject;
 public class StorageServer implements ClientStorageInterface {
 
     private static String localPath;
+
     private static String globalPath;
+
     private static String ServerName;
 
     private static StorageMetadataInterface stubStorageMetadata;
@@ -122,7 +124,7 @@ public class StorageServer implements ClientStorageInterface {
                 }
 
                 if(f.isDirectory()){
-                    System.out.println("Calling sendMetada() with ajustedFilePath ->> " + adjustedFilePath);
+                    System.out.println("Calling sendMetadata() with adjustedFilePath ->> " + adjustedFilePath);
                     sendMetaDataOfDirectory(adjustedFilePath);
                 }
 
@@ -155,7 +157,7 @@ public class StorageServer implements ClientStorageInterface {
 
     public boolean create(String globalPath, byte[] blob) {
 
-        int indexLastSlash = globalPath.lastIndexOf("/");
+        int indexLastSlash = globalPath.lastIndexOf('/');
         int length = globalPath.length();
 
         String pathToPutTheFileIn = globalPath.substring(0, indexLastSlash);

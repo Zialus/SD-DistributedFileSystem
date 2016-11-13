@@ -16,14 +16,20 @@ import java.util.stream.Stream;
 public class Client {
 
     private static String CurrentDirectory;
+
     private static ClientMetadataInterface stubClientMetadataInterface;
+
     private static final HashMap<String,String> configsMap = new HashMap<>();
+
     private static String configFile;
+
     private static Registry registry;
+
     private static String rmiHost;
 
     // Color for output
     private static final String ANSI_GREEN = "\u001B[32m";
+
     private static final String ANSI_RESET = "\u001B[0m";
 
     private Client() {}
@@ -56,7 +62,7 @@ public class Client {
         }
 
         else if("..".equals(cleanPath)){
-            int indexLastSlash = CurrentDirectory.lastIndexOf("/");
+            int indexLastSlash = CurrentDirectory.lastIndexOf('/');
             if(indexLastSlash > 0) {
                 cleanPath = CurrentDirectory.substring(0, indexLastSlash);
             }
@@ -142,7 +148,7 @@ public class Client {
 
                     byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
 
-                    System.out.println("File comming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
+                    System.out.println("File coming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
 
                     boolean maybeCreated = stubClientStorageInterface.create(pathWhereServerReceivesFiles + "/" + fileToBeSent, bytesToBeSent);
 
@@ -187,7 +193,7 @@ public class Client {
                     String pathToGetFileFrom = pathSanitizer(inputCmd[1]);
                     String pathWhereClientReceivesFiles = inputCmd[2];
 
-                    int indexLastSlash = pathToGetFileFrom.lastIndexOf("/");
+                    int indexLastSlash = pathToGetFileFrom.lastIndexOf('/');
                     int length = pathToGetFileFrom.length();
                     String fileToBeGotten = pathToGetFileFrom.substring(indexLastSlash + 1, length);
                     String pathWhereFileIs = pathToGetFileFrom.substring(0, indexLastSlash);
@@ -200,7 +206,7 @@ public class Client {
 
                     bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
 
-                    System.out.println("File comming from " + pathWhereFileIs + "/" + fileToBeGotten + " going too ---> " + pathWhereClientReceivesFiles + "/" + fileToBeGotten);
+                    System.out.println("File coming from " + pathWhereFileIs + "/" + fileToBeGotten + " going too ---> " + pathWhereClientReceivesFiles + "/" + fileToBeGotten);
 
                     Files.write(Paths.get(pathWhereClientReceivesFiles + "/" + fileToBeGotten), bytesToBeReceived);
 
@@ -214,7 +220,7 @@ public class Client {
                 } else {
                     String pathOfDirectoryToBeCreated = pathSanitizer(inputCmd[1]);
 
-                    int indexLastSlash = pathOfDirectoryToBeCreated.lastIndexOf("/");
+                    int indexLastSlash = pathOfDirectoryToBeCreated.lastIndexOf('/');
                     int length = pathOfDirectoryToBeCreated.length();
                     String pathWhereDirWillBeCreated = pathOfDirectoryToBeCreated.substring(0, indexLastSlash);
                     String dirName = pathOfDirectoryToBeCreated.substring(indexLastSlash + 1, length);
@@ -240,12 +246,12 @@ public class Client {
             case "open":
                 String fileToOpen = pathSanitizer(inputCmd[1]);
 
-                int lastDot = fileToOpen.lastIndexOf(".");
+                int lastDot = fileToOpen.lastIndexOf('.');
                 String extension = fileToOpen.substring(lastDot + 1, fileToOpen.length());
 
                 String appToOpenThisExtension = configsMap.get(extension);
 
-                int indexLastSlash = fileToOpen.lastIndexOf("/");
+                int indexLastSlash = fileToOpen.lastIndexOf('/');
                 int length = fileToOpen.length();
                 String fileToBeGotten = fileToOpen.substring(indexLastSlash + 1, length);
 
@@ -277,10 +283,10 @@ public class Client {
                     String fileToMove = pathSanitizer(inputCmd[1]);
                     String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
 
-                    int lastDotMV = fileToMove.lastIndexOf(".");
+                    int lastDotMV = fileToMove.lastIndexOf('.');
                     String extensionMV = fileToMove.substring(lastDotMV + 1, fileToMove.length());
 
-                    int indexLastSlashMV = fileToMove.lastIndexOf("/");
+                    int indexLastSlashMV = fileToMove.lastIndexOf('/');
                     int lengthMV = fileToMove.length();
 
                     String fileToBeGottenMV = fileToMove.substring(indexLastSlashMV + 1, lengthMV);
@@ -305,7 +311,7 @@ public class Client {
 
                         if( (filetype == FileType.FILE) || (filetype == FileType.NULL) ) {
                             System.out.println("ENTREI AQUI -> " + filetype.toString());
-                            int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf("/");
+                            int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf('/');
                             int length2 = pathWhereServerReceivesFiles.length();
                             fileInDestiny = pathWhereServerReceivesFiles.substring(indexLastSlash2 + 1, length2);
                         }
@@ -313,7 +319,7 @@ public class Client {
                             fileInDestiny = fileToBeGottenMV;
                         }
 
-                        System.out.println("File comming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
+                        System.out.println("File coming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
 
                         stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + "/" + fileInDestiny  , bytesToBeSent);
 

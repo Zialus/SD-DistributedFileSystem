@@ -135,7 +135,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
                 fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root, isDirectory, serverName);
             } else {
 
-                int lastSplit = item.lastIndexOf("/");
+                int lastSplit = item.lastIndexOf('/');
                 String parentPath = item.substring(0, lastSplit);
 
                 PairBoolNode maybeFoundParentNode = fileSystem.find(parentPath);

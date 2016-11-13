@@ -2,6 +2,7 @@ package fcup;
 
 public class PairBoolNode {
     public final boolean bool;
+
     public FileNode node;
 
     PairBoolNode(boolean b, FileNode n){
