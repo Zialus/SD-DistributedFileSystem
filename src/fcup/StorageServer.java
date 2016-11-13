@@ -75,8 +75,8 @@ public class StorageServer implements ClientStorageInterface {
     private static void init(String local_path, String globalPath){
         try {
             localPath = local_path;
-            stubStorageMetadata.add_storage_server(ServerName, globalPath);
-            stubStorageMetadata.add_storage_item("/",ServerName,true);
+            stubStorageMetadata.addStorageServer(ServerName, globalPath);
+            stubStorageMetadata.addStorageItem("/",ServerName,true);
             sendMetaDataOfDirectory("");
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
@@ -86,7 +86,7 @@ public class StorageServer implements ClientStorageInterface {
 
     private static void close(){
         try{
-            stubStorageMetadata.del_storage_server(globalPath);
+            stubStorageMetadata.delStorageServer(globalPath);
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
@@ -117,7 +117,7 @@ public class StorageServer implements ClientStorageInterface {
 
                 boolean isDirectory = f.isDirectory();
                 try {
-                    stubStorageMetadata.add_storage_item(adjustedFilePath, ServerName, isDirectory);
+                    stubStorageMetadata.addStorageItem(adjustedFilePath, ServerName, isDirectory);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -147,7 +147,7 @@ public class StorageServer implements ClientStorageInterface {
 
         if (mkdir){
             System.out.println("Directory" +  directory.toString() + "created successfully");
-            stubStorageMetadata.add_storage_item(pathGlobal, ServerName, true);
+            stubStorageMetadata.addStorageItem(pathGlobal, ServerName, true);
             return true;
         } else {
             System.out.println("Directory" +  directory.toString() + "could not be created");
@@ -169,7 +169,7 @@ public class StorageServer implements ClientStorageInterface {
         try {
             Files.write(Paths.get(finalName), blob);
             System.out.println("Final Name: " + finalName + "File received successfully");
-            stubStorageMetadata.add_storage_item(globalPath, ServerName, false);
+            stubStorageMetadata.addStorageItem(globalPath, ServerName, false);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -188,7 +188,7 @@ public class StorageServer implements ClientStorageInterface {
 
         boolean bool = fileToBeDeleted.delete();
 
-        stubStorageMetadata.del_storage_item(pathInGlobalServer);
+        stubStorageMetadata.delStorageItem(pathInGlobalServer);
 
         return bool;
     }
@@ -221,7 +221,7 @@ public class StorageServer implements ClientStorageInterface {
                 }
 
                 try {
-                    stubStorageMetadata.del_storage_item(adjustedFilePath);
+                    stubStorageMetadata.delStorageItem(adjustedFilePath);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }

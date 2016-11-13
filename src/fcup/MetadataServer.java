@@ -70,7 +70,6 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         }
     }
 
-
     public FileType findInfo(String path) throws RemoteException {
         PairBoolNode pair = fileSystem.find(path);
 
@@ -107,21 +106,21 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         return new String(output);
     }
 
-    public void add_storage_server(String machine, String top_of_the_subtree) throws RemoteException {
+    public void addStorageServer(String machine, String top_of_the_subtree) throws RemoteException {
         StorageServerList.put(top_of_the_subtree, machine);
-        add_storage_item(top_of_the_subtree,machine,true);
+        addStorageItem(top_of_the_subtree,machine,true);
         System.out.println("I added machine " + machine + " which contains the sub-tree " + top_of_the_subtree);
     }
 
-    public void del_storage_server(String top_of_the_subtree) throws RemoteException {
+    public void delStorageServer(String top_of_the_subtree) throws RemoteException {
         String machine = StorageServerList.get(top_of_the_subtree);
         StorageServerList.remove(top_of_the_subtree);
-        del_storage_item(top_of_the_subtree);
+        delStorageItem(top_of_the_subtree);
         System.out.println("I removed the machine " + machine + " that contained the sub-tree " + top_of_the_subtree);
     }
 
 
-    public void add_storage_item(String item, String serverName, boolean isDirectory) throws RemoteException {
+    public void addStorageItem(String item, String serverName, boolean isDirectory) throws RemoteException {
 
         if ("/".equals(item)){
             fileSystem.root.myStorageServer = serverName;
@@ -152,7 +151,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         }
     }
 
-    public void del_storage_item(String item) throws RemoteException {
+    public void delStorageItem(String item) throws RemoteException {
         fileSystem.removeFromFileSystem(item);
     }
 

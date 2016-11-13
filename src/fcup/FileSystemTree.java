@@ -47,7 +47,7 @@ public class FileSystemTree {
             if (currentNode == null){
                 return new PairBoolNode(false, null);
             }
-            if (currentNode.name.equals(part) && pathPartsLeft == 0 ){
+            if ( currentNode.name.equals(part) && (pathPartsLeft == 0) ) {
                 return new PairBoolNode(true, currentNode);
             }
             pathPartsLeft--;

@@ -303,7 +303,7 @@ public class Client {
                         Path pathOfFileToBeSent = Paths.get(tempFile.toString());
                         byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
 
-                        if(filetype == FileType.FILE || filetype == FileType.NULL){
+                        if( (filetype == FileType.FILE) || (filetype == FileType.NULL) ) {
                             System.out.println("ENTREI AQUI -> " + filetype.toString());
                             int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf("/");
                             int length2 = pathWhereServerReceivesFiles.length();
