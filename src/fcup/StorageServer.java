@@ -24,16 +24,14 @@ public class StorageServer implements ClientStorageInterface {
         removeMetadataOfDirectory("");
 
         try{
-            // Unregister this Storage Server
+            // Unregister and Un-export the Storage Server
             registry.unbind(ServerName);
-
-            // Un-export; this will also remove us from the RMI runtime
             UnicastRemoteObject.unexportObject(objStorageServer, true);
 
-            System.out.println("Unbinded and exited.");
+            System.out.println("Unbound and Un-exported.");
         }
         catch(Exception e){
-            System.err.println("Server exception: " + e.toString());
+            System.err.println("Exit messed up: " + e.toString());
             e.printStackTrace();
         }
     }
@@ -56,6 +54,7 @@ public class StorageServer implements ClientStorageInterface {
 
             // Initialize the storage server by adding its directories to the MetaDataServer
             System.out.println("LOCALPATH = " + localPathAtStartup + " GLOBALPATH = " + globalPath);
+
             init(localPathAtStartup, globalPath);
 
             // Call exit method when Storage Server shuts down
@@ -85,10 +84,10 @@ public class StorageServer implements ClientStorageInterface {
     }
 
     private static void close(){
-        try{
+        try {
             stubStorageMetadata.delStorageServer(globalPath);
-        } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
+        } catch (RemoteException e) {
+            System.out.println("Close messed up: " + e.toString());
             e.printStackTrace();
         }
     }
@@ -134,20 +133,19 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-    public boolean create(String pathGlobal) throws RemoteException {
+    public boolean create(String globalPath) throws RemoteException {
 
-        String localPath = globalToLocal(pathGlobal);
+        String localPath = globalToLocal(globalPath);
 
         File directory = new File(localPath);
 
         System.out.println("Creating directory: " + directory.toString());
 
-
         boolean mkdir = directory.mkdir();
 
         if (mkdir){
             System.out.println("Directory" +  directory.toString() + "created successfully");
-            stubStorageMetadata.addStorageItem(pathGlobal, ServerName, true);
+            stubStorageMetadata.addStorageItem(globalPath, ServerName, true);
             return true;
         } else {
             System.out.println("Directory" +  directory.toString() + "could not be created");
@@ -159,27 +157,25 @@ public class StorageServer implements ClientStorageInterface {
 
         int indexLastSlash = globalPath.lastIndexOf("/");
         int length = globalPath.length();
-        String fileName = globalPath.substring(indexLastSlash+1,length);
+
         String pathToPutTheFileIn = globalPath.substring(0, indexLastSlash);
+        String fileName = globalPath.substring(indexLastSlash+1,length);
 
         String localPathToPutFileIn = globalToLocal(pathToPutTheFileIn);
-
-        String finalName = localPathToPutFileIn + "/" + fileName;
+        String fullFinalPath = localPathToPutFileIn + "/" + fileName;
 
         try {
-            Files.write(Paths.get(finalName), blob);
-            System.out.println("Final Name: " + finalName + "File received successfully");
+            Files.write(Paths.get(fullFinalPath), blob);
+            System.out.println("Final Path: " + fullFinalPath + " File received successfully");
             stubStorageMetadata.addStorageItem(globalPath, ServerName, false);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Final Name: " + finalName + "File could not be received");
+            System.out.println("Final Path: " + fullFinalPath + " File could not be received");
             return false;
         }
 
     }
-
-
 
     public boolean del(String pathInGlobalServer) throws RemoteException {
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
@@ -188,9 +184,13 @@ public class StorageServer implements ClientStorageInterface {
 
         boolean bool = fileToBeDeleted.delete();
 
-        stubStorageMetadata.delStorageItem(pathInGlobalServer);
+        if (bool) {
+            stubStorageMetadata.delStorageItem(pathInGlobalServer);
+            return true;
+        } else {
+            return false;
+        }
 
-        return bool;
     }
 
     private static void removeMetadataOfDirectory(String path){
