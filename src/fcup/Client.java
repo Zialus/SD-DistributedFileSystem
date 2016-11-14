@@ -100,13 +100,19 @@ public class Client {
                     String whereImGoing = pathSanitizer(inputCmd[1]);
 
                     String ServerImGoingToUse = stubClientMetadataInterface.find(whereImGoing);
+                    FileType filetype = stubClientMetadataInterface.findInfo(whereImGoing);
+
 
                     if ("".equals(ServerImGoingToUse)) {
+
                         outPut = "Can't find directory " + whereImGoing;
-                    } else {
+                    } else if(filetype == FileType.DIRECTORY) {
                         CurrentDirectory = whereImGoing;
                         outPut = "Changed to directory " + whereImGoing;
+                    } else {
+                        outPut = "Incorrect use of cd command";
                     }
+
                 }
                 break;
 
@@ -124,9 +130,10 @@ public class Client {
                 } else {
                     String directoryToBeListedTemp = (inputCmd.length == 1) ? "." : inputCmd[1];
                     String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
+
                     outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
                     if ("".equals(outPut)) {
-                        outPut = inputCmd[1] + ": no such file or directory";
+                        outPut = directoryToBeListed + ": no such file or directory";
                     }
                 }
                 break;
@@ -258,18 +265,25 @@ public class Client {
                 byte[] bytesToBeReceived;
 
                 String ServerImGoingToUse = stubClientMetadataInterface.find(fileToOpen);
+                FileType fileType = stubClientMetadataInterface.findInfo(fileToOpen);
+
                 if (!"".equals(ServerImGoingToUse)) {
-                    ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+                    if (fileType == FileType.FILE){
+                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
-                    bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
+                        bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
 
-                    File tempFile = File.createTempFile(fileToBeGotten, extension);
+                        File tempFile = File.createTempFile(fileToBeGotten, extension);
 
-                    Files.write((tempFile.toPath()), bytesToBeReceived);
+                        Files.write((tempFile.toPath()), bytesToBeReceived);
 
-                    Runtime.getRuntime().exec(appToOpenThisExtension + " " + tempFile.getPath());
+                        Runtime.getRuntime().exec(appToOpenThisExtension + " " + tempFile.getPath());
 
-                    outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
+                        outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
+                    }
+                    else{
+                        outPut = "Can't open a directory";
+                    }
                 } else {
                     outPut = inputCmd[1] + ": no such file or directory";
                 }
@@ -292,40 +306,54 @@ public class Client {
                     String fileToBeGottenMV = fileToMove.substring(indexLastSlashMV + 1, lengthMV);
 
                     String ServerComingFrom = stubClientMetadataInterface.find(fileToMove);
+                    FileType originFiletype = stubClientMetadataInterface.findInfo(fileToMove);
+
 
                     FileType filetype = stubClientMetadataInterface.findInfo(pathWhereServerReceivesFiles);
                     String ServerGoingTo = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
 
-                    if (!("".equals(ServerComingFrom)) && !("".equals(ServerGoingTo))){
-                        ClientStorageInterface stubClientStorageInterfaceFrom = (ClientStorageInterface) registry.lookup(ServerComingFrom);
-                        ClientStorageInterface stubClientStorageInterfaceTo = (ClientStorageInterface) registry.lookup(ServerGoingTo);
 
-                        byte[] bytesToBeReceivedMV = stubClientStorageInterfaceFrom.get(fileToMove);
 
-                        File tempFile = File.createTempFile(fileToBeGottenMV, extensionMV);
+                    if (!("".equals(ServerComingFrom)) && !("".equals(ServerGoingTo))) {
+                        if (originFiletype == FileType.DIRECTORY) {
+                            outPut = "Can't move a directory";
+                        } else{
+                            ClientStorageInterface stubClientStorageInterfaceFrom = (ClientStorageInterface) registry.lookup(ServerComingFrom);
+                            ClientStorageInterface stubClientStorageInterfaceTo = (ClientStorageInterface) registry.lookup(ServerGoingTo);
 
-                        Files.write((tempFile.toPath()), bytesToBeReceivedMV);
+                            byte[] bytesToBeReceivedMV = stubClientStorageInterfaceFrom.get(fileToMove);
 
-                        Path pathOfFileToBeSent = Paths.get(tempFile.toString());
-                        byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
+                            File tempFile = File.createTempFile(fileToBeGottenMV, extensionMV);
 
-                        if( (filetype == FileType.FILE) || (filetype == FileType.NULL) ) {
-                            System.out.println("ENTREI AQUI -> " + filetype.toString());
-                            int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf('/');
-                            int length2 = pathWhereServerReceivesFiles.length();
-                            fileInDestiny = pathWhereServerReceivesFiles.substring(indexLastSlash2 + 1, length2);
+                            Files.write((tempFile.toPath()), bytesToBeReceivedMV);
+
+                            Path pathOfFileToBeSent = Paths.get(tempFile.toString());
+                            byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
+
+                            if ((filetype == FileType.FILE) || (filetype == FileType.NULL)) {
+                                System.out.println("ENTREI AQUI -> " + filetype.toString());
+                                int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf('/');
+                                int length2 = pathWhereServerReceivesFiles.length();
+                                fileInDestiny = pathWhereServerReceivesFiles.substring(indexLastSlash2 + 1, length2);
+                            } else {
+                                fileInDestiny = fileToBeGottenMV;
+                            }
+
+                            System.out.println("File coming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
+
+                            stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + "/" + fileInDestiny, bytesToBeSent);
+
+                            stubClientStorageInterfaceFrom.del(fileToMove);
+
+                            outPut = "File moved to " + pathWhereServerReceivesFiles + "/" + fileInDestiny;
                         }
-                        else{
-                            fileInDestiny = fileToBeGottenMV;
-                        }
+                    }
 
-                        System.out.println("File coming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
-
-                        stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + "/" + fileInDestiny  , bytesToBeSent);
-
-                        stubClientStorageInterfaceFrom.del(fileToMove);
-
-                        outPut = "File moved to " + pathWhereServerReceivesFiles + "/" + fileInDestiny;
+                    else if("".equals(ServerComingFrom)) {
+                        outPut = fileToMove + ": no such file or directory";
+                    }
+                    else{
+                        outPut = pathWhereServerReceivesFiles + ": no such directory";
                     }
                 }
                 break;

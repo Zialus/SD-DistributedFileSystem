@@ -77,7 +77,9 @@ public class StorageServer implements ClientStorageInterface {
         try {
             localPath = local_path;
             stubStorageMetadata.addStorageServer(ServerName, globalPath);
-            stubStorageMetadata.addStorageItem("/",ServerName,true);
+            if("/".equals(globalPath)){
+                stubStorageMetadata.addStorageItem("/",ServerName,true);
+            }
             sendMetaDataOfDirectory("");
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
