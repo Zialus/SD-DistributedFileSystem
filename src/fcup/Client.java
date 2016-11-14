@@ -151,18 +151,25 @@ public class Client {
                     String fileToBeSent = pathOfFileToBeSent.toString().substring(indexLastSlash + 1, length);
 
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
-                    ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
-                    byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
+                    if(!"".equals(ServerImGoingToUse)) {
+                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
-                    System.out.println("File coming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
+                        byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
 
-                    boolean maybeCreated = stubClientStorageInterface.create(pathWhereServerReceivesFiles + "/" + fileToBeSent, bytesToBeSent);
+                        System.out.println("File coming from: " + pathOfFileToBeSent + " going too: " + pathWhereServerReceivesFiles);
 
-                    if (maybeCreated) {
-                        outPut = "File sent successfully";
-                    } else {
-                        outPut = "File could not be sent";
+                        boolean maybeCreated = stubClientStorageInterface.create(pathWhereServerReceivesFiles + "/" + fileToBeSent, bytesToBeSent);
+
+                        if (maybeCreated) {
+                            outPut = "File sent successfully";
+                        } else {
+                            outPut = "File could not be sent";
+                        }
+                    }
+
+                    else{
+                        outPut = pathWhereServerReceivesFiles + ": No such directory";
                     }
 
                 }
@@ -207,17 +214,27 @@ public class Client {
 
                     byte[] bytesToBeReceived;
 
-                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereFileIs);
+                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathToGetFileFrom);
 
-                    ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+                    if(!"".equals(ServerImGoingToUse)) {
+                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
-                    bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
+                        bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
 
-                    System.out.println("File coming from " + pathWhereFileIs + "/" + fileToBeGotten + " going too ---> " + pathWhereClientReceivesFiles + "/" + fileToBeGotten);
+                        if(Files.isDirectory(Paths.get(pathWhereClientReceivesFiles))) {
+                            Files.write(Paths.get(pathWhereClientReceivesFiles + "/" + fileToBeGotten), bytesToBeReceived);
+                            System.out.println("File coming from: " + pathWhereFileIs + "/" + fileToBeGotten + " going too: " + pathWhereClientReceivesFiles + "/" + fileToBeGotten);
+                            outPut = "File received successfully";
+                        }
+                        else{
+                            outPut = "No such directory";
+                        }
+                    }
 
-                    Files.write(Paths.get(pathWhereClientReceivesFiles + "/" + fileToBeGotten), bytesToBeReceived);
+                    else{
+                        outPut = "No such file";
+                    }
 
-                    outPut = "File received successfully";
                 }
                 break;
 
@@ -331,7 +348,7 @@ public class Client {
                             byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
 
                             if ((filetype == FileType.FILE) || (filetype == FileType.NULL)) {
-                                System.out.println("ENTREI AQUI -> " + filetype.toString());
+//                                System.out.println("ENTREI AQUI -> " + filetype.toString());
                                 int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf('/');
                                 int length2 = pathWhereServerReceivesFiles.length();
                                 fileInDestiny = pathWhereServerReceivesFiles.substring(indexLastSlash2 + 1, length2);
@@ -339,7 +356,7 @@ public class Client {
                                 fileInDestiny = fileToBeGottenMV;
                             }
 
-                            System.out.println("File coming from " + pathOfFileToBeSent + " going too ---> " + pathWhereServerReceivesFiles);
+                            System.out.println("File coming from: " + pathOfFileToBeSent + " going too: " + pathWhereServerReceivesFiles);
 
                             stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + "/" + fileInDestiny, bytesToBeSent);
 
