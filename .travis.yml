@@ -4,5 +4,5 @@ os:
 language: java
 jdk: oraclejdk8
 script:
-  make
-  make test
+  - make
+  - make test
