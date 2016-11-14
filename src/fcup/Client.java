@@ -243,10 +243,16 @@ public class Client {
                     outPut = "Incorrect use of mkdir command";
                 } else {
                     String pathOfDirectoryToBeCreated = pathSanitizer(inputCmd[1]);
-
                     int indexLastSlash = pathOfDirectoryToBeCreated.lastIndexOf('/');
                     int length = pathOfDirectoryToBeCreated.length();
-                    String pathWhereDirWillBeCreated = pathOfDirectoryToBeCreated.substring(0, indexLastSlash);
+
+                    String pathWhereDirWillBeCreated;
+                    if(indexLastSlash == 0){
+                        pathWhereDirWillBeCreated = "/";
+                    }
+                    else {
+                        pathWhereDirWillBeCreated = pathOfDirectoryToBeCreated.substring(0, indexLastSlash);
+                    }
                     String dirName = pathOfDirectoryToBeCreated.substring(indexLastSlash + 1, length);
 
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereDirWillBeCreated);
@@ -256,13 +262,13 @@ public class Client {
                         boolean maybeCreated = stubClientStorageInterface.create(pathWhereDirWillBeCreated + "/" + dirName);
 
                         if (maybeCreated) {
-                            outPut = "Dir " + pathWhereDirWillBeCreated + "/" + dirName + " created successfully";
+                            outPut = "Dir " + pathOfDirectoryToBeCreated + " created successfully";
                         } else {
-                            outPut = "Dir " + pathWhereDirWillBeCreated + "/" + dirName + " could not be created!";
+                            outPut = "Dir " + pathOfDirectoryToBeCreated + " could not be created!";
                         }
                     }
                     else{
-                        outPut = pathWhereDirWillBeCreated + ": no such file or directory";
+                        outPut = pathWhereDirWillBeCreated + ": no such file or directory..";
                     }
                 }
                 break;
