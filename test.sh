@@ -11,6 +11,7 @@ mkdir -p ~/DFS/logs
 
 cd outd
 rmiregistry&
+sleep 1
 java fcup.MetadataServer &> ~/DFS/logs/Meta.log &
 sleep 1
 java fcup.StorageServer ~/DFS/A / localhost &> ~/DFS/logs/Storage1.log &
