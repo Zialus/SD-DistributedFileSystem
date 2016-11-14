@@ -1,0 +1,5 @@
+ls
+mkdir ok
+cd ok
+cd ..
+exit

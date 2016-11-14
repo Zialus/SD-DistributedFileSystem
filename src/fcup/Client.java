@@ -92,6 +92,9 @@ public class Client {
         String outPut = "";
 
         switch (inputCmd[0]) {
+            case "exit":
+                System.exit(0);
+                break;
             case "cd":
                 if (inputCmd.length != 2) {
                     outPut = "Incorrect use of cd command";

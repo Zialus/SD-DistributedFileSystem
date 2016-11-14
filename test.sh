@@ -20,4 +20,4 @@ java fcup.StorageServer ~/DFS/B /B localhost &> ~/DFS/logs/Storage2.log &
 sleep 1
 java fcup.StorageServer ~/DFS/C /C localhost &> ~/DFS/logs/Storage3.log &
 sleep 1
-java fcup.Client ../apps.conf localhost
+java fcup.Client ../apps.conf localhost < ../some_commands
