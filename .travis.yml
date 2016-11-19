@@ -2,10 +2,14 @@ os:
   - linux
   - osx
 language: java
-jdk: 
-	linux:
-		- oraclejdk8
-osx_image: xcode8.2
+
 script:
   - make
   - make test
+
+matrix:
+  include:
+    - os: linux
+      jdk: oraclejdk8
+    - os: osx
+      osx_image: xcode8.2
