@@ -98,7 +98,7 @@ public class StorageServer implements ClientStorageInterface {
 
     private static void sendMetaDataOfDirectory(String path){
         String globalPathAux = globalPath;
-        File myLocalPath = new File(localPath + path);
+        File myLocalPath = new File(localPath + "/" + path);
 
         System.out.println("Sending to metaData the local path " + myLocalPath.getPath());
 
@@ -126,8 +126,8 @@ public class StorageServer implements ClientStorageInterface {
                 }
 
                 if(f.isDirectory()){
-                    System.out.println("Calling sendMetadata() with adjustedFilePath ->> " + adjustedFilePath);
-                    sendMetaDataOfDirectory(adjustedFilePath);
+                    System.out.println("Calling sendMetadata() with adjustedFilePath ->> " + f.getName());
+                    sendMetaDataOfDirectory(f.getName());
                 }
 
             }
@@ -238,7 +238,7 @@ public class StorageServer implements ClientStorageInterface {
     }
 
     private String globalToLocal(String fullGlobalPath){
-        int indexEndGlobal = fullGlobalPath.indexOf(globalPath);
+        int indexEndGlobal = fullGlobalPath.indexOf(globalPath) + globalPath.length();
 
         String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal,fullGlobalPath.length());
 
@@ -248,6 +248,8 @@ public class StorageServer implements ClientStorageInterface {
 
     public byte[] get(String pathInGlobalServer) throws IOException {
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
+
+	System.out.println("pathinloco" + pathInLocalServer);
 
         Path fileToSend = Paths.get(pathInLocalServer);
 
