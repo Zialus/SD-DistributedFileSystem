@@ -1,5 +1,8 @@
 # DFS-SD
 
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e981321e422f4e3a80206f89de2efbea)](https://www.codacy.com/app/raulmendesferreira/SD-DistributedFileSystem?utm_source=github.com&utm_medium=referral&utm_content=Zialus/SD-DistributedFileSystem&utm_campaign=badger)
+
 ## MetadataServer
 
 ``` bash
