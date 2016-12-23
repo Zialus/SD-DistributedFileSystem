@@ -86,8 +86,6 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     public String lstat(String path) throws RemoteException {
-        StringBuilder output = new StringBuilder(".\n..\n");
-
         FileNode dirToBeListed;
 
         if ("/".equals(path) ) {
@@ -100,6 +98,8 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         if (dirToBeListed == null){
             return "";
         }
+
+        StringBuilder output = new StringBuilder(".\n..\n");
 
         dirToBeListed.children.entrySet().forEach(entry -> output.append(entry.getKey()).append("\n"));
 
