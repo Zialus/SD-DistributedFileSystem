@@ -111,7 +111,7 @@ public class StorageServer implements ClientStorageInterface {
         if (listOfFiles != null) {
             for (File f : listOfFiles) {
                 String adjustedFilePath;
-                if("".equals(path)) {
+                if( path.isEmpty() ) {
                     adjustedFilePath = globalPathAux + "/" + f.getName();
                 }
                 else {
@@ -213,7 +213,7 @@ public class StorageServer implements ClientStorageInterface {
             for (File f : listOfFiles) {
 
                 String adjustedFilePath;
-                if("".equals(path)) {
+                if( path.isEmpty() ) {
                     adjustedFilePath = globalPathAux + "/" + f.getName();
                 }
                 else {

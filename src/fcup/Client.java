@@ -110,7 +110,7 @@ public class Client {
                     FileType filetype = stubClientMetadataInterface.findInfo(whereImGoing);
 
 
-                    if ("".equals(ServerImGoingToUse)) {
+                    if ( ServerImGoingToUse.isEmpty() ) {
 
                         outPut = "Can't find directory " + whereImGoing;
                     } else if(filetype == FileType.DIRECTORY) {
@@ -139,7 +139,7 @@ public class Client {
                     String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
 
                     outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
-                    if ("".equals(outPut)) {
+                    if ( outPut.isEmpty() ) {
                         outPut = directoryToBeListed + ": no such file or directory";
                     }
                 }
@@ -159,7 +159,7 @@ public class Client {
 
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
 
-                    if(!"".equals(ServerImGoingToUse)) {
+                    if( !ServerImGoingToUse.isEmpty() ) {
                         ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                         byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
@@ -190,7 +190,7 @@ public class Client {
                     String pathOfFileToBeDeletedTEMP = inputCmd[1];
                     String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTEMP);
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathOfFileToBeDeleted);
-                    if(!"".equals(ServerImGoingToUse)) {
+                    if( !ServerImGoingToUse.isEmpty() ) {
                         ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
                         boolean answer = stubClientStorageInterface.del(pathOfFileToBeDeleted);
 
@@ -223,7 +223,7 @@ public class Client {
 
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathToGetFileFrom);
 
-                    if(!"".equals(ServerImGoingToUse)) {
+                    if( !ServerImGoingToUse.isEmpty() ) {
                         ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                         bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
@@ -263,7 +263,7 @@ public class Client {
                     String dirName = pathOfDirectoryToBeCreated.substring(indexLastSlash + 1, length);
 
                     String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereDirWillBeCreated);
-                    if( !("".equals(ServerImGoingToUse)) ) {
+                    if( !ServerImGoingToUse.isEmpty() ) {
                         ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                         boolean maybeCreated = stubClientStorageInterface.create(pathWhereDirWillBeCreated + "/" + dirName);
@@ -297,7 +297,7 @@ public class Client {
                 String ServerImGoingToUse = stubClientMetadataInterface.find(fileToOpen);
                 FileType fileType = stubClientMetadataInterface.findInfo(fileToOpen);
 
-                if (!"".equals(ServerImGoingToUse)) {
+                if ( !ServerImGoingToUse.isEmpty() ) {
                     if (fileType == FileType.FILE){
                         ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
@@ -344,7 +344,7 @@ public class Client {
 
 
 
-                    if (!("".equals(ServerComingFrom)) && !("".equals(ServerGoingTo))) {
+                    if ( !ServerComingFrom.isEmpty() && !ServerGoingTo.isEmpty() ) {
                         if (originFiletype == FileType.DIRECTORY) {
                             outPut = "Can't move a directory";
                         } else{
@@ -379,7 +379,7 @@ public class Client {
                         }
                     }
 
-                    else if("".equals(ServerComingFrom)) {
+                    else if( ServerComingFrom.isEmpty() ) {
                         outPut = fileToMove + ": no such file or directory";
                     }
                     else{
