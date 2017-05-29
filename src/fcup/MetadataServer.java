@@ -101,7 +101,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
         StringBuilder output = new StringBuilder(".\n..\n");
 
-        dirToBeListed.children.forEach((key, value) -> output.append(key).append("\n"));
+        dirToBeListed.children.forEach((key, value) -> output.append(key).append('\n'));
 
         return new String(output);
     }

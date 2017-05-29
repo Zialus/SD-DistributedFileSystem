@@ -98,7 +98,7 @@ public class StorageServer implements ClientStorageInterface {
 
     private static void sendMetaDataOfDirectory(String path){
         String globalPathAux = globalPath;
-        File myLocalPath = new File(localPath + "/" + path);
+        File myLocalPath = new File(localPath + '/' + path);
 
         System.out.println("Sending to metaData the local path " + myLocalPath.getPath());
 
@@ -112,10 +112,10 @@ public class StorageServer implements ClientStorageInterface {
             for (File f : listOfFiles) {
                 String adjustedFilePath;
                 if( path.isEmpty() ) {
-                    adjustedFilePath = globalPathAux + "/" + f.getName();
+                    adjustedFilePath = globalPathAux + '/' + f.getName();
                 }
                 else {
-                    adjustedFilePath = globalPathAux + path + "/" + f.getName();
+                    adjustedFilePath = globalPathAux + path + '/' + f.getName();
                 }
 
                 boolean isDirectory = f.isDirectory();
@@ -166,7 +166,7 @@ public class StorageServer implements ClientStorageInterface {
         String fileName = globalPath.substring(indexLastSlash+1,length);
 
         String localPathToPutFileIn = globalToLocal(pathToPutTheFileIn);
-        String fullFinalPath = localPathToPutFileIn + "/" + fileName;
+        String fullFinalPath = localPathToPutFileIn + '/' + fileName;
 
         try {
             Files.write(Paths.get(fullFinalPath), blob);
@@ -214,10 +214,10 @@ public class StorageServer implements ClientStorageInterface {
 
                 String adjustedFilePath;
                 if( path.isEmpty() ) {
-                    adjustedFilePath = globalPathAux + "/" + f.getName();
+                    adjustedFilePath = globalPathAux + '/' + f.getName();
                 }
                 else {
-                    adjustedFilePath = globalPathAux + path + "/" + f.getName();
+                    adjustedFilePath = globalPathAux + path + '/' + f.getName();
                 }
 
                 if(f.isDirectory()){

@@ -75,9 +75,9 @@ public class Client {
             }
         } else if(!cleanPath.startsWith("/")){
             if ("/".equals(CurrentDirectory)){
-                cleanPath =  "/" + cleanPath;
+                cleanPath = '/' + cleanPath;
             } else {
-                cleanPath = CurrentDirectory + "/" + cleanPath;
+                cleanPath = CurrentDirectory + '/' + cleanPath;
             }
         }
 
@@ -166,7 +166,7 @@ public class Client {
 
                         System.out.println("File coming from: " + pathOfFileToBeSent + " going too: " + pathWhereServerReceivesFiles);
 
-                        boolean maybeCreated = stubClientStorageInterface.create(pathWhereServerReceivesFiles + "/" + fileToBeSent, bytesToBeSent);
+                        boolean maybeCreated = stubClientStorageInterface.create(pathWhereServerReceivesFiles + '/' + fileToBeSent, bytesToBeSent);
 
                         if (maybeCreated) {
                             outPut = "File sent successfully";
@@ -229,8 +229,8 @@ public class Client {
                         bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
 
                         if(Files.isDirectory(Paths.get(pathWhereClientReceivesFiles))) {
-                            Files.write(Paths.get(pathWhereClientReceivesFiles + "/" + fileToBeGotten), bytesToBeReceived);
-                            System.out.println("File coming from: " + pathWhereFileIs + "/" + fileToBeGotten + " going too: " + pathWhereClientReceivesFiles + "/" + fileToBeGotten);
+                            Files.write(Paths.get(pathWhereClientReceivesFiles + '/' + fileToBeGotten), bytesToBeReceived);
+                            System.out.println("File coming from: " + pathWhereFileIs + '/' + fileToBeGotten + " going too: " + pathWhereClientReceivesFiles + '/' + fileToBeGotten);
                             outPut = "File received successfully";
                         }
                         else{
@@ -266,7 +266,7 @@ public class Client {
                     if( !ServerImGoingToUse.isEmpty() ) {
                         ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
-                        boolean maybeCreated = stubClientStorageInterface.create(pathWhereDirWillBeCreated + "/" + dirName);
+                        boolean maybeCreated = stubClientStorageInterface.create(pathWhereDirWillBeCreated + '/' + dirName);
 
                         if (maybeCreated) {
                             outPut = "Dir " + pathOfDirectoryToBeCreated + " created successfully";
@@ -307,7 +307,7 @@ public class Client {
 
                         Files.write((tempFile.toPath()), bytesToBeReceived);
 
-                        Runtime.getRuntime().exec(appToOpenThisExtension + " " + tempFile.getPath());
+                        Runtime.getRuntime().exec(appToOpenThisExtension + ' ' + tempFile.getPath());
 
                         outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
                     }
@@ -371,11 +371,11 @@ public class Client {
 
                             System.out.println("File coming from: " + pathOfFileToBeSent + " going too: " + pathWhereServerReceivesFiles);
 
-                            stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + "/" + fileInDestiny, bytesToBeSent);
+                            stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + '/' + fileInDestiny, bytesToBeSent);
 
                             stubClientStorageInterfaceFrom.del(fileToMove);
 
-                            outPut = "File moved to " + pathWhereServerReceivesFiles + "/" + fileInDestiny;
+                            outPut = "File moved to " + pathWhereServerReceivesFiles + '/' + fileInDestiny;
                         }
                     }
 
