@@ -92,6 +92,331 @@ public class Client {
         return cleanPath;
     }
 
+    private static String changeDir(String[] inputCmd) throws IOException, NotBoundException{
+        String outPut;
+
+        if (inputCmd.length != 2) {
+            outPut = "Incorrect use of cd command";
+        } else {
+
+            String whereImGoing = pathSanitizer(inputCmd[1]);
+
+            String ServerImGoingToUse = stubClientMetadataInterface.find(whereImGoing);
+            FileType filetype = stubClientMetadataInterface.findInfo(whereImGoing);
+
+
+            if ( ServerImGoingToUse.isEmpty() ) {
+
+                outPut = "Can't find directory " + whereImGoing;
+            } else if(filetype == FileType.DIRECTORY) {
+                CurrentDirectory = whereImGoing;
+                outPut = "Changed to directory " + whereImGoing;
+            } else {
+                outPut = "Incorrect use of cd command";
+            }
+
+        }
+
+        return outPut;
+    }
+
+    private static String presentWorkingDir(String[] inputCmd) {
+        String outPut;
+
+        if (inputCmd.length != 1) {
+            outPut = "Incorrect use of pwd command";
+        } else {
+            outPut = CurrentDirectory;
+        }
+
+        return outPut;
+    }
+
+    private static String listFiles(String[] inputCmd) throws IOException, NotBoundException {
+        String outPut;
+
+        if (inputCmd.length > 2) {
+            outPut = "Incorrect use of ls command";
+        } else {
+            String directoryToBeListedTemp = (inputCmd.length == 1) ? "." : inputCmd[1];
+            String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
+
+            outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
+            if ( outPut.isEmpty() ) {
+                outPut = directoryToBeListed + ": no such file or directory";
+            }
+        }
+
+        return outPut;
+    }
+
+    private static String putFile(String[] inputCmd) throws IOException, NotBoundException {
+        String outPut;
+
+        if (inputCmd.length != 3) {
+            outPut = "Incorrect use of put command";
+        } else {
+
+            Path pathOfFileToBeSent = Paths.get(inputCmd[1]);
+            String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
+
+            int indexLastSlash = pathOfFileToBeSent.toString().lastIndexOf("/");
+            int length = pathOfFileToBeSent.toString().length();
+            String fileToBeSent = pathOfFileToBeSent.toString().substring(indexLastSlash + 1, length);
+
+            String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
+
+            if( !ServerImGoingToUse.isEmpty() ) {
+                ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+
+                byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
+
+                System.out.println("File coming from: " + pathOfFileToBeSent + " going too: " + pathWhereServerReceivesFiles);
+
+                boolean maybeCreated = stubClientStorageInterface.create(pathWhereServerReceivesFiles + '/' + fileToBeSent, bytesToBeSent);
+
+                if (maybeCreated) {
+                    outPut = "File sent successfully";
+                } else {
+                    outPut = "File could not be sent";
+                }
+            }
+
+            else{
+                outPut = pathWhereServerReceivesFiles + ": No such directory";
+            }
+
+        }
+
+        return outPut;
+    }
+
+    private static String removeFile(String[] inputCmd) throws IOException, NotBoundException {
+        String outPut;
+
+        if (inputCmd.length != 2) {
+            outPut = "Incorrect use of rm command";
+        } else {
+
+            String pathOfFileToBeDeletedTEMP = inputCmd[1];
+            String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTEMP);
+            String ServerImGoingToUse = stubClientMetadataInterface.find(pathOfFileToBeDeleted);
+            if( !ServerImGoingToUse.isEmpty() ) {
+                ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+                boolean answer = stubClientStorageInterface.del(pathOfFileToBeDeleted);
+
+                if (answer) {
+                    outPut = "File deleted successfully";
+                } else {
+                    outPut = "File not deleted successfully";
+                }
+            }
+            else {
+                outPut = pathOfFileToBeDeleted + ": no such file or directory";
+            }
+        }
+
+        return outPut;
+    }
+
+    private static String getFile(String[] inputCmd) throws IOException, NotBoundException {
+        String outPut;
+
+        if (inputCmd.length != 3) {
+            outPut = "Incorrect use of get command";
+        } else {
+
+            String pathToGetFileFrom = pathSanitizer(inputCmd[1]);
+            String pathWhereClientReceivesFiles = inputCmd[2];
+
+            int indexLastSlash = pathToGetFileFrom.lastIndexOf('/');
+            int length = pathToGetFileFrom.length();
+            String fileToBeGotten = pathToGetFileFrom.substring(indexLastSlash + 1, length);
+            String pathWhereFileIs = pathToGetFileFrom.substring(0, indexLastSlash);
+
+            byte[] bytesToBeReceived;
+
+            String ServerImGoingToUse = stubClientMetadataInterface.find(pathToGetFileFrom);
+
+            if( !ServerImGoingToUse.isEmpty() ) {
+                ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+
+                bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
+
+                if(Files.isDirectory(Paths.get(pathWhereClientReceivesFiles))) {
+                    Files.write(Paths.get(pathWhereClientReceivesFiles + '/' + fileToBeGotten), bytesToBeReceived);
+                    System.out.println("File coming from: " + pathWhereFileIs + '/' + fileToBeGotten + " going too: " + pathWhereClientReceivesFiles + '/' + fileToBeGotten);
+                    outPut = "File received successfully";
+                }
+                else{
+                    outPut = "No such directory";
+                }
+            }
+
+            else{
+                outPut = "No such file";
+            }
+
+        }
+
+        return outPut;
+    }
+
+    private static String makeDir(String[] inputCmd) throws IOException, NotBoundException {
+        String outPut;
+
+        if (inputCmd.length != 2) {
+            outPut = "Incorrect use of mkdir command";
+        } else {
+            String pathOfDirectoryToBeCreated = pathSanitizer(inputCmd[1]);
+            int indexLastSlash = pathOfDirectoryToBeCreated.lastIndexOf('/');
+            int length = pathOfDirectoryToBeCreated.length();
+
+            String pathWhereDirWillBeCreated;
+            if(indexLastSlash == 0){
+                pathWhereDirWillBeCreated = "/";
+            }
+            else {
+                pathWhereDirWillBeCreated = pathOfDirectoryToBeCreated.substring(0, indexLastSlash);
+            }
+            String dirName = pathOfDirectoryToBeCreated.substring(indexLastSlash + 1, length);
+
+            String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereDirWillBeCreated);
+            if( !ServerImGoingToUse.isEmpty() ) {
+                ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+
+                boolean maybeCreated = stubClientStorageInterface.create(pathWhereDirWillBeCreated + '/' + dirName);
+
+                if (maybeCreated) {
+                    outPut = "Dir " + pathOfDirectoryToBeCreated + " created successfully";
+                } else {
+                    outPut = "Dir " + pathOfDirectoryToBeCreated + " could not be created!";
+                }
+            }
+            else{
+                outPut = pathWhereDirWillBeCreated + ": no such file or directory..";
+            }
+        }
+
+        return outPut;
+    }
+
+    private static String openFile(String[] inputCmd) throws IOException, NotBoundException{
+        String outPut;
+
+        String fileToOpen = pathSanitizer(inputCmd[1]);
+
+        int lastDot = fileToOpen.lastIndexOf('.');
+        String extension = fileToOpen.substring(lastDot + 1, fileToOpen.length());
+
+        String appToOpenThisExtension = configsMap.get(extension);
+
+        int indexLastSlash = fileToOpen.lastIndexOf('/');
+        int length = fileToOpen.length();
+        String fileToBeGotten = fileToOpen.substring(indexLastSlash + 1, length);
+
+        byte[] bytesToBeReceived;
+
+        String ServerImGoingToUse = stubClientMetadataInterface.find(fileToOpen);
+        FileType fileType = stubClientMetadataInterface.findInfo(fileToOpen);
+
+        if ( !ServerImGoingToUse.isEmpty() ) {
+            if (fileType == FileType.FILE){
+                ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+
+                bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
+
+                File tempFile = File.createTempFile(fileToBeGotten, extension);
+
+                Files.write((tempFile.toPath()), bytesToBeReceived);
+
+                Runtime.getRuntime().exec(appToOpenThisExtension + ' ' + tempFile.getPath());
+
+                outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
+            }
+            else{
+                outPut = "Can't open a directory";
+            }
+        } else {
+            outPut = inputCmd[1] + ": no such file or directory";
+        }
+
+        return outPut;
+    }
+
+    private static String moveDir(String[] inputCmd) throws IOException, NotBoundException{
+        String outPut;
+
+        if (inputCmd.length != 3) {
+            outPut = "Incorrect use of command mv";
+        } else {
+            String fileInDestiny;
+            String fileToMove = pathSanitizer(inputCmd[1]);
+            String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
+
+            int lastDotMV = fileToMove.lastIndexOf('.');
+            String extensionMV = fileToMove.substring(lastDotMV + 1, fileToMove.length());
+
+            int indexLastSlashMV = fileToMove.lastIndexOf('/');
+            int lengthMV = fileToMove.length();
+
+            String fileToBeGottenMV = fileToMove.substring(indexLastSlashMV + 1, lengthMV);
+
+            String ServerComingFrom = stubClientMetadataInterface.find(fileToMove);
+            FileType originFiletype = stubClientMetadataInterface.findInfo(fileToMove);
+
+
+            FileType filetype = stubClientMetadataInterface.findInfo(pathWhereServerReceivesFiles);
+            String ServerGoingTo = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
+
+
+
+            if ( !ServerComingFrom.isEmpty() && !ServerGoingTo.isEmpty() ) {
+                if (originFiletype == FileType.DIRECTORY) {
+                    outPut = "Can't move a directory";
+                } else{
+                    ClientStorageInterface stubClientStorageInterfaceFrom = (ClientStorageInterface) registry.lookup(ServerComingFrom);
+                    ClientStorageInterface stubClientStorageInterfaceTo = (ClientStorageInterface) registry.lookup(ServerGoingTo);
+
+                    byte[] bytesToBeReceivedMV = stubClientStorageInterfaceFrom.get(fileToMove);
+
+                    File tempFile = File.createTempFile(fileToBeGottenMV, extensionMV);
+
+                    Files.write((tempFile.toPath()), bytesToBeReceivedMV);
+
+                    Path pathOfFileToBeSent = Paths.get(tempFile.toString());
+                    byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
+
+                    if ((filetype == FileType.FILE) || (filetype == FileType.NULL)) {
+//                                System.out.println("ENTREI AQUI -> " + filetype.toString());
+                        int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf('/');
+                        int length2 = pathWhereServerReceivesFiles.length();
+                        fileInDestiny = pathWhereServerReceivesFiles.substring(indexLastSlash2 + 1, length2);
+                    } else {
+                        fileInDestiny = fileToBeGottenMV;
+                    }
+
+                    System.out.println("File coming from: " + pathOfFileToBeSent + " going too: " + pathWhereServerReceivesFiles);
+
+                    stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + '/' + fileInDestiny, bytesToBeSent);
+
+                    stubClientStorageInterfaceFrom.del(fileToMove);
+
+                    outPut = "File moved to " + pathWhereServerReceivesFiles + '/' + fileInDestiny;
+                }
+            }
+
+            else if( ServerComingFrom.isEmpty() ) {
+                outPut = fileToMove + ": no such file or directory";
+            }
+            else{
+                outPut = pathWhereServerReceivesFiles + ": no such directory";
+            }
+        }
+
+        return outPut;
+    }
+
     private static String processInput(String[] inputCmd) throws IOException, NotBoundException {
         String outPut = "";
 
@@ -100,299 +425,36 @@ public class Client {
                 System.exit(0);
                 break;
             case "cd":
-                if (inputCmd.length != 2) {
-                    outPut = "Incorrect use of cd command";
-                } else {
-
-                    String whereImGoing = pathSanitizer(inputCmd[1]);
-
-                    String ServerImGoingToUse = stubClientMetadataInterface.find(whereImGoing);
-                    FileType filetype = stubClientMetadataInterface.findInfo(whereImGoing);
-
-
-                    if ( ServerImGoingToUse.isEmpty() ) {
-
-                        outPut = "Can't find directory " + whereImGoing;
-                    } else if(filetype == FileType.DIRECTORY) {
-                        CurrentDirectory = whereImGoing;
-                        outPut = "Changed to directory " + whereImGoing;
-                    } else {
-                        outPut = "Incorrect use of cd command";
-                    }
-
-                }
+                outPut = changeDir(inputCmd);
                 break;
-
             case "pwd":
-                if (inputCmd.length != 1) {
-                    outPut = "Incorrect use of pwd command";
-                } else {
-                    outPut = CurrentDirectory;
-                }
+                outPut = presentWorkingDir(inputCmd);
                 break;
-
             case "ls":
-                if (inputCmd.length > 2) {
-                    outPut = "Incorrect use of ls command";
-                } else {
-                    String directoryToBeListedTemp = (inputCmd.length == 1) ? "." : inputCmd[1];
-                    String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
-
-                    outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
-                    if ( outPut.isEmpty() ) {
-                        outPut = directoryToBeListed + ": no such file or directory";
-                    }
-                }
+                outPut = listFiles(inputCmd);
                 break;
-
             case "put":
-                if (inputCmd.length != 3) {
-                    outPut = "Incorrect use of put command";
-                } else {
-
-                    Path pathOfFileToBeSent = Paths.get(inputCmd[1]);
-                    String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
-
-                    int indexLastSlash = pathOfFileToBeSent.toString().lastIndexOf("/");
-                    int length = pathOfFileToBeSent.toString().length();
-                    String fileToBeSent = pathOfFileToBeSent.toString().substring(indexLastSlash + 1, length);
-
-                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
-
-                    if( !ServerImGoingToUse.isEmpty() ) {
-                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
-
-                        byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
-
-                        System.out.println("File coming from: " + pathOfFileToBeSent + " going too: " + pathWhereServerReceivesFiles);
-
-                        boolean maybeCreated = stubClientStorageInterface.create(pathWhereServerReceivesFiles + '/' + fileToBeSent, bytesToBeSent);
-
-                        if (maybeCreated) {
-                            outPut = "File sent successfully";
-                        } else {
-                            outPut = "File could not be sent";
-                        }
-                    }
-
-                    else{
-                        outPut = pathWhereServerReceivesFiles + ": No such directory";
-                    }
-
-                }
+                outPut = putFile(inputCmd);
                 break;
-
             case "rm":
-                if (inputCmd.length != 2) {
-                    outPut = "Incorrect use of rm command";
-                } else {
-
-                    String pathOfFileToBeDeletedTEMP = inputCmd[1];
-                    String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTEMP);
-                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathOfFileToBeDeleted);
-                    if( !ServerImGoingToUse.isEmpty() ) {
-                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
-                        boolean answer = stubClientStorageInterface.del(pathOfFileToBeDeleted);
-
-                        if (answer) {
-                            outPut = "File deleted successfully";
-                        } else {
-                            outPut = "File not deleted successfully";
-                        }
-                    }
-                    else {
-                        outPut = pathOfFileToBeDeleted + ": no such file or directory";
-                    }
-                }
+                outPut = removeFile(inputCmd);
                 break;
-
             case "get":
-                if (inputCmd.length != 3) {
-                    outPut = "Incorrect use of get command";
-                } else {
-
-                    String pathToGetFileFrom = pathSanitizer(inputCmd[1]);
-                    String pathWhereClientReceivesFiles = inputCmd[2];
-
-                    int indexLastSlash = pathToGetFileFrom.lastIndexOf('/');
-                    int length = pathToGetFileFrom.length();
-                    String fileToBeGotten = pathToGetFileFrom.substring(indexLastSlash + 1, length);
-                    String pathWhereFileIs = pathToGetFileFrom.substring(0, indexLastSlash);
-
-                    byte[] bytesToBeReceived;
-
-                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathToGetFileFrom);
-
-                    if( !ServerImGoingToUse.isEmpty() ) {
-                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
-
-                        bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
-
-                        if(Files.isDirectory(Paths.get(pathWhereClientReceivesFiles))) {
-                            Files.write(Paths.get(pathWhereClientReceivesFiles + '/' + fileToBeGotten), bytesToBeReceived);
-                            System.out.println("File coming from: " + pathWhereFileIs + '/' + fileToBeGotten + " going too: " + pathWhereClientReceivesFiles + '/' + fileToBeGotten);
-                            outPut = "File received successfully";
-                        }
-                        else{
-                            outPut = "No such directory";
-                        }
-                    }
-
-                    else{
-                        outPut = "No such file";
-                    }
-
-                }
+                outPut = getFile(inputCmd);
                 break;
-
             case "mkdir":
-                if (inputCmd.length != 2) {
-                    outPut = "Incorrect use of mkdir command";
-                } else {
-                    String pathOfDirectoryToBeCreated = pathSanitizer(inputCmd[1]);
-                    int indexLastSlash = pathOfDirectoryToBeCreated.lastIndexOf('/');
-                    int length = pathOfDirectoryToBeCreated.length();
-
-                    String pathWhereDirWillBeCreated;
-                    if(indexLastSlash == 0){
-                        pathWhereDirWillBeCreated = "/";
-                    }
-                    else {
-                        pathWhereDirWillBeCreated = pathOfDirectoryToBeCreated.substring(0, indexLastSlash);
-                    }
-                    String dirName = pathOfDirectoryToBeCreated.substring(indexLastSlash + 1, length);
-
-                    String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereDirWillBeCreated);
-                    if( !ServerImGoingToUse.isEmpty() ) {
-                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
-
-                        boolean maybeCreated = stubClientStorageInterface.create(pathWhereDirWillBeCreated + '/' + dirName);
-
-                        if (maybeCreated) {
-                            outPut = "Dir " + pathOfDirectoryToBeCreated + " created successfully";
-                        } else {
-                            outPut = "Dir " + pathOfDirectoryToBeCreated + " could not be created!";
-                        }
-                    }
-                    else{
-                        outPut = pathWhereDirWillBeCreated + ": no such file or directory..";
-                    }
-                }
+                outPut = makeDir(inputCmd);
                 break;
-
             case "open":
-                String fileToOpen = pathSanitizer(inputCmd[1]);
-
-                int lastDot = fileToOpen.lastIndexOf('.');
-                String extension = fileToOpen.substring(lastDot + 1, fileToOpen.length());
-
-                String appToOpenThisExtension = configsMap.get(extension);
-
-                int indexLastSlash = fileToOpen.lastIndexOf('/');
-                int length = fileToOpen.length();
-                String fileToBeGotten = fileToOpen.substring(indexLastSlash + 1, length);
-
-                byte[] bytesToBeReceived;
-
-                String ServerImGoingToUse = stubClientMetadataInterface.find(fileToOpen);
-                FileType fileType = stubClientMetadataInterface.findInfo(fileToOpen);
-
-                if ( !ServerImGoingToUse.isEmpty() ) {
-                    if (fileType == FileType.FILE){
-                        ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
-
-                        bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
-
-                        File tempFile = File.createTempFile(fileToBeGotten, extension);
-
-                        Files.write((tempFile.toPath()), bytesToBeReceived);
-
-                        Runtime.getRuntime().exec(appToOpenThisExtension + ' ' + tempFile.getPath());
-
-                        outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
-                    }
-                    else{
-                        outPut = "Can't open a directory";
-                    }
-                } else {
-                    outPut = inputCmd[1] + ": no such file or directory";
-                }
+                outPut = openFile(inputCmd);
                 break;
-
             case "mv":
-                if (inputCmd.length != 3) {
-                    outPut = "Incorrect use of command mv";
-                } else {
-                    String fileInDestiny;
-                    String fileToMove = pathSanitizer(inputCmd[1]);
-                    String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
-
-                    int lastDotMV = fileToMove.lastIndexOf('.');
-                    String extensionMV = fileToMove.substring(lastDotMV + 1, fileToMove.length());
-
-                    int indexLastSlashMV = fileToMove.lastIndexOf('/');
-                    int lengthMV = fileToMove.length();
-
-                    String fileToBeGottenMV = fileToMove.substring(indexLastSlashMV + 1, lengthMV);
-
-                    String ServerComingFrom = stubClientMetadataInterface.find(fileToMove);
-                    FileType originFiletype = stubClientMetadataInterface.findInfo(fileToMove);
-
-
-                    FileType filetype = stubClientMetadataInterface.findInfo(pathWhereServerReceivesFiles);
-                    String ServerGoingTo = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
-
-
-
-                    if ( !ServerComingFrom.isEmpty() && !ServerGoingTo.isEmpty() ) {
-                        if (originFiletype == FileType.DIRECTORY) {
-                            outPut = "Can't move a directory";
-                        } else{
-                            ClientStorageInterface stubClientStorageInterfaceFrom = (ClientStorageInterface) registry.lookup(ServerComingFrom);
-                            ClientStorageInterface stubClientStorageInterfaceTo = (ClientStorageInterface) registry.lookup(ServerGoingTo);
-
-                            byte[] bytesToBeReceivedMV = stubClientStorageInterfaceFrom.get(fileToMove);
-
-                            File tempFile = File.createTempFile(fileToBeGottenMV, extensionMV);
-
-                            Files.write((tempFile.toPath()), bytesToBeReceivedMV);
-
-                            Path pathOfFileToBeSent = Paths.get(tempFile.toString());
-                            byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
-
-                            if ((filetype == FileType.FILE) || (filetype == FileType.NULL)) {
-//                                System.out.println("ENTREI AQUI -> " + filetype.toString());
-                                int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf('/');
-                                int length2 = pathWhereServerReceivesFiles.length();
-                                fileInDestiny = pathWhereServerReceivesFiles.substring(indexLastSlash2 + 1, length2);
-                            } else {
-                                fileInDestiny = fileToBeGottenMV;
-                            }
-
-                            System.out.println("File coming from: " + pathOfFileToBeSent + " going too: " + pathWhereServerReceivesFiles);
-
-                            stubClientStorageInterfaceTo.create(pathWhereServerReceivesFiles + '/' + fileInDestiny, bytesToBeSent);
-
-                            stubClientStorageInterfaceFrom.del(fileToMove);
-
-                            outPut = "File moved to " + pathWhereServerReceivesFiles + '/' + fileInDestiny;
-                        }
-                    }
-
-                    else if( ServerComingFrom.isEmpty() ) {
-                        outPut = fileToMove + ": no such file or directory";
-                    }
-                    else{
-                        outPut = pathWhereServerReceivesFiles + ": no such directory";
-                    }
-                }
+                outPut = moveDir(inputCmd);
                 break;
-
             default:
                 outPut = inputCmd[0] + ": command not found";
                 break;
         }
-
 
         return outPut;
     }
