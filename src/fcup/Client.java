@@ -23,7 +23,7 @@ public class Client {
 
     private static ClientMetadataInterface stubClientMetadataInterface;
 
-    private static final HashMap<String,String> configsMap = new HashMap<>();
+    private static final HashMap<String, String> configsMap = new HashMap<>();
 
     private static String configFile;
 
@@ -36,7 +36,8 @@ public class Client {
 
     private static final String ANSI_RESET = "\u001B[0m";
 
-    private Client() {}
+    private Client() {
+    }
 
     private static void processConfigFile() throws IOException {
         try (Stream<String> stream = Files.lines(Paths.get(configFile))) {
@@ -44,7 +45,7 @@ public class Client {
         }
     }
 
-    private static void addLineToHashMap(String line){
+    private static void addLineToHashMap(String line) {
         List<String> items = Arrays.asList(line.split("\\s+"));
 
         ArrayList<String> itemsWithoutCommas = items.stream().map(item -> item.replace(",", "")).collect(Collectors.toCollection(ArrayList::new));
@@ -52,29 +53,26 @@ public class Client {
         int lastItemIndex = itemsWithoutCommas.size() - 1;
         String appPath = items.get(lastItemIndex);
 
-        for (int i = 0; i < lastItemIndex; i++){
+        for (int i = 0; i < lastItemIndex; i++) {
             String extension = itemsWithoutCommas.get(i);
-            configsMap.put(extension,appPath);
+            configsMap.put(extension, appPath);
         }
     }
 
-    private static String pathSanitizer(String dirtyPath){
+    private static String pathSanitizer(String dirtyPath) {
         String cleanPath = dirtyPath;
 
-        if(".".equals(cleanPath)){
+        if (".".equals(cleanPath)) {
             cleanPath = CurrentDirectory;
-        }
-
-        else if("..".equals(cleanPath)){
+        } else if ("..".equals(cleanPath)) {
             int indexLastSlash = CurrentDirectory.lastIndexOf('/');
-            if(indexLastSlash > 0) {
+            if (indexLastSlash > 0) {
                 cleanPath = CurrentDirectory.substring(0, indexLastSlash);
-            }
-            else{
+            } else {
                 cleanPath = "/";
             }
-        } else if(!cleanPath.startsWith("/")){
-            if ("/".equals(CurrentDirectory)){
+        } else if (!cleanPath.startsWith("/")) {
+            if ("/".equals(CurrentDirectory)) {
                 cleanPath = '/' + cleanPath;
             } else {
                 cleanPath = CurrentDirectory + '/' + cleanPath;
@@ -92,7 +90,7 @@ public class Client {
         return cleanPath;
     }
 
-    private static String changeDir(String[] inputCmd) throws IOException, NotBoundException{
+    private static String changeDir(String[] inputCmd) throws IOException, NotBoundException {
         String outPut;
 
         if (inputCmd.length != 2) {
@@ -105,10 +103,10 @@ public class Client {
             FileType filetype = stubClientMetadataInterface.findInfo(whereImGoing);
 
 
-            if ( ServerImGoingToUse.isEmpty() ) {
+            if (ServerImGoingToUse.isEmpty()) {
 
                 outPut = "Can't find directory " + whereImGoing;
-            } else if(filetype == FileType.DIRECTORY) {
+            } else if (filetype == FileType.DIRECTORY) {
                 CurrentDirectory = whereImGoing;
                 outPut = "Changed to directory " + whereImGoing;
             } else {
@@ -142,7 +140,7 @@ public class Client {
             String directoryToBeListed = pathSanitizer(directoryToBeListedTemp);
 
             outPut = stubClientMetadataInterface.lstat(directoryToBeListed);
-            if ( outPut.isEmpty() ) {
+            if (outPut.isEmpty()) {
                 outPut = directoryToBeListed + ": no such file or directory";
             }
         }
@@ -166,7 +164,7 @@ public class Client {
 
             String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
 
-            if( !ServerImGoingToUse.isEmpty() ) {
+            if (!ServerImGoingToUse.isEmpty()) {
                 ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                 byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
@@ -180,9 +178,7 @@ public class Client {
                 } else {
                     outPut = "File could not be sent";
                 }
-            }
-
-            else{
+            } else {
                 outPut = pathWhereServerReceivesFiles + ": No such directory";
             }
 
@@ -201,7 +197,7 @@ public class Client {
             String pathOfFileToBeDeletedTEMP = inputCmd[1];
             String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTEMP);
             String ServerImGoingToUse = stubClientMetadataInterface.find(pathOfFileToBeDeleted);
-            if( !ServerImGoingToUse.isEmpty() ) {
+            if (!ServerImGoingToUse.isEmpty()) {
                 ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
                 boolean answer = stubClientStorageInterface.del(pathOfFileToBeDeleted);
 
@@ -210,8 +206,7 @@ public class Client {
                 } else {
                     outPut = "File not deleted successfully";
                 }
-            }
-            else {
+            } else {
                 outPut = pathOfFileToBeDeleted + ": no such file or directory";
             }
         }
@@ -238,22 +233,19 @@ public class Client {
 
             String ServerImGoingToUse = stubClientMetadataInterface.find(pathToGetFileFrom);
 
-            if( !ServerImGoingToUse.isEmpty() ) {
+            if (!ServerImGoingToUse.isEmpty()) {
                 ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                 bytesToBeReceived = stubClientStorageInterface.get(pathToGetFileFrom);
 
-                if(Files.isDirectory(Paths.get(pathWhereClientReceivesFiles))) {
+                if (Files.isDirectory(Paths.get(pathWhereClientReceivesFiles))) {
                     Files.write(Paths.get(pathWhereClientReceivesFiles + '/' + fileToBeGotten), bytesToBeReceived);
                     System.out.println("File coming from: " + pathWhereFileIs + '/' + fileToBeGotten + " going too: " + pathWhereClientReceivesFiles + '/' + fileToBeGotten);
                     outPut = "File received successfully";
-                }
-                else{
+                } else {
                     outPut = "No such directory";
                 }
-            }
-
-            else{
+            } else {
                 outPut = "No such file";
             }
 
@@ -273,16 +265,15 @@ public class Client {
             int length = pathOfDirectoryToBeCreated.length();
 
             String pathWhereDirWillBeCreated;
-            if(indexLastSlash == 0){
+            if (indexLastSlash == 0) {
                 pathWhereDirWillBeCreated = "/";
-            }
-            else {
+            } else {
                 pathWhereDirWillBeCreated = pathOfDirectoryToBeCreated.substring(0, indexLastSlash);
             }
             String dirName = pathOfDirectoryToBeCreated.substring(indexLastSlash + 1, length);
 
             String ServerImGoingToUse = stubClientMetadataInterface.find(pathWhereDirWillBeCreated);
-            if( !ServerImGoingToUse.isEmpty() ) {
+            if (!ServerImGoingToUse.isEmpty()) {
                 ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                 boolean maybeCreated = stubClientStorageInterface.create(pathWhereDirWillBeCreated + '/' + dirName);
@@ -292,8 +283,7 @@ public class Client {
                 } else {
                     outPut = "Dir " + pathOfDirectoryToBeCreated + " could not be created!";
                 }
-            }
-            else{
+            } else {
                 outPut = pathWhereDirWillBeCreated + ": no such file or directory..";
             }
         }
@@ -301,7 +291,7 @@ public class Client {
         return outPut;
     }
 
-    private static String openFile(String[] inputCmd) throws IOException, NotBoundException{
+    private static String openFile(String[] inputCmd) throws IOException, NotBoundException {
         String outPut;
 
         String fileToOpen = pathSanitizer(inputCmd[1]);
@@ -320,8 +310,8 @@ public class Client {
         String ServerImGoingToUse = stubClientMetadataInterface.find(fileToOpen);
         FileType fileType = stubClientMetadataInterface.findInfo(fileToOpen);
 
-        if ( !ServerImGoingToUse.isEmpty() ) {
-            if (fileType == FileType.FILE){
+        if (!ServerImGoingToUse.isEmpty()) {
+            if (fileType == FileType.FILE) {
                 ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
                 bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
@@ -333,8 +323,7 @@ public class Client {
                 Runtime.getRuntime().exec(appToOpenThisExtension + ' ' + tempFile.getPath());
 
                 outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
-            }
-            else{
+            } else {
                 outPut = "Can't open a directory";
             }
         } else {
@@ -344,7 +333,7 @@ public class Client {
         return outPut;
     }
 
-    private static String moveDir(String[] inputCmd) throws IOException, NotBoundException{
+    private static String moveDir(String[] inputCmd) throws IOException, NotBoundException {
         String outPut;
 
         if (inputCmd.length != 3) {
@@ -370,11 +359,10 @@ public class Client {
             String ServerGoingTo = stubClientMetadataInterface.find(pathWhereServerReceivesFiles);
 
 
-
-            if ( !ServerComingFrom.isEmpty() && !ServerGoingTo.isEmpty() ) {
+            if (!ServerComingFrom.isEmpty() && !ServerGoingTo.isEmpty()) {
                 if (originFiletype == FileType.DIRECTORY) {
                     outPut = "Can't move a directory";
-                } else{
+                } else {
                     ClientStorageInterface stubClientStorageInterfaceFrom = (ClientStorageInterface) registry.lookup(ServerComingFrom);
                     ClientStorageInterface stubClientStorageInterfaceTo = (ClientStorageInterface) registry.lookup(ServerGoingTo);
 
@@ -404,12 +392,9 @@ public class Client {
 
                     outPut = "File moved to " + pathWhereServerReceivesFiles + '/' + fileInDestiny;
                 }
-            }
-
-            else if( ServerComingFrom.isEmpty() ) {
+            } else if (ServerComingFrom.isEmpty()) {
                 outPut = fileToMove + ": no such file or directory";
-            }
-            else{
+            } else {
                 outPut = pathWhereServerReceivesFiles + ": no such directory";
             }
         }
@@ -495,9 +480,9 @@ public class Client {
 
         Scanner stdin = new Scanner(System.in);
 
-        System.out.print(ANSI_GREEN + CurrentDirectory+ " $ " + ANSI_RESET);
+        System.out.print(ANSI_GREEN + CurrentDirectory + " $ " + ANSI_RESET);
 
-        while(stdin.hasNextLine()){
+        while (stdin.hasNextLine()) {
             String fullCmd = stdin.nextLine();
             String[] cmdList = fullCmd.split(" ");
             String outPut;
@@ -511,7 +496,7 @@ public class Client {
                 outPut = "RMI stuff happened";
             }
             System.out.println(outPut);
-            System.out.print(ANSI_GREEN + CurrentDirectory+ " $ " + ANSI_RESET);
+            System.out.print(ANSI_GREEN + CurrentDirectory + " $ " + ANSI_RESET);
 
         }
 
