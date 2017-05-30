@@ -90,7 +90,7 @@ public class Client {
         return cleanPath;
     }
 
-    private static String changeDir(String[] inputCmd) throws IOException, NotBoundException {
+    private static String changeDir(String[] inputCmd) throws IOException {
         String outPut;
 
         if (inputCmd.length != 2) {
@@ -130,7 +130,7 @@ public class Client {
         return outPut;
     }
 
-    private static String listFiles(String[] inputCmd) throws IOException, NotBoundException {
+    private static String listFiles(String[] inputCmd) throws IOException {
         String outPut;
 
         if (inputCmd.length > 2) {
@@ -158,7 +158,7 @@ public class Client {
             Path pathOfFileToBeSent = Paths.get(inputCmd[1]);
             String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
 
-            int indexLastSlash = pathOfFileToBeSent.toString().lastIndexOf("/");
+            int indexLastSlash = pathOfFileToBeSent.toString().lastIndexOf('/');
             int length = pathOfFileToBeSent.toString().length();
             String fileToBeSent = pathOfFileToBeSent.toString().substring(indexLastSlash + 1, length);
 
