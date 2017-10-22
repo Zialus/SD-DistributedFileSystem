@@ -194,8 +194,8 @@ public class Client {
             outPut = "Incorrect use of rm command";
         } else {
 
-            String pathOfFileToBeDeletedTEMP = inputCmd[1];
-            String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTEMP);
+            String pathOfFileToBeDeletedTemp = inputCmd[1];
+            String pathOfFileToBeDeleted = pathSanitizer(pathOfFileToBeDeletedTemp);
             String ServerImGoingToUse = stubClientMetadataInterface.find(pathOfFileToBeDeleted);
             if (!ServerImGoingToUse.isEmpty()) {
                 ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
