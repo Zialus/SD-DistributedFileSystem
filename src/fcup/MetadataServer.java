@@ -11,9 +11,9 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     private static final FileSystemTree fileSystem = new FileSystemTree();
 
-    private int globalMachineCounter = 0;
-
     private final HashMap<String, String> StorageServerList = new HashMap<>();
+
+    private int globalMachineCounter = 0;
 
     private static void exit(Registry registry, MetadataServer obj1, MetadataServer obj2) {
         try {
@@ -115,7 +115,6 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         delStorageItem(top_of_the_subtree);
         System.out.println("I removed the machine " + machine + " that contained the sub-tree " + top_of_the_subtree);
     }
-
 
     public void addStorageItem(String item, String serverName, boolean isDirectory) throws RemoteException {
 

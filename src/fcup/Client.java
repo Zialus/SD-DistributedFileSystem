@@ -19,22 +19,22 @@ import java.util.stream.Stream;
 
 public class Client {
 
+    private static final HashMap<String, String> configsMap = new HashMap<>();
+
+    // Color for output
+    private static final String ANSI_GREEN = "\u001B[32m";
+
+    private static final String ANSI_RESET = "\u001B[0m";
+
     private static String CurrentDirectory;
 
     private static ClientMetadataInterface stubClientMetadataInterface;
-
-    private static final HashMap<String, String> configsMap = new HashMap<>();
 
     private static String configFile;
 
     private static Registry registry;
 
     private static String rmiHost;
-
-    // Color for output
-    private static final String ANSI_GREEN = "\u001B[32m";
-
-    private static final String ANSI_RESET = "\u001B[0m";
 
     private Client() {
     }

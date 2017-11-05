@@ -71,7 +71,6 @@ public class StorageServer implements ClientStorageInterface {
 
     }
 
-
     private static void init(String local_path, String globalPath) {
         try {
             localPath = local_path;
@@ -134,6 +133,44 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
+    private static void removeMetadataOfDirectory(String path) {
+        String globalPathAux = globalPath;
+        File myLocalPath = new File(localPath + path);
+
+        System.out.println("Going to remove metadata of " + myLocalPath.getPath());
+
+        File[] listOfFiles = myLocalPath.listFiles();
+
+        if ("/".equals(globalPath)) {
+            globalPathAux = "";
+        }
+
+        if (listOfFiles != null) {
+            for (File f : listOfFiles) {
+
+                String adjustedFilePath;
+                if (path.isEmpty()) {
+                    adjustedFilePath = globalPathAux + '/' + f.getName();
+                } else {
+                    adjustedFilePath = globalPathAux + path + '/' + f.getName();
+                }
+
+                if (f.isDirectory()) {
+                    removeMetadataOfDirectory(adjustedFilePath);
+                }
+
+                try {
+                    stubStorageMetadata.delStorageItem(adjustedFilePath);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            System.out.println("This is just an empty directory " + myLocalPath);
+        }
+
+    }
+
     public boolean create(String globalPath) throws RemoteException {
 
         String localPath = globalToLocal(globalPath);
@@ -194,44 +231,6 @@ public class StorageServer implements ClientStorageInterface {
 
     }
 
-    private static void removeMetadataOfDirectory(String path) {
-        String globalPathAux = globalPath;
-        File myLocalPath = new File(localPath + path);
-
-        System.out.println("Going to remove metadata of " + myLocalPath.getPath());
-
-        File[] listOfFiles = myLocalPath.listFiles();
-
-        if ("/".equals(globalPath)) {
-            globalPathAux = "";
-        }
-
-        if (listOfFiles != null) {
-            for (File f : listOfFiles) {
-
-                String adjustedFilePath;
-                if (path.isEmpty()) {
-                    adjustedFilePath = globalPathAux + '/' + f.getName();
-                } else {
-                    adjustedFilePath = globalPathAux + path + '/' + f.getName();
-                }
-
-                if (f.isDirectory()) {
-                    removeMetadataOfDirectory(adjustedFilePath);
-                }
-
-                try {
-                    stubStorageMetadata.delStorageItem(adjustedFilePath);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            System.out.println("This is just an empty directory " + myLocalPath);
-        }
-
-    }
-
     private String globalToLocal(String fullGlobalPath) {
         int indexEndGlobal = fullGlobalPath.indexOf(globalPath) + globalPath.length();
 
@@ -250,6 +249,5 @@ public class StorageServer implements ClientStorageInterface {
 
         return Files.readAllBytes(fileToSend);
     }
-
 
 }

@@ -3,6 +3,7 @@ package fcup;
 import java.util.HashMap;
 
 public class FileNode {
+
     public final String name;
 
     public final FileNode parentDir;

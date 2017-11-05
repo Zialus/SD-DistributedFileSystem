@@ -14,4 +14,5 @@ public interface StorageMetadataInterface extends Remote {
     void delStorageItem(String item) throws RemoteException;
 
     String giveMeAnID() throws RemoteException;
+
 }
