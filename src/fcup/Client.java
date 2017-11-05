@@ -446,15 +446,18 @@ public class Client {
 
     public static void main(String[] args) {
 
-        if (args.length == 1) {
-            configFile = args[0];
-            rmiHost = "localhost";
-        } else if (args.length == 2) {
-            configFile = args[0];
-            rmiHost = args[1];
-        } else {
-            System.err.println("Wrong number of arguments");
-            System.exit(1);
+        switch (args.length) {
+            case 1:
+                configFile = args[0];
+                rmiHost = "localhost";
+                break;
+            case 2:
+                configFile = args[0];
+                rmiHost = args[1];
+                break;
+            default:
+                System.err.println("Wrong number of arguments");
+                System.exit(1);
         }
 
         CurrentDirectory = "/";
