@@ -2,16 +2,15 @@ DESTDIR = outd
 SOURCEDIR = src/fcup
 
 sourcefiles = $(wildcard $(SOURCEDIR)/*.java)
-# classfiles = $(wildcard $(DESTDIR)/fcup/*.class)
+classfiles = $(patsubst $(SOURCEDIR)/%.java, $(DESTDIR)/fcup/%.class, $(sourcefiles) )
 
-# all: $(classfiles)
+all: $(DESTDIR)/fcup $(classfiles)
 
-all: doit
-
-# $(classfiles): $(sourcefiles)
-doit: $(sourcefiles)
-	mkdir -p $(DESTDIR)/fcup
+$(classfiles): $(sourcefiles)
 	javac -d $(DESTDIR) $(sourcefiles)
+
+$(DESTDIR)/fcup:
+	mkdir -p $(DESTDIR)/fcup
 
 clean:
 	rm -rf $(DESTDIR)
