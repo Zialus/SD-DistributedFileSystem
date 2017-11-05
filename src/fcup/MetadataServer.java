@@ -7,16 +7,16 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface{
+public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface {
 
     private static final FileSystemTree fileSystem = new FileSystemTree();
 
     private int globalMachineCounter = 0;
 
-    private final HashMap<String,String> StorageServerList = new HashMap<>();
+    private final HashMap<String, String> StorageServerList = new HashMap<>();
 
     private static void exit(Registry registry, MetadataServer obj1, MetadataServer obj2) {
-        try{
+        try {
             registry.unbind("ClientMetadataInterface");
             registry.unbind("StorageMetadataInterface");
 
@@ -24,8 +24,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             UnicastRemoteObject.unexportObject(obj2, true);
 
             System.out.println("Unbinded and exited.");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
             e.printStackTrace();
         }
@@ -44,7 +43,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             registry.bind("ClientMetadataInterface", stubClientMetaInterface);
             registry.bind("StorageMetadataInterface", stubStorageMetaInterface);
 
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry,objClientMetaInterface,objStorageMetaInterface)));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry, objClientMetaInterface, objStorageMetaInterface)));
 
             System.out.println("MetaData Server ready");
 
@@ -54,9 +53,9 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         }
     }
 
-    public String giveMeAnID(){
+    public String giveMeAnID() {
         globalMachineCounter++;
-        return "Machine"+globalMachineCounter;
+        return "Machine" + globalMachineCounter;
     }
 
     public String find(String path) {
@@ -64,8 +63,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
         if (pair.bool) {
             return pair.node.myStorageServer;
-        }
-        else{
+        } else {
             return "";
         }
     }
@@ -79,8 +77,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             } else {
                 return FileType.FILE;
             }
-        }
-        else{
+        } else {
             return FileType.NULL;
         }
     }
@@ -88,14 +85,14 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     public String lstat(String path) throws RemoteException {
         FileNode dirToBeListed;
 
-        if ("/".equals(path) ) {
+        if ("/".equals(path)) {
             dirToBeListed = fileSystem.root;
         } else {
             PairBoolNode didYouFindIt = fileSystem.find(path);
             dirToBeListed = didYouFindIt.node;
         }
 
-        if (dirToBeListed == null){
+        if (dirToBeListed == null) {
             return "";
         }
 
@@ -108,7 +105,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     public void addStorageServer(String machine, String top_of_the_subtree) throws RemoteException {
         StorageServerList.put(top_of_the_subtree, machine);
-        addStorageItem(top_of_the_subtree,machine,true);
+        addStorageItem(top_of_the_subtree, machine, true);
         System.out.println("I added machine " + machine + " which contains the sub-tree " + top_of_the_subtree);
     }
 
@@ -122,7 +119,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     public void addStorageItem(String item, String serverName, boolean isDirectory) throws RemoteException {
 
-        if ("/".equals(item)){
+        if ("/".equals(item)) {
             fileSystem.root.myStorageServer = serverName;
         } else {
             String[] pathElements = item.split("/");

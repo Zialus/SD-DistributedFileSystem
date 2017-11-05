@@ -25,14 +25,13 @@ public class StorageServer implements ClientStorageInterface {
         close();
         removeMetadataOfDirectory("");
 
-        try{
+        try {
             // Unregister and Un-export the Storage Server
             registry.unbind(ServerName);
             UnicastRemoteObject.unexportObject(objStorageServer, true);
 
             System.out.println("Unbound and Un-exported.");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.err.println("Exit messed up: " + e.toString());
             e.printStackTrace();
         }
@@ -60,7 +59,7 @@ public class StorageServer implements ClientStorageInterface {
             init(localPathAtStartup, globalPath);
 
             // Call exit method when Storage Server shuts down
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry,objStorageServer)));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry, objStorageServer)));
 
             System.out.println(ServerName + " is ready");
         } catch (Exception e) {
@@ -73,12 +72,12 @@ public class StorageServer implements ClientStorageInterface {
     }
 
 
-    private static void init(String local_path, String globalPath){
+    private static void init(String local_path, String globalPath) {
         try {
             localPath = local_path;
             stubStorageMetadata.addStorageServer(ServerName, globalPath);
-            if("/".equals(globalPath)){
-                stubStorageMetadata.addStorageItem("/",ServerName,true);
+            if ("/".equals(globalPath)) {
+                stubStorageMetadata.addStorageItem("/", ServerName, true);
             }
             sendMetaDataOfDirectory("");
         } catch (Exception e) {
@@ -87,7 +86,7 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-    private static void close(){
+    private static void close() {
         try {
             stubStorageMetadata.delStorageServer(globalPath);
         } catch (RemoteException e) {
@@ -96,7 +95,7 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-    private static void sendMetaDataOfDirectory(String path){
+    private static void sendMetaDataOfDirectory(String path) {
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + '/' + path);
 
@@ -104,17 +103,16 @@ public class StorageServer implements ClientStorageInterface {
 
         File[] listOfFiles = myLocalPath.listFiles();
 
-        if ("/".equals(globalPath)){
+        if ("/".equals(globalPath)) {
             globalPathAux = "";
         }
 
         if (listOfFiles != null) {
             for (File f : listOfFiles) {
                 String adjustedFilePath;
-                if( path.isEmpty() ) {
+                if (path.isEmpty()) {
                     adjustedFilePath = globalPathAux + '/' + f.getName();
-                }
-                else {
+                } else {
                     adjustedFilePath = globalPathAux + path + '/' + f.getName();
                 }
 
@@ -125,14 +123,13 @@ public class StorageServer implements ClientStorageInterface {
                     e.printStackTrace();
                 }
 
-                if(f.isDirectory()){
+                if (f.isDirectory()) {
                     System.out.println("Calling sendMetadata() with adjustedFilePath ->> " + f.getName());
                     sendMetaDataOfDirectory(f.getName());
                 }
 
             }
-        }
-        else {
+        } else {
             System.out.println("Directory " + myLocalPath + " is empty");
         }
     }
@@ -147,12 +144,12 @@ public class StorageServer implements ClientStorageInterface {
 
         boolean mkdir = directory.mkdir();
 
-        if (mkdir){
-            System.out.println("Directory" +  directory.toString() + "created successfully");
+        if (mkdir) {
+            System.out.println("Directory" + directory.toString() + "created successfully");
             stubStorageMetadata.addStorageItem(globalPath, ServerName, true);
             return true;
         } else {
-            System.out.println("Directory" +  directory.toString() + "could not be created");
+            System.out.println("Directory" + directory.toString() + "could not be created");
             return false;
         }
     }
@@ -163,7 +160,7 @@ public class StorageServer implements ClientStorageInterface {
         int length = globalPath.length();
 
         String pathToPutTheFileIn = globalPath.substring(0, indexLastSlash);
-        String fileName = globalPath.substring(indexLastSlash+1,length);
+        String fileName = globalPath.substring(indexLastSlash + 1, length);
 
         String localPathToPutFileIn = globalToLocal(pathToPutTheFileIn);
         String fullFinalPath = localPathToPutFileIn + '/' + fileName;
@@ -197,7 +194,7 @@ public class StorageServer implements ClientStorageInterface {
 
     }
 
-    private static void removeMetadataOfDirectory(String path){
+    private static void removeMetadataOfDirectory(String path) {
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + path);
 
@@ -205,7 +202,7 @@ public class StorageServer implements ClientStorageInterface {
 
         File[] listOfFiles = myLocalPath.listFiles();
 
-        if ("/".equals(globalPath)){
+        if ("/".equals(globalPath)) {
             globalPathAux = "";
         }
 
@@ -213,14 +210,13 @@ public class StorageServer implements ClientStorageInterface {
             for (File f : listOfFiles) {
 
                 String adjustedFilePath;
-                if( path.isEmpty() ) {
+                if (path.isEmpty()) {
                     adjustedFilePath = globalPathAux + '/' + f.getName();
-                }
-                else {
+                } else {
                     adjustedFilePath = globalPathAux + path + '/' + f.getName();
                 }
 
-                if(f.isDirectory()){
+                if (f.isDirectory()) {
                     removeMetadataOfDirectory(adjustedFilePath);
                 }
 
@@ -230,17 +226,16 @@ public class StorageServer implements ClientStorageInterface {
                     e.printStackTrace();
                 }
             }
-        }
-        else {
+        } else {
             System.out.println("This is just an empty directory " + myLocalPath);
         }
 
     }
 
-    private String globalToLocal(String fullGlobalPath){
+    private String globalToLocal(String fullGlobalPath) {
         int indexEndGlobal = fullGlobalPath.indexOf(globalPath) + globalPath.length();
 
-        String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal,fullGlobalPath.length());
+        String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal, fullGlobalPath.length());
 
         String output = localPath + relevantPartOfTheString;
         return output;
@@ -249,7 +244,7 @@ public class StorageServer implements ClientStorageInterface {
     public byte[] get(String pathInGlobalServer) throws IOException {
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
 
-	System.out.println("pathinloco" + pathInLocalServer);
+        System.out.println("pathinloco" + pathInLocalServer);
 
         Path fileToSend = Paths.get(pathInLocalServer);
 

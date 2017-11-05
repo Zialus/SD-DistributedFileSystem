@@ -9,7 +9,7 @@ public class FileNode {
 
     public final boolean isDirectory;
 
-    public final HashMap<String,FileNode> children;
+    public final HashMap<String, FileNode> children;
 
     public String myStorageServer;
 

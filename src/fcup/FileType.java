@@ -1,3 +1,3 @@
 package fcup;
 
-public enum FileType{DIRECTORY, FILE, NULL}
+public enum FileType {DIRECTORY, FILE, NULL}
