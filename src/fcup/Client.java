@@ -38,9 +38,6 @@ public class Client {
 
     private static String rmiHost;
 
-    private Client() {
-    }
-
     private static void processConfigFile() throws IOException {
         try (Stream<String> stream = Files.lines(Paths.get(configFile))) {
             stream.forEach(Client::addLineToHashMap);
