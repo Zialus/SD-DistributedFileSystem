@@ -19,14 +19,14 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jline.builtins.Completers;
+import org.jline.reader.*;
+import org.jline.reader.impl.DefaultParser;
+import org.jline.terminal.*;
+
 public class Client {
 
     private static final HashMap<String, String> configsMap = new HashMap<>();
-
-    // Color for output
-    private static final String ANSI_GREEN = "\u001B[32m";
-
-    private static final String ANSI_RESET = "\u001B[0m";
 
     private static String CurrentDirectory;
 
@@ -484,10 +484,27 @@ public class Client {
             e.printStackTrace();
         }
 
+        TerminalBuilder builder = TerminalBuilder.builder();
+        Terminal terminal = builder.system(true).build();
+
+        Completer completer = new Completers.FileNameCompleter();
+        Parser parser = new DefaultParser();;
+
+        LineReader reader = LineReaderBuilder.builder()
+                .terminal(terminal)
+                .completer(completer)
+                .parser(parser)
+                .build();
+
+        // Color for output
+        String ANSI_GREEN = "\u001B[32m";
+
+        String ANSI_RESET = "\u001B[0m";
+
+        String prompt = ANSI_GREEN + CurrentDirectory + " $ " + ANSI_RESET;
+        /*
         Scanner stdin = new Scanner(System.in);
-
-        System.out.print(ANSI_GREEN + CurrentDirectory + " $ " + ANSI_RESET);
-
+        System.out.print(prompt);
         while (stdin.hasNextLine()) {
             String fullCmd = stdin.nextLine();
             String[] cmdList = fullCmd.split(" ");
@@ -502,8 +519,25 @@ public class Client {
                 outPut = "RMI stuff happened";
             }
             System.out.println(outPut);
-            System.out.print(ANSI_GREEN + CurrentDirectory + " $ " + ANSI_RESET);
+            System.out.print(prompt);
+        }*/
 
+
+
+        while (true){
+            String fullCmd = reader.readLine(prompt);
+            String[] cmdList = fullCmd.split(" ");
+            String outPut;
+            try {
+                outPut = processInput(cmdList);
+            } catch (IOException e) {
+                e.printStackTrace();
+                outPut = "IO stuff happened";
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+                outPut = "RMI stuff happened";
+            }
+            System.out.println(outPut);
         }
 
     }

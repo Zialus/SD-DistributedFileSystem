@@ -1,5 +1,10 @@
 #!/bin/bash
 
+mkdir lib
+cd lib
+wget -nc "http://central.maven.org/maven2/org/jline/jline/3.5.1/jline-3.5.1.jar"
+cd ..
+
 set -x
 
 mkdir -p ~/DFS/A/1
@@ -20,4 +25,4 @@ java fcup.StorageServer ~/DFS/B /B localhost &> ~/DFS/logs/Storage2.log &
 sleep 1
 java fcup.StorageServer ~/DFS/C /C localhost &> ~/DFS/logs/Storage3.log &
 sleep 1
-java fcup.Client ../apps.conf localhost < ../some_commands
+java -cp .:../lib/jline-3.5.1.jar fcup.Client ../apps.conf localhost < ../some_commands

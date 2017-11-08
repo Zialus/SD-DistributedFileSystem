@@ -1,5 +1,6 @@
 DESTDIR = outd
 SOURCEDIR = src/fcup
+LIB = lib/jline-3.5.1.jar
 
 sourcefiles = $(wildcard $(SOURCEDIR)/*.java)
 classfiles = $(patsubst $(SOURCEDIR)/%.java, $(DESTDIR)/fcup/%.class, $(sourcefiles) )
@@ -7,7 +8,7 @@ classfiles = $(patsubst $(SOURCEDIR)/%.java, $(DESTDIR)/fcup/%.class, $(sourcefi
 all: $(DESTDIR)/fcup $(classfiles)
 
 $(classfiles): $(sourcefiles)
-	javac -d $(DESTDIR) $(sourcefiles)
+	javac -d $(DESTDIR) $(sourcefiles) -cp $(LIB)
 
 $(DESTDIR)/fcup:
 	mkdir -p $(DESTDIR)/fcup
