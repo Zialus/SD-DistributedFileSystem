@@ -79,7 +79,7 @@ public class StorageServer implements ClientStorageInterface {
                 stubStorageMetadata.addStorageItem("/", ServerName, true);
             }
             sendMetaDataOfDirectory("");
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
         }

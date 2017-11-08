@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -90,7 +92,7 @@ public class Client {
         return cleanPath;
     }
 
-    private static String changeDir(String[] inputCmd) throws IOException {
+    private static String changeDir(String[] inputCmd) throws RemoteException {
         String outPut;
 
         if (inputCmd.length != 2) {
@@ -130,7 +132,7 @@ public class Client {
         return outPut;
     }
 
-    private static String listFiles(String[] inputCmd) throws IOException {
+    private static String listFiles(String[] inputCmd) throws RemoteException {
         String outPut;
 
         if (inputCmd.length > 2) {
@@ -444,7 +446,7 @@ public class Client {
         return outPut;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         switch (args.length) {
             case 1:
@@ -458,6 +460,7 @@ public class Client {
             default:
                 System.err.println("Wrong number of arguments");
                 System.exit(1);
+                break;
         }
 
         CurrentDirectory = "/";
@@ -475,6 +478,9 @@ public class Client {
 
         } catch (NotBoundException e) {
             System.err.println("RMI Not Bound related exception: " + e.toString());
+            e.printStackTrace();
+        } catch (AccessException e) {
+            System.err.println("Access related exception: " + e.toString());
             e.printStackTrace();
         } catch (RemoteException e) {
             System.err.println("Remote related exception: " + e.toString());
