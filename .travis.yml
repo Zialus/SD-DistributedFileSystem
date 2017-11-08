@@ -9,8 +9,9 @@ matrix:
       dist: trusty
       jdk: oraclejdk9
     - os: osx
-      osx_image: xcode9.1
+      osx_image: xcode9.2
 
 script:
+  - make prepare
   - make
   - make test

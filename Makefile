@@ -16,6 +16,9 @@ $(DESTDIR)/fcup:
 clean:
 	rm -rf $(DESTDIR)
 
+prepare:
+	./prepare.sh
+
 test:
 	./test.sh
 
