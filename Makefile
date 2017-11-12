@@ -1,5 +1,5 @@
 DESTDIR = outd
-SOURCEDIR = src/fcup
+SOURCEDIR = src/main/java/fcup
 LIB = lib/jline-3.5.1.jar
 
 sourcefiles = $(wildcard $(SOURCEDIR)/*.java)
@@ -23,4 +23,4 @@ test:
 	./test.sh
 
 stop:
-	killall rmiregistry
+	killall rmiregistry java

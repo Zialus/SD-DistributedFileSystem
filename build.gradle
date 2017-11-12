@@ -1,0 +1,47 @@
+group 'fcup'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.jline:jline:3.5.1'
+}
+
+// Don't produce default Jar
+jar.enabled = false
+
+def jarPackage(groupName,artifactName, artifactVersion) {
+    return tasks.create("jar${artifactName}", Jar) {
+        baseName = artifactName
+        version = artifactVersion
+        String group = groupName
+
+        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+
+        from(sourceSets.main.output) {
+            include "$groupName/**"
+        }
+
+        manifest {
+            attributes(
+                    'Specification-Title': "$baseName",
+                    'Specification-Version': "$version",
+                    'Main-Class': "$group.$baseName"
+            )
+        }
+
+    }
+}
+
+artifacts {
+    archives jarPackage("$group","StorageServer","$version"),
+            jarPackage("$group","Client","$version"),
+            jarPackage("$group","MetadataServer","$version")
+}
