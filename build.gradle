@@ -1,8 +1,18 @@
-group 'fcup'
-version '1.0-SNAPSHOT'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
+    }
+}
 
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+group 'fcup'
+version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
@@ -11,13 +21,20 @@ repositories {
 }
 
 dependencies {
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.0.2"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.0.2"
+    // To avoid compiler warnings about @API annotations in JUnit code
+    testCompileOnly('org.apiguardian:apiguardian-api:1.0.0')
+    // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
+    testRuntime("org.junit.platform:junit-platform-launcher:1.0.2")
+
     compile 'org.jline:jline:3.5.1'
 }
 
 // Don't produce default Jar
 jar.enabled = false
 
-def jarPackage(groupName,artifactName, artifactVersion) {
+def jarPackage(groupName, artifactName, artifactVersion) {
     return tasks.create("jar${artifactName}", Jar) {
         baseName = artifactName
         version = artifactVersion
@@ -41,7 +58,7 @@ def jarPackage(groupName,artifactName, artifactVersion) {
 }
 
 artifacts {
-    archives jarPackage("$group","StorageServer","$version"),
-            jarPackage("$group","Client","$version"),
-            jarPackage("$group","MetadataServer","$version")
+    archives jarPackage("$group", "StorageServer", "$version"),
+            jarPackage("$group", "Client", "$version"),
+            jarPackage("$group", "MetadataServer", "$version")
 }
