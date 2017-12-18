@@ -1,5 +1,12 @@
 language: java
 
+install:
+  - wget https://services.gradle.org/distributions/gradle-4.4-bin.zip
+  - mkdir /tmp/gradle
+  - unzip -d /tmp/gradle gradle-4.4-bin.zip
+  - export PATH=/tmp/gradle/gradle-4.4/bin:$PATH
+  - gradle -v
+
 matrix:
   include:
     - os: linux
