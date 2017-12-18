@@ -7,6 +7,10 @@ install:
   - export PATH=/tmp/gradle/gradle-4.4/bin:$PATH
   - gradle -v
 
+script:
+  - ./prepare.sh
+  - ./test.sh
+
 matrix:
   include:
     - os: linux
@@ -17,10 +21,3 @@ matrix:
       jdk: oraclejdk9
     - os: osx
       osx_image: xcode9.2
-      install:
-        - brew update
-        - brew install gradle
-
-script:
-  - ./prepare.sh
-  - ./test.sh
