@@ -21,12 +21,12 @@ repositories {
 }
 
 dependencies {
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.0.2"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.0.2"
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
     // To avoid compiler warnings about @API annotations in JUnit code
-    testCompileOnly('org.apiguardian:apiguardian-api:1.0.0')
+    testCompileOnly 'org.apiguardian:apiguardian-api:1.0.0'
     // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
-    testRuntime("org.junit.platform:junit-platform-launcher:1.0.2")
+    testRuntime 'org.junit.platform:junit-platform-launcher:1.0.2'
 
     compile 'org.jline:jline:3.5.1'
 }

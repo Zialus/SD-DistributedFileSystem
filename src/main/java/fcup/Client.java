@@ -1,5 +1,14 @@
 package fcup;
 
+import org.jline.builtins.Completers;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.Parser;
+import org.jline.reader.impl.DefaultParser;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -15,14 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.jline.builtins.Completers;
-import org.jline.reader.*;
-import org.jline.reader.impl.DefaultParser;
-import org.jline.terminal.*;
 
 public class Client {
 
@@ -488,7 +490,7 @@ public class Client {
         Terminal terminal = builder.system(true).build();
 
         Completer completer = new Completers.FileNameCompleter();
-        Parser parser = new DefaultParser();;
+        Parser parser = new DefaultParser();
 
         LineReader reader = LineReaderBuilder.builder()
                 .terminal(terminal)
@@ -502,29 +504,8 @@ public class Client {
         String ANSI_RESET = "\u001B[0m";
 
         String prompt = ANSI_GREEN + CurrentDirectory + " $ " + ANSI_RESET;
-        /*
-        Scanner stdin = new Scanner(System.in);
-        System.out.print(prompt);
-        while (stdin.hasNextLine()) {
-            String fullCmd = stdin.nextLine();
-            String[] cmdList = fullCmd.split(" ");
-            String outPut;
-            try {
-                outPut = processInput(cmdList);
-            } catch (IOException e) {
-                e.printStackTrace();
-                outPut = "IO stuff happened";
-            } catch (NotBoundException e) {
-                e.printStackTrace();
-                outPut = "RMI stuff happened";
-            }
-            System.out.println(outPut);
-            System.out.print(prompt);
-        }*/
 
-
-
-        while (true){
+        while (true) {
             String fullCmd = reader.readLine(prompt);
             String[] cmdList = fullCmd.split(" ");
             String outPut;
