@@ -302,34 +302,38 @@ public class Client {
 
         String appToOpenThisExtension = configsMap.get(extension);
 
-        int indexLastSlash = fileToOpen.lastIndexOf('/');
-        int length = fileToOpen.length();
-        String fileToBeGotten = fileToOpen.substring(indexLastSlash + 1, length);
+        if (appToOpenThisExtension != null) {
+            int indexLastSlash = fileToOpen.lastIndexOf('/');
+            int length = fileToOpen.length();
+            String fileToBeGotten = fileToOpen.substring(indexLastSlash + 1, length);
 
-        byte[] bytesToBeReceived;
+            byte[] bytesToBeReceived;
 
-        String ServerImGoingToUse = stubClientMetadataInterface.find(fileToOpen);
-        FileType fileType = stubClientMetadataInterface.findInfo(fileToOpen);
+            String ServerImGoingToUse = stubClientMetadataInterface.find(fileToOpen);
+            FileType fileType = stubClientMetadataInterface.findInfo(fileToOpen);
 
-        if (!ServerImGoingToUse.isEmpty()) {
-            if (fileType == FileType.FILE) {
-                ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
+            if (!ServerImGoingToUse.isEmpty()) {
+                if (fileType == FileType.FILE) {
+                    ClientStorageInterface stubClientStorageInterface = (ClientStorageInterface) registry.lookup(ServerImGoingToUse);
 
-                bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
+                    bytesToBeReceived = stubClientStorageInterface.get(fileToOpen);
 
-                File tempFile = File.createTempFile(fileToBeGotten, extension);
+                    File tempFile = File.createTempFile(fileToBeGotten, extension);
 
-                Files.write((tempFile.toPath()), bytesToBeReceived);
+                    Files.write((tempFile.toPath()), bytesToBeReceived);
 
-                Runtime.getRuntime().exec(appToOpenThisExtension + ' ' + tempFile.getPath());
+                    Runtime.getRuntime().exec(appToOpenThisExtension + ' ' + tempFile.getPath());
 
-                outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
+                    outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
+                } else {
+                    outPut = "Can't open a directory";
+                }
             } else {
-                outPut = "Can't open a directory";
+                outPut = inputCmd[1] + ": no such file or directory";
             }
-        } else {
-            outPut = inputCmd[1] + ": no such file or directory";
         }
+
+        outPut = "No app to open this file type";
 
         return outPut;
     }
