@@ -171,6 +171,7 @@ public class StorageServer implements ClientStorageInterface {
 
     }
 
+    @Override
     public boolean create(String globalPath) throws RemoteException {
 
         String localPath = globalToLocal(globalPath);
@@ -191,6 +192,7 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
+    @Override
     public boolean create(String globalPath, byte[] blob) {
 
         int indexLastSlash = globalPath.lastIndexOf('/');
@@ -215,6 +217,7 @@ public class StorageServer implements ClientStorageInterface {
 
     }
 
+    @Override
     public boolean del(String pathInGlobalServer) throws RemoteException {
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
 
@@ -240,6 +243,7 @@ public class StorageServer implements ClientStorageInterface {
         return output;
     }
 
+    @Override
     public byte[] get(String pathInGlobalServer) throws IOException {
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
 

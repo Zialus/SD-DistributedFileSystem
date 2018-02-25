@@ -1,10 +1,10 @@
 language: java
 
 install:
-  - wget https://services.gradle.org/distributions/gradle-4.4-bin.zip
+  - wget https://services.gradle.org/distributions/gradle-4.5.1-bin.zip
   - mkdir /tmp/gradle
-  - unzip -d /tmp/gradle gradle-4.4-bin.zip
-  - export PATH=/tmp/gradle/gradle-4.4/bin:$PATH
+  - unzip -d /tmp/gradle gradle-4.5.1-bin.zip
+  - export PATH=/tmp/gradle/gradle-4.5.1/bin:$PATH
   - gradle -v
 
 script:
@@ -20,4 +20,4 @@ matrix:
       dist: trusty
       jdk: oraclejdk9
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode9.3

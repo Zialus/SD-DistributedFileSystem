@@ -1,15 +1,22 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
+        classpath "org.junit.platform:junit-platform-gradle-plugin:1.1.0"
+        classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.0.13"
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.13"
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'net.ltgt.errorprone'
+apply plugin: 'net.ltgt.apt'
 
 group 'fcup'
 version '1.0-SNAPSHOT'
@@ -21,14 +28,21 @@ repositories {
 }
 
 dependencies {
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
-    // To avoid compiler warnings about @API annotations in JUnit code
-    testCompileOnly 'org.apiguardian:apiguardian-api:1.0.0'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
     // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
     testRuntime 'org.junit.platform:junit-platform-launcher:1.0.2'
 
-    compile 'org.jline:jline:3.5.1'
+    compile 'org.jline:jline:3.6.1'
+
+    apt "com.uber.nullaway:nullaway:0.3.4"
+
+    // Optional, some source of nullability annotations.
+    // Not required on Android if you use the support
+    // library nullability annotations.
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+
+    errorprone "com.google.errorprone:error_prone_core:2.2.0"
 }
 
 // Don't produce default Jar
@@ -61,4 +75,11 @@ artifacts {
     archives jarPackage("$group", "StorageServer", "$version"),
             jarPackage("$group", "Client", "$version"),
             jarPackage("$group", "MetadataServer", "$version")
+}
+
+tasks.withType(JavaCompile) {
+    // remove the if condition if you want to run NullAway on test code
+    if (!name.toLowerCase().contains("test")) {
+        options.compilerArgs += ["-Xep:NullAway:ERROR", "-XepOpt:NullAway:AnnotatedPackages=com.uber"]
+    }
 }

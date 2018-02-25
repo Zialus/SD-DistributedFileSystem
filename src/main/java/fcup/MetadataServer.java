@@ -53,11 +53,13 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         }
     }
 
+    @Override
     public String giveMeAnID() {
         globalMachineCounter++;
         return "Machine" + globalMachineCounter;
     }
 
+    @Override
     public String find(String path) {
         PairBoolNode pair = fileSystem.find(path);
 
@@ -68,6 +70,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         }
     }
 
+    @Override
     public FileType findInfo(String path) throws RemoteException {
         PairBoolNode pair = fileSystem.find(path);
 
@@ -82,6 +85,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         }
     }
 
+    @Override
     public String lstat(String path) throws RemoteException {
         FileNode dirToBeListed;
 
@@ -103,12 +107,14 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         return new String(output);
     }
 
+    @Override
     public void addStorageServer(String machine, String top_of_the_subtree) throws RemoteException {
         StorageServerList.put(top_of_the_subtree, machine);
         addStorageItem(top_of_the_subtree, machine, true);
         System.out.println("I added machine " + machine + " which contains the sub-tree " + top_of_the_subtree);
     }
 
+    @Override
     public void delStorageServer(String top_of_the_subtree) throws RemoteException {
         String machine = StorageServerList.get(top_of_the_subtree);
         StorageServerList.remove(top_of_the_subtree);
@@ -116,6 +122,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         System.out.println("I removed the machine " + machine + " that contained the sub-tree " + top_of_the_subtree);
     }
 
+    @Override
     public void addStorageItem(String item, String serverName, boolean isDirectory) throws RemoteException {
 
         if ("/".equals(item)) {
@@ -147,6 +154,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
         }
     }
 
+    @Override
     public void delStorageItem(String item) throws RemoteException {
         fileSystem.removeFromFileSystem(item);
     }
