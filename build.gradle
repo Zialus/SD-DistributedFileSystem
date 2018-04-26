@@ -1,22 +1,9 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "org.junit.platform:junit-platform-gradle-plugin:1.1.0"
-        classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.0.13"
-        classpath "net.ltgt.gradle:gradle-apt-plugin:0.13"
-    }
+plugins {
+    id "net.ltgt.errorprone" version "0.0.13"
+    id "net.ltgt.apt" version "0.15"
+    id "java"
+    id "idea"
 }
-
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.junit.platform.gradle.plugin'
-apply plugin: 'net.ltgt.errorprone'
-apply plugin: 'net.ltgt.apt'
 
 group 'fcup'
 version '1.0-SNAPSHOT'
@@ -28,10 +15,8 @@ repositories {
 }
 
 dependencies {
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.1.0'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
-    // Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
-    testRuntime 'org.junit.platform:junit-platform-launcher:1.0.2'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.1.1'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.1.1'
 
     compile 'org.jline:jline:3.6.1'
 
@@ -43,6 +28,27 @@ dependencies {
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
     errorprone "com.google.errorprone:error_prone_core:2.2.0"
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+
+    reports {
+        html.enabled = true
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'fcup.Editor'
+        )
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
 // Don't produce default Jar

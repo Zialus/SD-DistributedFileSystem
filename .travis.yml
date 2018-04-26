@@ -1,10 +1,10 @@
 language: java
 
 install:
-  - wget https://services.gradle.org/distributions/gradle-4.5.1-bin.zip
+  - wget https://services.gradle.org/distributions/gradle-4.7-bin.zip
   - mkdir /tmp/gradle
-  - unzip -d /tmp/gradle gradle-4.5.1-bin.zip
-  - export PATH=/tmp/gradle/gradle-4.5.1/bin:$PATH
+  - unzip -d /tmp/gradle gradle-4.7-bin.zip
+  - export PATH=/tmp/gradle/gradle-4.7/bin:$PATH
   - gradle -v
 
 script:
