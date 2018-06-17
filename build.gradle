@@ -1,11 +1,11 @@
 plugins {
-    id "net.ltgt.errorprone" version "0.0.13"
-    id "net.ltgt.apt" version "0.15"
+    id "net.ltgt.errorprone" version "0.0.14"
+    id "com.github.spotbugs" version "1.6.2"
     id "java"
     id "idea"
 }
 
-group 'fcup'
+group 'FCUP'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
@@ -15,19 +15,12 @@ repositories {
 }
 
 dependencies {
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.1.1'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.1.1'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
 
-    compile 'org.jline:jline:3.6.1'
+    compile 'org.jline:jline:3.7.1'
 
-    apt "com.uber.nullaway:nullaway:0.3.4"
-
-    // Optional, some source of nullability annotations.
-    // Not required on Android if you use the support
-    // library nullability annotations.
-    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-
-    errorprone "com.google.errorprone:error_prone_core:2.2.0"
+    errorprone "com.google.errorprone:error_prone_core:2.3.1"
 }
 
 test {
@@ -81,11 +74,4 @@ artifacts {
     archives jarPackage("$group", "StorageServer", "$version"),
             jarPackage("$group", "Client", "$version"),
             jarPackage("$group", "MetadataServer", "$version")
-}
-
-tasks.withType(JavaCompile) {
-    // remove the if condition if you want to run NullAway on test code
-    if (!name.toLowerCase().contains("test")) {
-        options.compilerArgs += ["-Xep:NullAway:ERROR", "-XepOpt:NullAway:AnnotatedPackages=com.uber"]
-    }
 }
