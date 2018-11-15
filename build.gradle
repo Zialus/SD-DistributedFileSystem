@@ -1,7 +1,7 @@
 plugins {
     id "com.github.ben-manes.versions" version "0.20.0"
     id "net.ltgt.errorprone" version "0.6"
-    id "com.github.spotbugs" version "1.6.5"
+    // id "com.github.spotbugs" version "1.6.5"
     id "java"
     id "idea"
 }
