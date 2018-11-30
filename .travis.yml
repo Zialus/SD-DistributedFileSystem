@@ -2,7 +2,7 @@ language: java
 dist: xenial
 
 install:
-  - export VERSION=4.10.2
+  - export VERSION=5.0
   - wget https://services.gradle.org/distributions/gradle-${VERSION}-bin.zip
   - mkdir /tmp/gradle
   - unzip -d /tmp/gradle gradle-${VERSION}-bin.zip
