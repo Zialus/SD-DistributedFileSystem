@@ -1,7 +1,7 @@
 plugins {
     id "com.github.ben-manes.versions" version "0.20.0"
-    id "net.ltgt.errorprone" version "0.6"
-    // id "com.github.spotbugs" version "1.6.5"
+    id "net.ltgt.errorprone" version "0.7"
+//    id "com.github.spotbugs" version "1.6.10"
     id "java"
     id "idea"
 }
@@ -10,16 +10,20 @@ group 'FCUP'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.4.0'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
 
-    compile 'org.jline:jline:3.9.0'
+    compile 'org.jline:jline:3.10.0'
+
+//    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.8.0'
+//    spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.3'
 
     errorprone 'com.google.errorprone:error_prone_core:2.3.2'
     errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
