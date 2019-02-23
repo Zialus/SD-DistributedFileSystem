@@ -1,6 +1,7 @@
 plugins {
+    id "se.patrikerdes.use-latest-versions" version "0.2.8"
     id "com.github.ben-manes.versions" version "0.20.0"
-    id "net.ltgt.errorprone" version "0.7"
+    id "net.ltgt.errorprone" version "0.7.1"
 //    id "com.github.spotbugs" version "1.6.10"
     id "java"
     id "idea"
@@ -25,7 +26,7 @@ dependencies {
 //    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.8.0'
 //    spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.3'
 
-    errorprone 'com.google.errorprone:error_prone_core:2.3.2'
+    errorprone 'com.google.errorprone:error_prone_core:2.3.3'
     errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
 }
 
