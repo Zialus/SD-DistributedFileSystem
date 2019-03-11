@@ -10,7 +10,7 @@ install:
   - gradle -v
 
 script:
-  - ./prepare.sh
+  - gradle build
   - ./test.sh
 
 matrix:

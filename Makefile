@@ -16,8 +16,9 @@ $(DESTDIR)/fcup:
 clean:
 	rm -rf $(DESTDIR)
 
-prepare:
-	./prepare.sh
+download:
+	mkdir -p lib
+	wget https://repo1.maven.org/maven2/org/jline/jline/3.10.0/jline-3.10.0.jar -O $(LIB)
 
 test:
 	./test.sh
