@@ -33,6 +33,8 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     public static void main(String[] args) {
 
         try {
+            LocateRegistry.createRegistry(1099);
+
             MetadataServer objClientMetaInterface = new MetadataServer();
             ClientMetadataInterface stubClientMetaInterface = (ClientMetadataInterface) UnicastRemoteObject.exportObject(objClientMetaInterface, 0);
 
