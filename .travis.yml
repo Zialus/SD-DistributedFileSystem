@@ -9,6 +9,10 @@ install:
   - export PATH=/tmp/gradle/gradle-${VERSION}/bin:$PATH
   - gradle -v
 
+script:
+  - ./prepare.sh
+  - ./test.sh
+
 matrix:
   include:
     - os: linux
