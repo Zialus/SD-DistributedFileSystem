@@ -39,9 +39,25 @@ public class StorageServer implements ClientStorageInterface {
 
     public static void main(String[] args) {
 
-        String localPathAtStartup = args[0];
-        globalPath = args[1];
-        String metaDataHostName = args[2];
+        String localPathAtStartup = "";
+        String metaDataHostName = "";
+
+        switch (args.length) {
+            case 2:
+                localPathAtStartup = args[0];
+                globalPath = args[1];
+                metaDataHostName = "localhost";
+                break;
+            case 3:
+                localPathAtStartup = args[0];
+                globalPath = args[1];
+                metaDataHostName = args[2];
+                break;
+            default:
+                System.err.println("Wrong number of arguments");
+                System.exit(1);
+                break;
+        }
 
         try {
             StorageServer objStorageServer = new StorageServer();
