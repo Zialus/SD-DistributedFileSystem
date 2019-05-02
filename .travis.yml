@@ -2,7 +2,7 @@ language: java
 dist: xenial
 
 install:
-  - export VERSION=5.2.1
+  - export VERSION=5.4.1
   - wget https://services.gradle.org/distributions/gradle-${VERSION}-bin.zip
   - mkdir /tmp/gradle
   - unzip -d /tmp/gradle gradle-${VERSION}-bin.zip
@@ -15,6 +15,8 @@ script:
 
 matrix:
   include:
+    - os: linux
+      jdk: openjdk13
     - os: linux
       jdk: openjdk12
     - os: linux
@@ -29,7 +31,8 @@ matrix:
     - os: linux
       jdk: oraclejdk11
 
-
+    - os: osx
+      jdk: openjdk13
     - os: osx
       jdk: openjdk12
     - os: osx
@@ -47,4 +50,4 @@ matrix:
 
 
   allow_failures:
-    - jdk: openjdk12 # not out yet
+    - jdk: openjdk13 # not out yet
