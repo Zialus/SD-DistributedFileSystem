@@ -1,9 +1,9 @@
 plugins {
-    id "se.patrikerdes.use-latest-versions" version "0.2.9"
-    id "com.github.ben-manes.versions" version "0.21.0"
-//    id "net.ltgt.errorprone" version "0.8"
-//    id "com.github.spotbugs" version "1.7.1"
-//    id "pmd"
+    id "se.patrikerdes.use-latest-versions" version "0.2.12"
+    id "com.github.ben-manes.versions" version "0.22.0"
+//    id "net.ltgt.errorprone" version "0.8.1"
+    id "com.github.spotbugs" version "2.0.0"
+    id "pmd"
 //    id 'checkstyle'
     id "java"
     id "idea"
@@ -20,13 +20,13 @@ repositories {
 }
 
 dependencies {
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.5.0-M1'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.5.0-M1'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
 
-    compile 'org.jline:jline:3.10.0'
+    compile 'org.jline:jline:3.12.1'
 
 //    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
-//    spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.3'
+//    spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.6'
 
 //    errorprone 'com.google.errorprone:error_prone_core:2.3.3'
 //    errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
@@ -47,11 +47,10 @@ test {
 // Don't produce default Jar
 jar.enabled = false
 
-def jarPackage(groupName, artifactName, artifactVersion) {
-    return tasks.create("jar${artifactName}", Jar) {
-        baseName = artifactName
-        version = artifactVersion
-        String group = groupName
+def jarPackage(String groupName, String artifactName, String artifactVersion) {
+    return tasks.create("jar_${artifactName}", Jar) {
+        getArchiveBaseName().set(artifactName)
+        getArchiveVersion().set(artifactVersion)
 
         from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 
@@ -61,9 +60,7 @@ def jarPackage(groupName, artifactName, artifactVersion) {
 
         manifest {
             attributes(
-                    'Specification-Title': "$baseName",
-                    'Specification-Version': "$version",
-                    'Main-Class': "$group.$baseName"
+                    'Main-Class': "$groupName.$artifactName"
             )
         }
 
@@ -74,4 +71,17 @@ artifacts {
     archives jarPackage("$group", "StorageServer", "$version"),
             jarPackage("$group", "Client", "$version"),
             jarPackage("$group", "MetadataServer", "$version")
+}
+
+pmd {
+    ignoreFailures = true
+}
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    ignoreFailures = true
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
 }
