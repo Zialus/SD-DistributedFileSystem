@@ -1,12 +1,22 @@
+buildscript {
+    configurations.maybeCreate('pitest')
+    dependencies {
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.5'
+        pitest 'org.pitest:pitest-junit5-plugin:0.10'
+    }
+}
+
 plugins {
-    id "se.patrikerdes.use-latest-versions" version "0.2.12"
-    id "com.github.ben-manes.versions" version "0.22.0"
-//    id "net.ltgt.errorprone" version "0.8.1"
-    id "com.github.spotbugs" version "2.0.0"
+    id 'info.solidsoft.pitest' version '1.4.5'
+    id "se.patrikerdes.use-latest-versions" version "0.2.13"
+    id "com.github.ben-manes.versions" version "0.27.0"
+//    id "net.ltgt.errorprone" version "1.1.1"
+//    id "com.github.spotbugs" version "2.0.1"
     id "pmd"
 //    id 'checkstyle'
     id "java"
     id "idea"
+    id 'jacoco'
 }
 
 group 'fcup'
@@ -20,13 +30,13 @@ repositories {
 }
 
 dependencies {
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.5.1'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.6.0-M1'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.6.0-M1'
 
-    compile 'org.jline:jline:3.12.1'
+    compile 'org.jline:jline:3.13.1'
 
-//    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.9.0'
-//    spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.6'
+//    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
+//    spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.7'
 
 //    errorprone 'com.google.errorprone:error_prone_core:2.3.3'
 //    errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
@@ -77,11 +87,22 @@ pmd {
     ignoreFailures = true
 }
 
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
-    ignoreFailures = true
+pitest {
+    testPlugin.set("junit5")
+}
 
+jacocoTestReport {
     reports {
         xml.enabled = false
         html.enabled = true
     }
 }
+
+//tasks.withType(com.github.spotbugs.SpotBugsTask) {
+//    ignoreFailures = true
+//
+//    reports {
+//        xml.enabled = false
+//        html.enabled = true
+//    }
+//}
