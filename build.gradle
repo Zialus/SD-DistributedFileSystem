@@ -1,17 +1,17 @@
 buildscript {
     configurations.maybeCreate('pitest')
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.5'
-        pitest 'org.pitest:pitest-junit5-plugin:0.10'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6'
+        pitest 'org.pitest:pitest-junit5-plugin:0.11'
     }
 }
 
 plugins {
-    id 'info.solidsoft.pitest' version '1.4.5'
+    id 'info.solidsoft.pitest' version '1.4.6'
     id "se.patrikerdes.use-latest-versions" version "0.2.13"
     id "com.github.ben-manes.versions" version "0.27.0"
-//    id "net.ltgt.errorprone" version "1.1.1"
-//    id "com.github.spotbugs" version "2.0.1"
+    id "net.ltgt.errorprone" version "1.1.1"
+    id "com.github.spotbugs" version "3.0.0"
     id "pmd"
 //    id 'checkstyle'
     id "java"
@@ -30,16 +30,15 @@ repositories {
 }
 
 dependencies {
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.6.0-M1'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.6.0-M1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
 
-    compile 'org.jline:jline:3.13.1'
+    implementation 'org.jline:jline:3.13.3'
 
-//    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
-//    spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.7'
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
+    spotbugsPlugins 'com.mebigfatguy.sb-contrib:sb-contrib:7.4.7'
 
-//    errorprone 'com.google.errorprone:error_prone_core:2.3.3'
-//    errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
+    errorprone 'com.google.errorprone:error_prone_core:2.3.4'
+    errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
 }
 
 test {
@@ -62,7 +61,7 @@ def jarPackage(String groupName, String artifactName, String artifactVersion) {
         getArchiveBaseName().set(artifactName)
         getArchiveVersion().set(artifactVersion)
 
-        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+        from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 
         from(sourceSets.main.output) {
             include "$groupName/**"
@@ -98,11 +97,15 @@ jacocoTestReport {
     }
 }
 
-//tasks.withType(com.github.spotbugs.SpotBugsTask) {
-//    ignoreFailures = true
-//
-//    reports {
-//        xml.enabled = false
-//        html.enabled = true
-//    }
-//}
+spotbugs {
+    toolVersion = '4.0.0-RC1'
+}
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    ignoreFailures = true
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
