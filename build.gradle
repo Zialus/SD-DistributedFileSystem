@@ -2,7 +2,7 @@ buildscript {
     configurations.maybeCreate('pitest')
     dependencies {
         classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6'
-        pitest 'org.pitest:pitest-junit5-plugin:0.11'
+        pitest 'org.pitest:pitest-junit5-plugin:0.12'
     }
 }
 
@@ -88,6 +88,8 @@ pmd {
 
 pitest {
     testPlugin.set("junit5")
+    pitestVersion.set("1.4.11")
+    mutators.set(["ALL"])
 }
 
 jacocoTestReport {
