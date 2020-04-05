@@ -9,6 +9,8 @@ install:
   - export PATH=${GRADLE_DIR}/gradle-${VERSION}/bin:$PATH
   - gradle -v
 
+dist: xenial
+
 os:
   - linux
   - osx
@@ -19,11 +21,9 @@ jdk:
   - openjdk13
   - openjdk12
   - openjdk11
-  - openjdk10
-  - openjdk9
   - openjdk8
 
-matrix:
+jobs:
   allow_failures:
     - os: osx
       jdk: openjdk8
