@@ -1,5 +1,6 @@
 package fcup;
 
+import lombok.extern.java.Log;
 import org.jline.builtins.Completers;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Log
 public class Client {
 
     private static final HashMap<String, String> configsMap = new HashMap<>();
@@ -39,6 +41,10 @@ public class Client {
     private static Registry registry;
 
     private static String rmiHost;
+
+    private static final String ANSI_GREEN = "\u001B[32m";
+
+    private static final String ANSI_RESET = "\u001B[0m";
 
     private static void processConfigFile() throws IOException {
         try (Stream<String> stream = Files.lines(Paths.get(configFile))) {
@@ -84,7 +90,7 @@ public class Client {
         try {
             cleanPath = f.getCanonicalPath();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.severe(e.toString());
         }
 
 
@@ -381,7 +387,7 @@ public class Client {
                     byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
 
                     if ((filetype == FileType.FILE) || (filetype == FileType.NULL)) {
-//                                System.out.println("ENTREI AQUI -> " + filetype.toString());
+                        log.finest("ENTREI AQUI -> " + filetype.toString());
                         int indexLastSlash2 = pathWhereServerReceivesFiles.lastIndexOf('/');
                         int length2 = pathWhereServerReceivesFiles.length();
                         fileInDestiny = pathWhereServerReceivesFiles.substring(indexLastSlash2 + 1, length2);
@@ -471,7 +477,7 @@ public class Client {
         try {
             processConfigFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.severe(e.toString());
         }
 
         try {
@@ -480,14 +486,11 @@ public class Client {
             stubClientMetadataInterface = (ClientMetadataInterface) registry.lookup("ClientMetadataInterface");
 
         } catch (NotBoundException e) {
-            System.err.println("RMI Not Bound related exception: " + e.toString());
-            e.printStackTrace();
+            log.severe("RMI Not Bound related exception: " + e.toString());
         } catch (AccessException e) {
-            System.err.println("Access related exception: " + e.toString());
-            e.printStackTrace();
+            log.severe("Access related exception: " + e.toString());
         } catch (RemoteException e) {
-            System.err.println("Remote related exception: " + e.toString());
-            e.printStackTrace();
+            log.severe("Remote related exception: " + e.toString());
         }
 
         TerminalBuilder builder = TerminalBuilder.builder();
@@ -503,10 +506,6 @@ public class Client {
                 .build();
 
         // Color for output
-        String ANSI_GREEN = "\u001B[32m";
-
-        String ANSI_RESET = "\u001B[0m";
-
         String prompt = ANSI_GREEN + currentDirectory + " $ " + ANSI_RESET;
 
         while (true) {
@@ -516,10 +515,10 @@ public class Client {
             try {
                 outPut = processInput(cmdList);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.severe(e.toString());
                 outPut = "IO stuff happened";
             } catch (NotBoundException e) {
-                e.printStackTrace();
+                log.severe(e.toString());
                 outPut = "RMI stuff happened";
             }
             System.out.println(outPut);

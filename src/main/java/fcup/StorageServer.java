@@ -36,7 +36,6 @@ public class StorageServer implements ClientStorageInterface {
             log.info("Unbound and Un-exported.");
         } catch (Exception e) {
             log.severe("Exit messed up: " + e.toString());
-            e.printStackTrace();
         }
     }
 
@@ -83,7 +82,6 @@ public class StorageServer implements ClientStorageInterface {
             log.info(serverName + " is ready");
         } catch (Exception e) {
             log.severe("Client exception: " + e.toString());
-            e.printStackTrace();
             System.exit(1);
         }
 
@@ -100,7 +98,6 @@ public class StorageServer implements ClientStorageInterface {
             sendMetaDataOfDirectory("");
         } catch (RemoteException e) {
             log.severe("Client exception: " + e.toString());
-            e.printStackTrace();
         }
     }
 
@@ -108,8 +105,7 @@ public class StorageServer implements ClientStorageInterface {
         try {
             stubStorageMetadata.delStorageServer(globalPath);
         } catch (RemoteException e) {
-            log.info("Close messed up: " + e.toString());
-            e.printStackTrace();
+            log.severe("Close messed up: " + e.toString());
         }
     }
 
@@ -138,7 +134,7 @@ public class StorageServer implements ClientStorageInterface {
                 try {
                     stubStorageMetadata.addStorageItem(adjustedFilePath, serverName, isDirectory);
                 } catch (RemoteException e) {
-                    e.printStackTrace();
+                    log.severe(e.toString());
                 }
 
                 if (f.isDirectory()) {
@@ -181,7 +177,7 @@ public class StorageServer implements ClientStorageInterface {
                 try {
                     stubStorageMetadata.delStorageItem(adjustedFilePath);
                 } catch (RemoteException e) {
-                    e.printStackTrace();
+                    log.severe(e.toString());
                 }
             }
         } else {
@@ -193,9 +189,9 @@ public class StorageServer implements ClientStorageInterface {
     @Override
     public boolean create(String globalPath) throws RemoteException {
 
-        String localPath = globalToLocal(globalPath);
+        String createdLocalPath = globalToLocal(globalPath);
 
-        File directory = new File(localPath);
+        File directory = new File(createdLocalPath);
 
         log.info("Creating directory: " + directory.toString());
 
@@ -229,8 +225,7 @@ public class StorageServer implements ClientStorageInterface {
             stubStorageMetadata.addStorageItem(globalPath, serverName, false);
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
-            log.info("Final Path: " + fullFinalPath + " File could not be received");
+            log.severe("Final Path: " + fullFinalPath + " File could not be received " + e.toString());
             return false;
         }
 
@@ -240,9 +235,14 @@ public class StorageServer implements ClientStorageInterface {
     public boolean del(String pathInGlobalServer) throws RemoteException {
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
 
-        File fileToBeDeleted = new File(pathInLocalServer);
-
-        boolean bool = fileToBeDeleted.delete();
+        boolean bool;
+        try {
+            Files.delete(Paths.get(pathInLocalServer));
+            bool = true;
+        } catch (IOException e) {
+            log.severe(e.toString());
+            bool = false;
+        }
 
         if (bool) {
             stubStorageMetadata.delStorageItem(pathInGlobalServer);

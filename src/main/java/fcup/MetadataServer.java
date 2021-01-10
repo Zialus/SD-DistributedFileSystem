@@ -29,7 +29,6 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             log.info("Unbinded and exited.");
         } catch (Exception e) {
             log.severe("Server exception: " + e.toString());
-            e.printStackTrace();
         }
     }
 
@@ -54,7 +53,6 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
         } catch (Exception e) {
             log.severe("Server exception: " + e.toString());
-            e.printStackTrace();
         }
     }
 

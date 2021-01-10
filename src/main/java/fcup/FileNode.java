@@ -1,6 +1,7 @@
 package fcup;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class FileNode {
 
@@ -10,7 +11,7 @@ public class FileNode {
 
     public final boolean isDirectory;
 
-    public final HashMap<String, FileNode> children;
+    public final Map<String, FileNode> children;
 
     public String myStorageServer;
 
