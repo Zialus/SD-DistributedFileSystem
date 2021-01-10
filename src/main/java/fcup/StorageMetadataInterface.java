@@ -5,9 +5,9 @@ import java.rmi.RemoteException;
 
 public interface StorageMetadataInterface extends Remote {
 
-    void addStorageServer(String host, String top_of_the_subtree) throws RemoteException;
+    void addStorageServer(String host, String topOfTheSubtree) throws RemoteException;
 
-    void delStorageServer(String top_of_the_subtree) throws RemoteException;
+    void delStorageServer(String topOfTheSubtree) throws RemoteException;
 
     void addStorageItem(String item, String serverName, boolean isDirectory) throws RemoteException;
 

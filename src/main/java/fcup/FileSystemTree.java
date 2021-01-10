@@ -1,7 +1,10 @@
 package fcup;
 
+import lombok.extern.java.Log;
+
 import java.util.Arrays;
 
+@Log
 public class FileSystemTree {
 
     public final FileNode root; // root folder
@@ -10,9 +13,9 @@ public class FileSystemTree {
         this.root = new FileNode("/", null, true, null);
     }
 
-    public void addToFileSystem(String name, FileNode dirPath, boolean isDir, String StorageServer) {
-        FileNode f = new FileNode(name, dirPath, isDir, StorageServer);
-        System.out.println("added child -> " + f.name + " -> with parent " + dirPath.name);
+    public void addToFileSystem(String name, FileNode dirPath, boolean isDir, String storageServer) {
+        FileNode f = new FileNode(name, dirPath, isDir, storageServer);
+        log.info("added child -> " + f.name + " -> with parent " + dirPath.name);
         dirPath.children.put(f.name, f);
 
     }
@@ -21,11 +24,11 @@ public class FileSystemTree {
         PairBoolNode p = find(fullPath);
 
         if (!p.bool) {
-            System.out.println("You are trying to remove something that doesn't exist in the filesystem | Path-> " + fullPath);
+            log.info("You are trying to remove something that doesn't exist in the filesystem | Path-> " + fullPath);
         } else if (p.node.parentDir != null) {
             p.node.parentDir.children.remove(p.node.name);
         } else {
-            System.out.println("I'm an orphan and my name is -> " + p.node.name);
+            log.info("I'm an orphan and my name is -> " + p.node.name);
             p.node = null;
         }
     }
@@ -35,7 +38,7 @@ public class FileSystemTree {
             return new PairBoolNode(true, root);
         }
 
-        System.out.println("Trying to find: " + path);
+        log.info("Trying to find: " + path);
         String[] pathParts = path.split("/");
         pathParts = Arrays.copyOfRange(pathParts, 1, pathParts.length);
 

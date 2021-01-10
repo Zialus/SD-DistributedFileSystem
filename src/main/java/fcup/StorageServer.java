@@ -1,5 +1,7 @@
 package fcup;
 
+import lombok.extern.java.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,13 +12,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+@Log
 public class StorageServer implements ClientStorageInterface {
 
     private static String localPath;
 
     private static String globalPath;
 
-    private static String ServerName;
+    private static String serverName;
 
     private static StorageMetadataInterface stubStorageMetadata;
 
@@ -27,12 +30,12 @@ public class StorageServer implements ClientStorageInterface {
 
         try {
             // Unregister and Un-export the Storage Server
-            registry.unbind(ServerName);
+            registry.unbind(serverName);
             UnicastRemoteObject.unexportObject(objStorageServer, true);
 
-            System.out.println("Unbound and Un-exported.");
+            log.info("Unbound and Un-exported.");
         } catch (Exception e) {
-            System.err.println("Exit messed up: " + e.toString());
+            log.severe("Exit messed up: " + e.toString());
             e.printStackTrace();
         }
     }
@@ -54,7 +57,7 @@ public class StorageServer implements ClientStorageInterface {
                 metaDataHostName = args[2];
                 break;
             default:
-                System.err.println("Wrong number of arguments");
+                log.severe("Wrong number of arguments");
                 System.exit(1);
                 break;
         }
@@ -66,20 +69,20 @@ public class StorageServer implements ClientStorageInterface {
             Registry registry = LocateRegistry.getRegistry(metaDataHostName);
             stubStorageMetadata = (StorageMetadataInterface) registry.lookup("StorageMetadataInterface");
 
-            ServerName = stubStorageMetadata.giveMeAnID();
-            registry.bind(ServerName, stubClientStorage);
+            serverName = stubStorageMetadata.giveMeAnID();
+            registry.bind(serverName, stubClientStorage);
 
             // Initialize the storage server by adding its directories to the MetaDataServer
-            System.out.println("LOCALPATH = " + localPathAtStartup + " GLOBALPATH = " + globalPath);
+            log.info("LOCALPATH = " + localPathAtStartup + " GLOBALPATH = " + globalPath);
 
             init(localPathAtStartup, globalPath);
 
             // Call exit method when Storage Server shuts down
             Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry, objStorageServer)));
 
-            System.out.println(ServerName + " is ready");
+            log.info(serverName + " is ready");
         } catch (Exception e) {
-            System.err.println("Client exception: " + e.toString());
+            log.severe("Client exception: " + e.toString());
             e.printStackTrace();
             System.exit(1);
         }
@@ -87,16 +90,16 @@ public class StorageServer implements ClientStorageInterface {
 
     }
 
-    private static void init(String local_path, String globalPath) {
+    private static void init(String localPath, String globalPath) {
         try {
-            localPath = local_path;
-            stubStorageMetadata.addStorageServer(ServerName, globalPath);
+            StorageServer.localPath = localPath;
+            stubStorageMetadata.addStorageServer(serverName, globalPath);
             if ("/".equals(globalPath)) {
-                stubStorageMetadata.addStorageItem("/", ServerName, true);
+                stubStorageMetadata.addStorageItem("/", serverName, true);
             }
             sendMetaDataOfDirectory("");
         } catch (RemoteException e) {
-            System.err.println("Client exception: " + e.toString());
+            log.severe("Client exception: " + e.toString());
             e.printStackTrace();
         }
     }
@@ -105,7 +108,7 @@ public class StorageServer implements ClientStorageInterface {
         try {
             stubStorageMetadata.delStorageServer(globalPath);
         } catch (RemoteException e) {
-            System.out.println("Close messed up: " + e.toString());
+            log.info("Close messed up: " + e.toString());
             e.printStackTrace();
         }
     }
@@ -114,7 +117,7 @@ public class StorageServer implements ClientStorageInterface {
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + '/' + path);
 
-        System.out.println("Sending to metaData the local path " + myLocalPath.getPath());
+        log.info("Sending to metaData the local path " + myLocalPath.getPath());
 
         File[] listOfFiles = myLocalPath.listFiles();
 
@@ -133,19 +136,19 @@ public class StorageServer implements ClientStorageInterface {
 
                 boolean isDirectory = f.isDirectory();
                 try {
-                    stubStorageMetadata.addStorageItem(adjustedFilePath, ServerName, isDirectory);
+                    stubStorageMetadata.addStorageItem(adjustedFilePath, serverName, isDirectory);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
 
                 if (f.isDirectory()) {
-                    System.out.println("Calling sendMetadata() with adjustedFilePath ->> " + f.getName());
+                    log.info("Calling sendMetadata() with adjustedFilePath ->> " + f.getName());
                     sendMetaDataOfDirectory(f.getName());
                 }
 
             }
         } else {
-            System.out.println("Directory " + myLocalPath + " is empty");
+            log.info("Directory " + myLocalPath + " is empty");
         }
     }
 
@@ -153,7 +156,7 @@ public class StorageServer implements ClientStorageInterface {
         String globalPathAux = globalPath;
         File myLocalPath = new File(localPath + path);
 
-        System.out.println("Going to remove metadata of " + myLocalPath.getPath());
+        log.info("Going to remove metadata of " + myLocalPath.getPath());
 
         File[] listOfFiles = myLocalPath.listFiles();
 
@@ -182,7 +185,7 @@ public class StorageServer implements ClientStorageInterface {
                 }
             }
         } else {
-            System.out.println("This is just an empty directory " + myLocalPath);
+            log.info("This is just an empty directory " + myLocalPath);
         }
 
     }
@@ -194,16 +197,16 @@ public class StorageServer implements ClientStorageInterface {
 
         File directory = new File(localPath);
 
-        System.out.println("Creating directory: " + directory.toString());
+        log.info("Creating directory: " + directory.toString());
 
         boolean mkdir = directory.mkdir();
 
         if (mkdir) {
-            System.out.println("Directory" + directory.toString() + "created successfully");
-            stubStorageMetadata.addStorageItem(globalPath, ServerName, true);
+            log.info("Directory" + directory.toString() + "created successfully");
+            stubStorageMetadata.addStorageItem(globalPath, serverName, true);
             return true;
         } else {
-            System.out.println("Directory" + directory.toString() + "could not be created");
+            log.info("Directory" + directory.toString() + "could not be created");
             return false;
         }
     }
@@ -222,12 +225,12 @@ public class StorageServer implements ClientStorageInterface {
 
         try {
             Files.write(Paths.get(fullFinalPath), blob);
-            System.out.println("Final Path: " + fullFinalPath + " File received successfully");
-            stubStorageMetadata.addStorageItem(globalPath, ServerName, false);
+            log.info("Final Path: " + fullFinalPath + " File received successfully");
+            stubStorageMetadata.addStorageItem(globalPath, serverName, false);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Final Path: " + fullFinalPath + " File could not be received");
+            log.info("Final Path: " + fullFinalPath + " File could not be received");
             return false;
         }
 
@@ -263,7 +266,7 @@ public class StorageServer implements ClientStorageInterface {
     public byte[] get(String pathInGlobalServer) throws IOException {
         String pathInLocalServer = globalToLocal(pathInGlobalServer);
 
-        System.out.println("pathinloco" + pathInLocalServer);
+        log.info("pathinloco" + pathInLocalServer);
 
         Path fileToSend = Paths.get(pathInLocalServer);
 

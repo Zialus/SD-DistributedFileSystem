@@ -1,5 +1,7 @@
 package fcup;
 
+import lombok.extern.java.Log;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -7,11 +9,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.HashMap;
 
+@Log
 public class MetadataServer implements ClientMetadataInterface, StorageMetadataInterface {
 
     private static final FileSystemTree fileSystem = new FileSystemTree();
 
-    private final HashMap<String, String> StorageServerList = new HashMap<>();
+    private final HashMap<String, String> storageServerList = new HashMap<>();
 
     private int globalMachineCounter = 0;
 
@@ -23,9 +26,9 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             UnicastRemoteObject.unexportObject(obj1, true);
             UnicastRemoteObject.unexportObject(obj2, true);
 
-            System.out.println("Unbinded and exited.");
+            log.info("Unbinded and exited.");
         } catch (Exception e) {
-            System.err.println("Server exception: " + e.toString());
+            log.severe("Server exception: " + e.toString());
             e.printStackTrace();
         }
     }
@@ -47,10 +50,10 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry, objClientMetaInterface, objStorageMetaInterface)));
 
-            System.out.println("MetaData Server ready");
+            log.info("MetaData Server ready");
 
         } catch (Exception e) {
-            System.err.println("Server exception: " + e.toString());
+            log.severe("Server exception: " + e.toString());
             e.printStackTrace();
         }
     }
@@ -110,18 +113,18 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     @Override
-    public void addStorageServer(String machine, String top_of_the_subtree) throws RemoteException {
-        StorageServerList.put(top_of_the_subtree, machine);
-        addStorageItem(top_of_the_subtree, machine, true);
-        System.out.println("I added machine " + machine + " which contains the sub-tree " + top_of_the_subtree);
+    public void addStorageServer(String machine, String topOfTheSubtree) throws RemoteException {
+        storageServerList.put(topOfTheSubtree, machine);
+        addStorageItem(topOfTheSubtree, machine, true);
+        log.info("I added machine " + machine + " which contains the sub-tree " + topOfTheSubtree);
     }
 
     @Override
-    public void delStorageServer(String top_of_the_subtree) throws RemoteException {
-        String machine = StorageServerList.get(top_of_the_subtree);
-        StorageServerList.remove(top_of_the_subtree);
-        delStorageItem(top_of_the_subtree);
-        System.out.println("I removed the machine " + machine + " that contained the sub-tree " + top_of_the_subtree);
+    public void delStorageServer(String topOfTheSubtree) throws RemoteException {
+        String machine = storageServerList.get(topOfTheSubtree);
+        storageServerList.remove(topOfTheSubtree);
+        delStorageItem(topOfTheSubtree);
+        log.info("I removed the machine " + machine + " that contained the sub-tree " + topOfTheSubtree);
     }
 
     @Override
@@ -150,7 +153,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
                     FileNode parentNode = maybeFoundParentNode.node;
                     fileSystem.addToFileSystem(pathElements[lastElement], parentNode, isDirectory, serverName);
                 } else {
-                    System.err.println("Something went really wrong");
+                    log.severe("Something went really wrong");
                 }
             }
         }
