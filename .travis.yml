@@ -1,7 +1,7 @@
 language: java
 
 install:
-  - export VERSION=6.8.3
+  - export VERSION=7.0
   - export GRADLE_DIR=/tmp/gradle
   - wget https://services.gradle.org/distributions/gradle-${VERSION}-bin.zip
   - mkdir ${GRADLE_DIR}
@@ -16,6 +16,7 @@ os:
   - osx
 
 jdk:
+  - openjdk17
   - openjdk16
   - openjdk15
   - openjdk14
@@ -28,7 +29,7 @@ jobs:
   allow_failures:
     - os: osx
       jdk: openjdk8
-    - jdk: openjdk16
+    - jdk: openjdk17
 
   include:
     - name: Sonar
