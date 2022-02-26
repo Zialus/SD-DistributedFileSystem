@@ -326,7 +326,7 @@ public class Client {
 
                     File tempFile = File.createTempFile(fileToBeGotten, extension);
 
-                    Files.write((tempFile.toPath()), bytesToBeReceived);
+                    Files.write(tempFile.toPath(), bytesToBeReceived);
 
                     Runtime.getRuntime().exec(appToOpenThisExtension + ' ' + tempFile.getPath());
 
@@ -381,7 +381,7 @@ public class Client {
 
                     File tempFile = File.createTempFile(fileToBeGottenMV, extensionMV);
 
-                    Files.write((tempFile.toPath()), bytesToBeReceivedMV);
+                    Files.write(tempFile.toPath(), bytesToBeReceivedMV);
 
                     Path pathOfFileToBeSent = Paths.get(tempFile.toString());
                     byte[] bytesToBeSent = Files.readAllBytes(pathOfFileToBeSent);
