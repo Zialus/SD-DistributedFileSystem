@@ -1,7 +1,7 @@
 language: java
 
 install:
-  - export VERSION=7.4
+  - export VERSION=7.4.2
   - export GRADLE_DIR=/tmp/gradle
   - wget https://services.gradle.org/distributions/gradle-${VERSION}-bin.zip
   - mkdir ${GRADLE_DIR}

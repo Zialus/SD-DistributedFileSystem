@@ -1,5 +1,5 @@
 plugins {
-    id 'info.solidsoft.pitest' version '1.7.0'
+    id 'info.solidsoft.pitest' version '1.7.4'
     id "se.patrikerdes.use-latest-versions" version "0.2.18"
     id "com.github.ben-manes.versions" version "0.42.0"
     id "net.ltgt.errorprone" version "2.0.2"
@@ -10,7 +10,7 @@ plugins {
     id "idea"
     id 'jacoco'
     id "org.sonarqube" version "3.3"
-    id "io.freefair.lombok" version "6.4.1"
+    id "io.freefair.lombok" version "6.4.3"
 }
 
 sonarqube {
@@ -24,9 +24,6 @@ sonarqube {
 group 'fcup'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 repositories {
     mavenCentral()
 }
@@ -36,12 +33,11 @@ dependencies {
 
     implementation 'org.jline:jline:3.21.0'
 
-    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.11.0'
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
     spotbugsPlugins 'com.mebigfatguy.sb-contrib:sb-contrib:7.4.7'
 
-    annotationProcessor "com.uber.nullaway:nullaway:0.9.5"
-    errorprone 'com.google.errorprone:error_prone_core:2.11.0'
-    errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
+    annotationProcessor "com.uber.nullaway:nullaway:0.9.6"
+    errorprone 'com.google.errorprone:error_prone_core:2.13.1'
 }
 
 tasks.withType(JavaCompile) {
@@ -111,7 +107,7 @@ pmdTest {
 
 pitest {
     junit5PluginVersion = '0.15'
-    pitestVersion = '1.7.4'
+    pitestVersion = '1.7.6'
     mutators = ["ALL"]
 }
 
@@ -123,11 +119,11 @@ jacocoTestReport {
 }
 
 lombok {
-    version = '1.18.22'
+    version = '1.18.24'
 }
 
 spotbugs {
-    toolVersion = '4.5.3'
+    toolVersion = '4.6.0'
     ignoreFailures = true
     showStackTraces = false
     showProgress = true
