@@ -17,6 +17,7 @@ os:
   - windows
 
 jdk:
+  - openjdk19
   - openjdk18
   - openjdk17
   - openjdk16
@@ -28,4 +29,4 @@ jdk:
 
 jobs:
   allow_failures:
-    - jdk: openjdk18
+    - jdk: openjdk19

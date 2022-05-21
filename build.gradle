@@ -3,7 +3,7 @@ plugins {
     id "se.patrikerdes.use-latest-versions" version "0.2.18"
     id "com.github.ben-manes.versions" version "0.42.0"
     id "net.ltgt.errorprone" version "2.0.2"
-    id "com.github.spotbugs" version "5.0.6"
+    id "com.github.spotbugs" version "5.0.7"
     id "pmd"
 //    id 'checkstyle'
     id "java"
@@ -29,14 +29,14 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0-M1'
 
     implementation 'org.jline:jline:3.21.0'
 
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
     spotbugsPlugins 'com.mebigfatguy.sb-contrib:sb-contrib:7.4.7'
 
-    annotationProcessor "com.uber.nullaway:nullaway:0.9.6"
+    annotationProcessor "com.uber.nullaway:nullaway:0.9.7"
     errorprone 'com.google.errorprone:error_prone_core:2.13.1'
 }
 
@@ -111,6 +111,10 @@ pitest {
     mutators = ["ALL"]
 }
 
+jacoco {
+    toolVersion = '0.8.8'
+}
+
 jacocoTestReport {
     reports {
         xml.required = true
@@ -123,7 +127,7 @@ lombok {
 }
 
 spotbugs {
-    toolVersion = '4.6.0'
+    toolVersion = '4.7.0'
     ignoreFailures = true
     showStackTraces = false
     showProgress = true
