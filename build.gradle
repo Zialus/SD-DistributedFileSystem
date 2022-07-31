@@ -3,14 +3,14 @@ plugins {
     id "se.patrikerdes.use-latest-versions" version "0.2.18"
     id "com.github.ben-manes.versions" version "0.42.0"
     id "net.ltgt.errorprone" version "2.0.2"
-    id "com.github.spotbugs" version "5.0.8"
+    id "com.github.spotbugs" version "5.0.9"
     id "pmd"
 //    id 'checkstyle'
     id "java"
     id "idea"
     id 'jacoco'
     id "org.sonarqube" version "3.4.0.2513"
-    id "io.freefair.lombok" version "6.5.0.2"
+    id "io.freefair.lombok" version "6.5.0.3"
 }
 
 sonarqube {
@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0-M1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
 
     implementation 'org.jline:jline:3.21.0'
 
@@ -107,7 +107,7 @@ pmdTest {
 
 pitest {
     junit5PluginVersion = '1.0.0'
-    pitestVersion = '1.9.0'
+    pitestVersion = '1.9.3'
     mutators = ["ALL"]
 }
 
@@ -127,7 +127,7 @@ lombok {
 }
 
 spotbugs {
-    toolVersion = '4.7.0'
+    toolVersion = '4.7.1'
     ignoreFailures = true
     showStackTraces = false
     showProgress = true

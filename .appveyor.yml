@@ -11,7 +11,7 @@ environment:
     - JAVA_HOME: C:\Program Files\Java\jdk17
 
 install:
-  - set VERSION=7.4.2
+  - set VERSION=7.5
   - set GRADLE_DIR=C:\gradle
   - set DOWNLOAD_URL=https://services.gradle.org/distributions/gradle-%VERSION%-bin.zip
   - ps: wget $env:DOWNLOAD_URL -O gradle-bin.zip
