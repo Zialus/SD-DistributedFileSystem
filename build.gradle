@@ -36,8 +36,8 @@ dependencies {
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
     spotbugsPlugins 'com.mebigfatguy.sb-contrib:sb-contrib:7.4.7'
 
-    annotationProcessor "com.uber.nullaway:nullaway:0.9.8"
-    errorprone 'com.google.errorprone:error_prone_core:2.14.0'
+    annotationProcessor "com.uber.nullaway:nullaway:0.9.9"
+    errorprone 'com.google.errorprone:error_prone_core:2.15.0'
 }
 
 tasks.withType(JavaCompile) {
@@ -107,7 +107,7 @@ pmdTest {
 
 pitest {
     junit5PluginVersion = '1.0.0'
-    pitestVersion = '1.9.3'
+    pitestVersion = '1.9.4'
     mutators = ["ALL"]
 }
 
