@@ -328,7 +328,9 @@ public class Client {
 
                     Files.write(tempFile.toPath(), bytesToBeReceived);
 
-                    Runtime.getRuntime().exec(appToOpenThisExtension + ' ' + tempFile.getPath());
+                    String[] commandLineArgs = {appToOpenThisExtension, tempFile.getPath()};
+
+                    Runtime.getRuntime().exec(commandLineArgs);
 
                     outPut = "Opened file " + fileToOpen + " with " + appToOpenThisExtension;
                 } else {
