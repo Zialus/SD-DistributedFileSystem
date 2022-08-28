@@ -339,9 +339,9 @@ public class Client {
             } else {
                 outPut = inputCmd[1] + ": no such file or directory";
             }
+        } else {
+            outPut = "No app to open this file type";
         }
-
-        outPut = "No app to open this file type";
 
         return outPut;
     }
