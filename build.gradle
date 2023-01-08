@@ -1,5 +1,5 @@
 plugins {
-    id 'info.solidsoft.pitest' version '1.9.0'
+    id 'info.solidsoft.pitest' version '1.9.11'
     id "se.patrikerdes.use-latest-versions" version "0.2.18"
     id "com.github.ben-manes.versions" version "0.44.0"
     id "net.ltgt.errorprone" version "3.0.1"
@@ -10,7 +10,7 @@ plugins {
     id "idea"
     id 'jacoco'
     id "org.sonarqube" version "3.5.0.2730"
-    id "io.freefair.lombok" version "6.6-rc1"
+    id "io.freefair.lombok" version "6.6.1"
 }
 
 sonarqube {
@@ -39,8 +39,8 @@ dependencies {
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
     spotbugsPlugins 'com.mebigfatguy.sb-contrib:sb-contrib:7.4.7'
 
-    annotationProcessor "com.uber.nullaway:nullaway:0.10.5"
-    errorprone 'com.google.errorprone:error_prone_core:2.16'
+    annotationProcessor "com.uber.nullaway:nullaway:0.10.7"
+    errorprone 'com.google.errorprone:error_prone_core:2.17.0'
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -111,8 +111,8 @@ pmdTest {
 }
 
 pitest {
-    junit5PluginVersion = '1.1.0'
-    pitestVersion = '1.9.10'
+    junit5PluginVersion = '1.1.1'
+    pitestVersion = '1.10.4'
     mutators = ["ALL"]
 }
 
@@ -140,20 +140,20 @@ spotbugs {
 
 spotbugsMain {
     reports {
-        xml { required = false }
-        html { required = true }
+        xml.required = false
+        html.required = true
     }
 }
 
 spotbugsTest {
     reports {
-        xml { required = false }
-        html { required = true }
+        xml.required = false
+        html.required = true
     }
 }
 
 checkstyle {
-    toolVersion = '10.4'
+    toolVersion = '10.6.0'
     showViolations = false
     ignoreFailures = true
 }
