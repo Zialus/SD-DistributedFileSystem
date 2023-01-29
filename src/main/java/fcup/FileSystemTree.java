@@ -13,15 +13,15 @@ public class FileSystemTree {
         this.root = new FileNode("/", null, true, null);
     }
 
-    public void addToFileSystem(String name, FileNode dirPath, boolean isDir, String storageServer) {
-        FileNode f = new FileNode(name, dirPath, isDir, storageServer);
+    public void addToFileSystem(final String name, final FileNode dirPath, final boolean isDir, final String storageServer) {
+        final FileNode f = new FileNode(name, dirPath, isDir, storageServer);
         log.info("added child -> " + f.name + " -> with parent " + dirPath.name);
         dirPath.children.put(f.name, f);
 
     }
 
-    public void removeFromFileSystem(String fullPath) {
-        PairBoolNode p = find(fullPath);
+    public void removeFromFileSystem(final String fullPath) {
+        final PairBoolNode p = find(fullPath);
 
         if (!p.bool) {
             log.info("You are trying to remove something that doesn't exist in the filesystem | Path-> " + fullPath);
@@ -33,7 +33,7 @@ public class FileSystemTree {
         }
     }
 
-    public PairBoolNode find(String path) {
+    public PairBoolNode find(final String path) {
         if ("/".equals(path)) {
             return new PairBoolNode(true, root);
         }
@@ -45,7 +45,7 @@ public class FileSystemTree {
         int pathPartsLeft = pathParts.length - 1;
         FileNode currentNode = root;
 
-        for (String part : pathParts) {
+        for (final String part : pathParts) {
             currentNode = currentNode.children.get(part);
             if (currentNode == null) {
                 return new PairBoolNode(false, null);

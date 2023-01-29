@@ -15,7 +15,7 @@ public class FileNode {
 
     public String myStorageServer;
 
-    public FileNode(String name, FileNode parentDir, boolean isDirectory, String myStorageServer) {
+    public FileNode(final String name, final FileNode parentDir, final boolean isDirectory, final String myStorageServer) {
         this.name = name;
         this.isDirectory = isDirectory;
         this.parentDir = parentDir;

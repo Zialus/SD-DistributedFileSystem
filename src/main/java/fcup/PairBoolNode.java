@@ -5,7 +5,7 @@ public class PairBoolNode {
 
     public FileNode node;
 
-    PairBoolNode(boolean b, FileNode n) {
+    PairBoolNode(final boolean b, final FileNode n) {
         this.bool = b;
         this.node = n;
     }

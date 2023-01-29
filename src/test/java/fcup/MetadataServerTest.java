@@ -8,9 +8,9 @@ class MetadataServerTest {
 
     @Test
     void giveMeAnID() {
-        MetadataServer metaServer = new MetadataServer();
-        String a = metaServer.giveMeAnID();
-        String b = metaServer.giveMeAnID();
+        final MetadataServer metaServer = new MetadataServer();
+        final String a = metaServer.giveMeAnID();
+        final String b = metaServer.giveMeAnID();
         assertNotEquals(a, b);
     }
 }

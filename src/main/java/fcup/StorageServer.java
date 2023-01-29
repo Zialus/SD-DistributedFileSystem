@@ -23,7 +23,7 @@ public class StorageServer implements ClientStorageInterface {
 
     private static StorageMetadataInterface stubStorageMetadata;
 
-    private static void exit(Registry registry, StorageServer objStorageServer) {
+    private static void exit(final Registry registry, final StorageServer objStorageServer) {
 
         close();
         removeMetadataOfDirectory("");
@@ -34,12 +34,12 @@ public class StorageServer implements ClientStorageInterface {
             UnicastRemoteObject.unexportObject(objStorageServer, true);
 
             log.info("Unbound and Un-exported.");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.severe("Exit messed up: " + e.toString());
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
         String localPathAtStartup = "";
         String metaDataHostName = "";
@@ -62,10 +62,10 @@ public class StorageServer implements ClientStorageInterface {
         }
 
         try {
-            StorageServer objStorageServer = new StorageServer();
-            ClientStorageInterface stubClientStorage = (ClientStorageInterface) UnicastRemoteObject.exportObject(objStorageServer, 0);
+            final StorageServer objStorageServer = new StorageServer();
+            final ClientStorageInterface stubClientStorage = (ClientStorageInterface) UnicastRemoteObject.exportObject(objStorageServer, 0);
 
-            Registry registry = LocateRegistry.getRegistry(metaDataHostName);
+            final Registry registry = LocateRegistry.getRegistry(metaDataHostName);
             stubStorageMetadata = (StorageMetadataInterface) registry.lookup("StorageMetadataInterface");
 
             serverName = stubStorageMetadata.giveMeAnID();
@@ -80,7 +80,7 @@ public class StorageServer implements ClientStorageInterface {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> exit(registry, objStorageServer)));
 
             log.info(serverName + " is ready");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.severe("Client exception: " + e.toString());
             System.exit(1);
         }
@@ -88,7 +88,7 @@ public class StorageServer implements ClientStorageInterface {
 
     }
 
-    private static void init(String localPath, String globalPath) {
+    private static void init(final String localPath, final String globalPath) {
         try {
             StorageServer.localPath = localPath;
             stubStorageMetadata.addStorageServer(serverName, globalPath);
@@ -96,7 +96,7 @@ public class StorageServer implements ClientStorageInterface {
                 stubStorageMetadata.addStorageItem("/", serverName, true);
             }
             sendMetaDataOfDirectory("");
-        } catch (RemoteException e) {
+        } catch (final RemoteException e) {
             log.severe("Client exception: " + e.toString());
         }
     }
@@ -104,36 +104,36 @@ public class StorageServer implements ClientStorageInterface {
     private static void close() {
         try {
             stubStorageMetadata.delStorageServer(globalPath);
-        } catch (RemoteException e) {
+        } catch (final RemoteException e) {
             log.severe("Close messed up: " + e.toString());
         }
     }
 
-    private static void sendMetaDataOfDirectory(String path) {
+    private static void sendMetaDataOfDirectory(final String path) {
         String globalPathAux = globalPath;
-        File myLocalPath = new File(localPath + '/' + path);
+        final File myLocalPath = new File(localPath + '/' + path);
 
         log.info("Sending to metaData the local path " + myLocalPath.getPath());
 
-        File[] listOfFiles = myLocalPath.listFiles();
+        final File[] listOfFiles = myLocalPath.listFiles();
 
         if ("/".equals(globalPath)) {
             globalPathAux = "";
         }
 
         if (listOfFiles != null) {
-            for (File f : listOfFiles) {
-                String adjustedFilePath;
+            for (final File f : listOfFiles) {
+                final String adjustedFilePath;
                 if (path.isEmpty()) {
                     adjustedFilePath = globalPathAux + '/' + f.getName();
                 } else {
                     adjustedFilePath = globalPathAux + path + '/' + f.getName();
                 }
 
-                boolean isDirectory = f.isDirectory();
+                final boolean isDirectory = f.isDirectory();
                 try {
                     stubStorageMetadata.addStorageItem(adjustedFilePath, serverName, isDirectory);
-                } catch (RemoteException e) {
+                } catch (final RemoteException e) {
                     log.severe(e.toString());
                 }
 
@@ -148,22 +148,22 @@ public class StorageServer implements ClientStorageInterface {
         }
     }
 
-    private static void removeMetadataOfDirectory(String path) {
+    private static void removeMetadataOfDirectory(final String path) {
         String globalPathAux = globalPath;
-        File myLocalPath = new File(localPath + path);
+        final File myLocalPath = new File(localPath + path);
 
         log.info("Going to remove metadata of " + myLocalPath.getPath());
 
-        File[] listOfFiles = myLocalPath.listFiles();
+        final File[] listOfFiles = myLocalPath.listFiles();
 
         if ("/".equals(globalPath)) {
             globalPathAux = "";
         }
 
         if (listOfFiles != null) {
-            for (File f : listOfFiles) {
+            for (final File f : listOfFiles) {
 
-                String adjustedFilePath;
+                final String adjustedFilePath;
                 if (path.isEmpty()) {
                     adjustedFilePath = globalPathAux + '/' + f.getName();
                 } else {
@@ -176,7 +176,7 @@ public class StorageServer implements ClientStorageInterface {
 
                 try {
                     stubStorageMetadata.delStorageItem(adjustedFilePath);
-                } catch (RemoteException e) {
+                } catch (final RemoteException e) {
                     log.severe(e.toString());
                 }
             }
@@ -187,15 +187,15 @@ public class StorageServer implements ClientStorageInterface {
     }
 
     @Override
-    public boolean create(String globalPath) throws RemoteException {
+    public boolean create(final String globalPath) throws RemoteException {
 
-        String createdLocalPath = globalToLocal(globalPath);
+        final String createdLocalPath = globalToLocal(globalPath);
 
-        File directory = new File(createdLocalPath);
+        final File directory = new File(createdLocalPath);
 
         log.info("Creating directory: " + directory.toString());
 
-        boolean mkdir = directory.mkdir();
+        final boolean mkdir = directory.mkdir();
 
         if (mkdir) {
             log.info("Directory" + directory.toString() + "created successfully");
@@ -208,23 +208,23 @@ public class StorageServer implements ClientStorageInterface {
     }
 
     @Override
-    public boolean create(String globalPath, byte[] blob) {
+    public boolean create(final String globalPath, final byte[] blob) {
 
-        int indexLastSlash = globalPath.lastIndexOf('/');
-        int length = globalPath.length();
+        final int indexLastSlash = globalPath.lastIndexOf('/');
+        final int length = globalPath.length();
 
-        String pathToPutTheFileIn = globalPath.substring(0, indexLastSlash);
-        String fileName = globalPath.substring(indexLastSlash + 1, length);
+        final String pathToPutTheFileIn = globalPath.substring(0, indexLastSlash);
+        final String fileName = globalPath.substring(indexLastSlash + 1, length);
 
-        String localPathToPutFileIn = globalToLocal(pathToPutTheFileIn);
-        String fullFinalPath = localPathToPutFileIn + '/' + fileName;
+        final String localPathToPutFileIn = globalToLocal(pathToPutTheFileIn);
+        final String fullFinalPath = localPathToPutFileIn + '/' + fileName;
 
         try {
             Files.write(Paths.get(fullFinalPath), blob);
             log.info("Final Path: " + fullFinalPath + " File received successfully");
             stubStorageMetadata.addStorageItem(globalPath, serverName, false);
             return true;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.severe("Final Path: " + fullFinalPath + " File could not be received " + e.toString());
             return false;
         }
@@ -232,14 +232,14 @@ public class StorageServer implements ClientStorageInterface {
     }
 
     @Override
-    public boolean del(String pathInGlobalServer) throws RemoteException {
-        String pathInLocalServer = globalToLocal(pathInGlobalServer);
+    public boolean del(final String pathInGlobalServer) throws RemoteException {
+        final String pathInLocalServer = globalToLocal(pathInGlobalServer);
 
         boolean bool;
         try {
             Files.delete(Paths.get(pathInLocalServer));
             bool = true;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.severe(e.toString());
             bool = false;
         }
@@ -253,22 +253,22 @@ public class StorageServer implements ClientStorageInterface {
 
     }
 
-    private String globalToLocal(String fullGlobalPath) {
-        int indexEndGlobal = fullGlobalPath.indexOf(globalPath) + globalPath.length();
+    private String globalToLocal(final String fullGlobalPath) {
+        final int indexEndGlobal = fullGlobalPath.indexOf(globalPath) + globalPath.length();
 
-        String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal, fullGlobalPath.length());
+        final String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal, fullGlobalPath.length());
 
-        String output = localPath + relevantPartOfTheString;
+        final String output = localPath + relevantPartOfTheString;
         return output;
     }
 
     @Override
-    public byte[] get(String pathInGlobalServer) throws IOException {
-        String pathInLocalServer = globalToLocal(pathInGlobalServer);
+    public byte[] get(final String pathInGlobalServer) throws IOException {
+        final String pathInLocalServer = globalToLocal(pathInGlobalServer);
 
         log.info("pathinloco" + pathInLocalServer);
 
-        Path fileToSend = Paths.get(pathInLocalServer);
+        final Path fileToSend = Paths.get(pathInLocalServer);
 
         return Files.readAllBytes(fileToSend);
     }

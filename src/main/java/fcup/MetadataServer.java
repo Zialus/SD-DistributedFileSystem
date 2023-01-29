@@ -18,7 +18,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
     private int globalMachineCounter = 0;
 
-    private static void exit(Registry registry, MetadataServer obj1, MetadataServer obj2) {
+    private static void exit(final Registry registry, final MetadataServer obj1, final MetadataServer obj2) {
         try {
             registry.unbind("ClientMetadataInterface");
             registry.unbind("StorageMetadataInterface");
@@ -27,23 +27,23 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             UnicastRemoteObject.unexportObject(obj2, true);
 
             log.info("Unbinded and exited.");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.severe("Server exception: " + e.toString());
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
         try {
             LocateRegistry.createRegistry(1099);
 
-            MetadataServer objClientMetaInterface = new MetadataServer();
-            ClientMetadataInterface stubClientMetaInterface = (ClientMetadataInterface) UnicastRemoteObject.exportObject(objClientMetaInterface, 0);
+            final MetadataServer objClientMetaInterface = new MetadataServer();
+            final ClientMetadataInterface stubClientMetaInterface = (ClientMetadataInterface) UnicastRemoteObject.exportObject(objClientMetaInterface, 0);
 
-            MetadataServer objStorageMetaInterface = new MetadataServer();
-            StorageMetadataInterface stubStorageMetaInterface = (StorageMetadataInterface) UnicastRemoteObject.exportObject(objStorageMetaInterface, 0);
+            final MetadataServer objStorageMetaInterface = new MetadataServer();
+            final StorageMetadataInterface stubStorageMetaInterface = (StorageMetadataInterface) UnicastRemoteObject.exportObject(objStorageMetaInterface, 0);
 
-            Registry registry = LocateRegistry.getRegistry();
+            final Registry registry = LocateRegistry.getRegistry();
             registry.bind("ClientMetadataInterface", stubClientMetaInterface);
             registry.bind("StorageMetadataInterface", stubStorageMetaInterface);
 
@@ -51,7 +51,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
 
             log.info("MetaData Server ready");
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.severe("Server exception: " + e.toString());
         }
     }
@@ -63,8 +63,8 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     @Override
-    public String find(String path) {
-        PairBoolNode pair = fileSystem.find(path);
+    public String find(final String path) {
+        final PairBoolNode pair = fileSystem.find(path);
 
         if (pair.bool) {
             return pair.node.myStorageServer;
@@ -74,8 +74,8 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     @Override
-    public FileType findInfo(String path) throws RemoteException {
-        PairBoolNode pair = fileSystem.find(path);
+    public FileType findInfo(final String path) throws RemoteException {
+        final PairBoolNode pair = fileSystem.find(path);
 
         if (pair.bool) {
             if (pair.node.isDirectory) {
@@ -89,13 +89,13 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     @Override
-    public String lstat(String path) throws RemoteException {
-        FileNode dirToBeListed;
+    public String lstat(final String path) throws RemoteException {
+        final FileNode dirToBeListed;
 
         if ("/".equals(path)) {
             dirToBeListed = fileSystem.root;
         } else {
-            PairBoolNode didYouFindIt = fileSystem.find(path);
+            final PairBoolNode didYouFindIt = fileSystem.find(path);
             dirToBeListed = didYouFindIt.node;
         }
 
@@ -103,7 +103,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             return "";
         }
 
-        StringBuilder output = new StringBuilder(".\n..\n");
+        final StringBuilder output = new StringBuilder(".\n..\n");
 
         dirToBeListed.children.forEach((key, value) -> output.append(key).append('\n'));
 
@@ -111,22 +111,22 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     @Override
-    public void addStorageServer(String machine, String topOfTheSubtree) throws RemoteException {
+    public void addStorageServer(final String machine, final String topOfTheSubtree) throws RemoteException {
         storageServerList.put(topOfTheSubtree, machine);
         addStorageItem(topOfTheSubtree, machine, true);
         log.info("I added machine " + machine + " which contains the sub-tree " + topOfTheSubtree);
     }
 
     @Override
-    public void delStorageServer(String topOfTheSubtree) throws RemoteException {
-        String machine = storageServerList.get(topOfTheSubtree);
+    public void delStorageServer(final String topOfTheSubtree) throws RemoteException {
+        final String machine = storageServerList.get(topOfTheSubtree);
         storageServerList.remove(topOfTheSubtree);
         delStorageItem(topOfTheSubtree);
         log.info("I removed the machine " + machine + " that contained the sub-tree " + topOfTheSubtree);
     }
 
     @Override
-    public void addStorageItem(String item, String serverName, boolean isDirectory) throws RemoteException {
+    public void addStorageItem(final String item, final String serverName, final boolean isDirectory) throws RemoteException {
 
         if ("/".equals(item)) {
             fileSystem.root.myStorageServer = serverName;
@@ -135,20 +135,20 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
             // Copy without first element
             pathElements = Arrays.copyOfRange(pathElements, 1, pathElements.length);
 
-            int lastElement = pathElements.length - 1;
+            final int lastElement = pathElements.length - 1;
 
             if (pathElements.length == 1) {
                 fileSystem.addToFileSystem(pathElements[lastElement], fileSystem.root, isDirectory, serverName);
             } else {
 
-                int lastSplit = item.lastIndexOf('/');
-                String parentPath = item.substring(0, lastSplit);
+                final int lastSplit = item.lastIndexOf('/');
+                final String parentPath = item.substring(0, lastSplit);
 
-                PairBoolNode maybeFoundParentNode = fileSystem.find(parentPath);
+                final PairBoolNode maybeFoundParentNode = fileSystem.find(parentPath);
 
-                boolean didYouFindIt = maybeFoundParentNode.bool;
+                final boolean didYouFindIt = maybeFoundParentNode.bool;
                 if (didYouFindIt) {
-                    FileNode parentNode = maybeFoundParentNode.node;
+                    final FileNode parentNode = maybeFoundParentNode.node;
                     fileSystem.addToFileSystem(pathElements[lastElement], parentNode, isDirectory, serverName);
                 } else {
                     log.severe("Something went really wrong");
@@ -158,7 +158,7 @@ public class MetadataServer implements ClientMetadataInterface, StorageMetadataI
     }
 
     @Override
-    public void delStorageItem(String item) throws RemoteException {
+    public void delStorageItem(final String item) throws RemoteException {
         fileSystem.removeFromFileSystem(item);
     }
 
