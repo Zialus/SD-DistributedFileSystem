@@ -256,7 +256,7 @@ public class StorageServer implements ClientStorageInterface {
     private String globalToLocal(final String fullGlobalPath) {
         final int indexEndGlobal = fullGlobalPath.indexOf(globalPath) + globalPath.length();
 
-        final String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal, fullGlobalPath.length());
+        final String relevantPartOfTheString = fullGlobalPath.substring(indexEndGlobal);
 
         final String output = localPath + relevantPartOfTheString;
         return output;

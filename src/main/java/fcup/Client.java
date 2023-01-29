@@ -304,7 +304,7 @@ public class Client {
         final String fileToOpen = pathSanitizer(inputCmd[1]);
 
         final int lastDot = fileToOpen.lastIndexOf('.');
-        final String extension = fileToOpen.substring(lastDot + 1, fileToOpen.length());
+        final String extension = fileToOpen.substring(lastDot + 1);
 
         final String appToOpenThisExtension = configsMap.get(extension);
 
@@ -357,7 +357,7 @@ public class Client {
             final String pathWhereServerReceivesFiles = pathSanitizer(inputCmd[2]);
 
             final int lastDotMV = fileToMove.lastIndexOf('.');
-            final String extensionMV = fileToMove.substring(lastDotMV + 1, fileToMove.length());
+            final String extensionMV = fileToMove.substring(lastDotMV + 1);
 
             final int indexLastSlashMV = fileToMove.lastIndexOf('/');
             final int lengthMV = fileToMove.length();
