@@ -1,7 +1,7 @@
 plugins {
     id 'info.solidsoft.pitest' version '1.9.11'
     id "se.patrikerdes.use-latest-versions" version "0.2.18"
-    id "com.github.ben-manes.versions" version "0.44.0"
+    id "com.github.ben-manes.versions" version "0.45.0"
     id "net.ltgt.errorprone" version "3.0.1"
     id "com.github.spotbugs" version "5.0.13"
     id "pmd"
@@ -9,8 +9,8 @@ plugins {
     id "java"
     id "idea"
     id 'jacoco'
-    id "org.sonarqube" version "3.5.0.2730"
-    id "io.freefair.lombok" version "6.6.1"
+    id "org.sonarqube" version "4.0.0.2929"
+    id "io.freefair.lombok" version "6.6.2"
 }
 
 sonarqube {
@@ -39,7 +39,7 @@ dependencies {
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
     spotbugsPlugins 'com.mebigfatguy.sb-contrib:sb-contrib:7.4.7'
 
-    annotationProcessor "com.uber.nullaway:nullaway:0.10.8"
+    annotationProcessor "com.uber.nullaway:nullaway:0.10.9"
     errorprone 'com.google.errorprone:error_prone_core:2.18.0'
 }
 
@@ -112,7 +112,7 @@ pmdTest {
 
 pitest {
     junit5PluginVersion = '1.1.2'
-    pitestVersion = '1.10.4'
+    pitestVersion = '1.11.0'
     mutators = ["ALL"]
 }
 
@@ -128,7 +128,7 @@ jacocoTestReport {
 }
 
 lombok {
-    version = '1.18.24'
+    version = '1.18.26'
 }
 
 spotbugs {
@@ -153,7 +153,7 @@ spotbugsTest {
 }
 
 checkstyle {
-    toolVersion = '10.6.0'
+    toolVersion = '10.7.0'
     showViolations = false
     ignoreFailures = true
 }
