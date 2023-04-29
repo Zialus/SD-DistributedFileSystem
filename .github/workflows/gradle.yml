@@ -2,9 +2,9 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
   workflow_dispatch:
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        java: [11, 12, 13, 14, 15, 16, 17, 18, 19]
+        java: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
     runs-on: ${{ matrix.os }}
 
@@ -91,7 +91,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: 11
+          java-version: 17
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:

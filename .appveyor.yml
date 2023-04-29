@@ -13,7 +13,7 @@ environment:
     - JAVA_HOME: C:\Program Files\Java\jdk19
 
 install:
-  - set VERSION=7.6
+  - set VERSION=8.1.1
   - set GRADLE_DIR=C:\gradle
   - set DOWNLOAD_URL=https://services.gradle.org/distributions/gradle-%VERSION%-bin.zip
   - ps: wget $env:DOWNLOAD_URL -O gradle-bin.zip
