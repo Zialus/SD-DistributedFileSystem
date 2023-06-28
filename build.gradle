@@ -32,7 +32,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0-M1'
+    testImplementation 'org.junit.platform:junit-platform-launcher:1.10.0-M1'
 
     implementation 'org.jline:jline:3.23.0'
 
@@ -111,8 +112,8 @@ pmdTest {
 }
 
 pitest {
-    junit5PluginVersion = '1.1.2'
-    pitestVersion = '1.12.0'
+    junit5PluginVersion = '1.2.0'
+    pitestVersion = '1.14.2'
     mutators = ["ALL"]
 }
 
