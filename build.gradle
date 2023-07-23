@@ -32,8 +32,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0-RC1'
-    testImplementation 'org.junit.platform:junit-platform-launcher:1.10.0-RC1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.junit.platform:junit-platform-launcher:1.10.0'
 
     implementation 'org.jline:jline:3.23.0'
 
