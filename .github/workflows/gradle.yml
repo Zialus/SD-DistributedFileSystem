@@ -30,19 +30,19 @@ jobs:
           java-version: ${{ matrix.java }}
 
       - name: Gradle/Java version Info
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: -v
           gradle-version: release-candidate
 
       - name: Gradle Build
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: build
           gradle-version: release-candidate
 
       - name: Gradle Test
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: pitest
           gradle-version: release-candidate
@@ -69,13 +69,13 @@ jobs:
           java-version: ${{ matrix.java }}
 
       - name: Gradle/Java version Info
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: -v
           gradle-version: release-candidate
 
       - name: Gradle Build
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: build -D enableErrorProne=true
           gradle-version: release-candidate
@@ -108,7 +108,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: build jacocoTestReport sonarqube --info
           gradle-version: current
