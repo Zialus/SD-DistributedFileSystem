@@ -29,23 +29,17 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
 
-      - name: Gradle/Java version Info
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: -v
-          gradle-version: release-candidate
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
+      - name: Gralde Info
+        run: gradle -v
+        
       - name: Gradle Build
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: build
-          gradle-version: release-candidate
+        run: gradle build
 
       - name: Gradle Test
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: pitest
-          gradle-version: release-candidate
+        run: gradle pitest
 
   errorprone:
     name: Build with ErrorProne
@@ -68,17 +62,14 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
 
-      - name: Gradle/Java version Info
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: -v
-          gradle-version: release-candidate
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
+      - name: Gralde Info
+        run: gradle -v
+        
       - name: Gradle Build
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: build -D enableErrorProne=true
-          gradle-version: release-candidate
+        run: gradle build -D enableErrorProne=true
 
   sonar:
     name: Sonarcloud
@@ -104,11 +95,12 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Gralde Info
+        run: gradle -v
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: build jacocoTestReport sonarqube --info
-          gradle-version: current
+        run: gradle build jacocoTestReport sonarqube --info
