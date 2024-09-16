@@ -40,7 +40,7 @@ dependencies {
     spotbugsPlugins('com.h3xstream.findsecbugs:findsecbugs-plugin:1.13.0') { transitive = false }
     spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.6.4') { transitive = false }
 
-    annotationProcessor "com.uber.nullaway:nullaway:0.11.2"
+    annotationProcessor "com.uber.nullaway:nullaway:0.11.3"
     errorprone 'com.google.errorprone:error_prone_core:2.31.0'
 }
 
