@@ -41,7 +41,7 @@ dependencies {
     spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.6.8') { transitive = false }
 
     annotationProcessor "com.uber.nullaway:nullaway:0.12.1"
-    errorprone 'com.google.errorprone:error_prone_core:2.35.1'
+    errorprone 'com.google.errorprone:error_prone_core:2.36.0'
 }
 
 tasks.withType(JavaCompile).configureEach {
