@@ -13,6 +13,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+         gradle-version: "8.8"
+
       - name: Download Coverity Build Tool
         run: |
           wget -q https://scan.coverity.com/download/java/linux64 --post-data "token=$TOKEN&project=Zialus%2FSD-DistributedFileSystem" -O cov-analysis-linux64.tar.gz
