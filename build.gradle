@@ -154,7 +154,7 @@ spotbugsTest {
 }
 
 checkstyle {
-    toolVersion = '10.21.4'
+    toolVersion = '10.22.0'
     showViolations = false
     ignoreFailures = true
 }
