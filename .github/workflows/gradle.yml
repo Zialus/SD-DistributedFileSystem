@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        java: [11, 17, 21, 23]
+        java: [11, 17, 21, 24]
 
     runs-on: ${{ matrix.os }}
 
@@ -31,6 +31,8 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 'release-candidate'
 
       - name: Gralde Info
         run: gradle -v
