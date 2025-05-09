@@ -35,7 +35,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.12.2'
     testImplementation 'org.junit.platform:junit-platform-launcher:1.12.2'
 
-    implementation 'org.jline:jline:3.29.0'
+    implementation 'org.jline:jline:3.30.0'
 
     spotbugsPlugins('com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0') { transitive = false }
     spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.6.9') { transitive = false }
