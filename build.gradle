@@ -38,7 +38,7 @@ dependencies {
     implementation('org.jline:jline:3.30.4')
 
     spotbugsPlugins('com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0')
-    spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.6.9')
+    spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.6.10')
 
     annotationProcessor('com.uber.nullaway:nullaway:0.12.7')
     errorprone('com.google.errorprone:error_prone_core:2.38.0')
