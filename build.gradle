@@ -44,7 +44,7 @@ dependencies {
     annotationProcessor('com.uber.nullaway:nullaway:0.12.7')
     errorprone('com.google.errorprone:error_prone_core:2.40.0')
     errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.23.0')
-    errorprone('tech.picnic.error-prone-support:refaster-runner:0.23.0')
+    errorprone('tech.picnic.error-prone-support:refaster-runner:0.24.0')
 }
 
 tasks.withType(JavaCompile).configureEach {
