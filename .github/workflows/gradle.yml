@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        java: [11, 17, 21, 24]
+        java: [17, 21, 24]
 
     runs-on: ${{ matrix.os }}
 
@@ -26,7 +26,7 @@ jobs:
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: ${{ matrix.java }}
 
       - name: Set up Gradle
@@ -34,7 +34,7 @@ jobs:
 
       - name: Gralde Info
         run: gradle -v
-        
+
       - name: Gradle Build
         run: gradle build
 
@@ -48,7 +48,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        java: [17, 21]
+        java: [21]
 
     runs-on: ${{ matrix.os }}
 
@@ -59,7 +59,7 @@ jobs:
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: ${{ matrix.java }}
 
       - name: Set up Gradle
@@ -67,9 +67,16 @@ jobs:
 
       - name: Gralde Info
         run: gradle -v
-        
+
       - name: Gradle Build
-        run: gradle build -D enableErrorProne=true
+        run: gradle build -D enableErrorProne=true --scan
+
+      - name: Upload gradle build scan reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-reports
+          path: "**/build/reports/"
 
   sonar:
     name: Sonarcloud
@@ -81,7 +88,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: 17
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
