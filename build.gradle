@@ -36,7 +36,7 @@ dependencies {
     testImplementation('org.junit.jupiter:junit-jupiter:5.13.4')
     testRuntimeOnly('org.junit.platform:junit-platform-launcher:1.13.4')
 
-    implementation('org.jline:jline:3.30.5')
+    implementation('org.jline:jline:3.30.6')
 
     spotbugsPlugins('com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0')
     spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.6.14')
