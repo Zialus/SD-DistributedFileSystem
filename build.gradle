@@ -41,7 +41,7 @@ dependencies {
     spotbugsPlugins('com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0')
     spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.6.14')
 
-    annotationProcessor('com.uber.nullaway:nullaway:0.12.9')
+    annotationProcessor('com.uber.nullaway:nullaway:0.12.10')
     errorprone('com.google.errorprone:error_prone_core:2.41.0')
     errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.24.0')
     errorprone('tech.picnic.error-prone-support:refaster-runner:0.24.0')
