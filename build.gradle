@@ -11,7 +11,7 @@ plugins {
     id 'jacoco'
     id "org.sonarqube" version "6.3.1.5724"
     id "io.freefair.lombok" version "9.0.0"
-    id "nebula.lint" version "21.1.1"
+    id "nebula.lint" version "21.1.2"
 }
 
 sonarqube {
