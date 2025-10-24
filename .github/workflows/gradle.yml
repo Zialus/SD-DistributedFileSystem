@@ -72,7 +72,7 @@ jobs:
         run: gradle build -D enableErrorProne=true --scan
 
       - name: Upload gradle build scan reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: build-reports
