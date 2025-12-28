@@ -116,7 +116,7 @@ pmdTest {
 
 pitest {
     junit5PluginVersion = '1.2.3'
-    pitestVersion = '1.20.3'
+    pitestVersion = '1.22.0'
     mutators = ["ALL"]
 }
 
