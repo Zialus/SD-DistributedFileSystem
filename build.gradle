@@ -10,7 +10,7 @@ plugins {
     id "idea"
     id 'jacoco'
     id "org.sonarqube" version "7.2.2.6593"
-    id "io.freefair.lombok" version "9.1.0"
+    id "io.freefair.lombok" version "9.2.0"
     id "nebula.lint" version "21.1.3"
 }
 
