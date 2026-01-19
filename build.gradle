@@ -1,5 +1,5 @@
 plugins {
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2'
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3'
     id "se.patrikerdes.use-latest-versions" version "0.2.19"
     id "com.github.ben-manes.versions" version "0.53.0"
     id "net.ltgt.errorprone" version "4.4.0"
