@@ -1,10 +1,11 @@
-name: GitHub Actions Security Analysis with zizmor 🌈
+name: GHAS Analysis with zizmor 🌈
 
 on:
   push:
-    branches: ["main"]
+    branches: ["master"]
   pull_request:
-    branches: ["**"]
+    branches: ["master"]
+  workflow_dispatch:
 
 permissions: {}
 
