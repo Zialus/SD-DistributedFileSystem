@@ -3,7 +3,7 @@ plugins {
     id "se.patrikerdes.use-latest-versions" version "0.2.19"
     id "com.github.ben-manes.versions" version "0.54.0"
     id "net.ltgt.errorprone" version "5.1.0"
-    id "com.github.spotbugs" version "6.5.8"
+    id "com.github.spotbugs" version "6.5.9"
     id "pmd"
     id 'checkstyle'
     id "java"
@@ -41,10 +41,10 @@ dependencies {
     spotbugsPlugins('com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0')
     spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.7.4')
 
-    annotationProcessor('com.uber.nullaway:nullaway:0.13.7')
-    errorprone('com.google.errorprone:error_prone_core:2.49.0')
-    errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.29.0')
-    errorprone('tech.picnic.error-prone-support:refaster-runner:0.29.0')
+    annotationProcessor('com.uber.nullaway:nullaway:0.13.8')
+    errorprone('com.google.errorprone:error_prone_core:2.50.0')
+    errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.30.0')
+    errorprone('tech.picnic.error-prone-support:refaster-runner:0.30.0')
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -116,7 +116,7 @@ pmdTest {
 
 pitest {
     junit5PluginVersion = '1.2.3'
-    pitestVersion = '1.23.1'
+    pitestVersion = '1.25.8'
     mutators = ["ALL"]
 }
 
