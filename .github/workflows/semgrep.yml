@@ -7,7 +7,7 @@ on:
     branches: ["master"]
   workflow_dispatch:
   schedule:
-    - cron: '20 17 * * *' # Sets Semgrep to scan every day at 17:20 UTC.
+    - cron: '20 17 * * *'  # Sets Semgrep to scan every day at 17:20 UTC.
 
 jobs:
   semgrep:
@@ -21,5 +21,5 @@ jobs:
       image: semgrep/semgrep
     if: (github.actor != 'dependabot[bot]')
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       - run: semgrep ci
