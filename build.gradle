@@ -90,11 +90,11 @@ def jarPackage(String groupName, String artifactName, String artifactVersion) {
     }
 }
 
-artifacts {
-    archives jarPackage("$group", "StorageServer", "$version"),
-            jarPackage("$group", "Client", "$version"),
-            jarPackage("$group", "MetadataServer", "$version")
-}
+def storageServerJar = jarPackage("$group", "StorageServer", "$version")
+def clientJar = jarPackage("$group", "Client", "$version")
+def metadataServerJar = jarPackage("$group", "MetadataServer", "$version")
+
+assemble.dependsOn storageServerJar, clientJar, metadataServerJar
 
 pmd {
     toolVersion = '7.26.0'
