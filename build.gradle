@@ -97,6 +97,7 @@ artifacts {
 }
 
 pmd {
+    toolVersion = '7.26.0'
     ignoreFailures = true
 }
 
@@ -116,7 +117,7 @@ pmdTest {
 
 pitest {
     junit5PluginVersion = '1.2.3'
-    pitestVersion = '1.25.8'
+    pitestVersion = '1.25.9'
     mutators = ["ALL"]
 }
 
@@ -157,7 +158,7 @@ spotbugsTest {
 }
 
 checkstyle {
-    toolVersion = '13.9.0'
+    toolVersion = '13.10.0'
     showViolations = false
     ignoreFailures = true
 }
