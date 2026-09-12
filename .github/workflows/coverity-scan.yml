@@ -5,6 +5,12 @@ on:
 
   workflow_dispatch:
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   daily_scan:
     name: Daily Scan
@@ -26,15 +32,17 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb  # v6.3.0
         with:
-          gradle-version: "9.5.0"
+          gradle-version: "9.7.1"
 
       - name: Download Coverity Build Tool
-        run: |
-          wget -q https://scan.coverity.com/download/java/linux64 --post-data "token=$TOKEN&project=Zialus%2FSD-DistributedFileSystem" -O cov-analysis-linux64.tar.gz
-          mkdir cov-analysis-linux64
-          tar xzf cov-analysis-linux64.tar.gz --strip 1 -C cov-analysis-linux64
         env:
           TOKEN: ${{ secrets.COVERITY_TOKEN }}
+        run: |
+          wget -q "https://scan.coverity.com/download/java/linux64" \
+            --post-data "token=${TOKEN}&project=Zialus%2FSD-DistributedFileSystem" \
+            -O cov-analysis-linux64.tar.gz
+          mkdir cov-analysis-linux64
+          tar xzf cov-analysis-linux64.tar.gz --strip 1 -C cov-analysis-linux64
 
       - name: Build with cov-build
         run: |
