@@ -13,7 +13,6 @@ concurrency:
 
 permissions:
   contents: read  # Required to check out the repository.
-  pull-requests: read  # Required by SonarCloud to inspect pull-request information.
 
 jobs:
   build:
@@ -93,6 +92,9 @@ jobs:
   sonar:
     name: Sonarcloud
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # Required to check out the repository.
+      pull-requests: read  # Required by SonarCloud to inspect pull-request information.
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
