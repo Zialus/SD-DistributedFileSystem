@@ -9,18 +9,18 @@ on:
   schedule:
     - cron: '20 17 * * *'  # Sets Semgrep to scan every day at 17:20 UTC.
 
-permissions: {}
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions: {}
 
 jobs:
   semgrep:
     name: semgrep/ci
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read  # Required to scan repository contents.
     env:
       SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
     container:

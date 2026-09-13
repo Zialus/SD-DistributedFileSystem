@@ -40,6 +40,8 @@ dependencies {
 
     spotbugsPlugins('com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0')
     spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.7.4')
+    spotbugsPlugins('jp.skypencil.findbugs.slf4j:bug-pattern:1.5.0')
+    spotbugsSlf4j('org.slf4j:slf4j-simple:2.0.19')
 
     annotationProcessor('com.uber.nullaway:nullaway:0.14.1')
     errorprone('com.google.errorprone:error_prone_core:2.50.0')

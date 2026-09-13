@@ -7,17 +7,17 @@ on:
     branches: ["master"]
   workflow_dispatch:
 
-permissions: {}
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read  # Required to check out the repository.
+  pull-requests: read  # Required by SonarCloud to inspect pull-request information.
+
 jobs:
   build:
     name: Build and Test
-    permissions:
-      contents: read
 
     strategy:
       fail-fast: false
@@ -36,7 +36,7 @@ jobs:
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6  # v6.0.1
         with:
-          distribution: "zulu"
+          distribution: 'zulu'
           java-version: ${{ matrix.java }}
 
       - name: Set up Gradle
@@ -53,8 +53,6 @@ jobs:
 
   errorprone:
     name: Build with ErrorProne
-    permissions:
-      contents: read
 
     strategy:
       fail-fast: false
@@ -73,7 +71,7 @@ jobs:
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6  # v6.0.1
         with:
-          distribution: "zulu"
+          distribution: 'zulu'
           java-version: ${{ matrix.java }}
 
       - name: Set up Gradle
@@ -90,13 +88,11 @@ jobs:
         if: always()
         with:
           name: build-reports
-          path: "**/build/reports/"
+          path: '**/build/reports/'
 
   sonar:
     name: Sonarcloud
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
@@ -105,7 +101,7 @@ jobs:
       - name: Set up JDK 25
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6  # v6.0.1
         with:
-          distribution: "zulu"
+          distribution: 'zulu'
           java-version: 25
       - name: Cache SonarCloud packages
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
