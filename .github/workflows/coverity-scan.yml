@@ -32,7 +32,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6  # v6.4.0
         with:
-          gradle-version: "9.7.1"
+          gradle-version: "9.8.1"
 
       - name: Run Coverity Scan
         uses: vapier/coverity-scan-action@8fe7b0af23cbbd4eced5f63dcd2384640eaa5d49  # v1.10.0
