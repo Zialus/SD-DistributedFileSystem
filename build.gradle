@@ -1,17 +1,17 @@
 plugins {
     id 'info.solidsoft.pitest' version '1.19.0'
     id "se.patrikerdes.use-latest-versions" version "0.2.19"
-    id "io.github.ben-manes.versions" version "0.62.0"
+    id "io.github.ben-manes.versions" version "0.66.0"
     id "net.ltgt.errorprone" version "5.1.1"
-    id "com.github.spotbugs" version "6.5.11"
+    id "com.github.spotbugs" version "6.5.13"
     id "pmd"
     id 'checkstyle'
     id "java"
     id "idea"
     id 'jacoco'
     id "org.sonarqube" version "7.5.0.8588"
-    id "io.freefair.lombok" version "9.5.0"
-    id "nebula.lint" version "21.2.3"
+    id "io.freefair.lombok" version "9.8.2"
+    id "nebula.lint" version "21.3.0"
 }
 
 sonarqube {
@@ -36,14 +36,14 @@ dependencies {
     testImplementation('org.junit.jupiter:junit-jupiter:6.1.3')
     testRuntimeOnly('org.junit.platform:junit-platform-launcher:6.1.3')
 
-    implementation('org.jline:jline:4.4.3')
+    implementation('org.jline:jline:4.4.8')
 
     spotbugsPlugins('com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0')
     spotbugsPlugins('com.mebigfatguy.sb-contrib:sb-contrib:7.7.4')
     spotbugsPlugins('jp.skypencil.findbugs.slf4j:bug-pattern:1.5.0')
-    spotbugsSlf4j('org.slf4j:slf4j-simple:2.0.19')
+    spotbugsSlf4j('org.slf4j:slf4j-simple:2.0.20')
 
-    annotationProcessor('com.uber.nullaway:nullaway:0.14.1')
+    annotationProcessor('com.uber.nullaway:nullaway:0.14.2')
     errorprone('com.google.errorprone:error_prone_core:2.50.0')
     errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.30.0')
     errorprone('tech.picnic.error-prone-support:refaster-runner:0.30.0')
