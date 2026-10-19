@@ -99,7 +99,7 @@ def metadataServerJar = jarPackage("$group", "MetadataServer", "$version")
 assemble.dependsOn storageServerJar, clientJar, metadataServerJar
 
 pmd {
-    toolVersion = '7.27.0'
+    toolVersion = '7.28.0'
     ignoreFailures = true
 }
 
@@ -119,7 +119,7 @@ pmdTest {
 
 pitest {
     junit5PluginVersion = '1.2.3'
-    pitestVersion = '1.30.0'
+    pitestVersion = '1.30.1'
     mutators = ["ALL"]
 }
 
@@ -139,7 +139,7 @@ lombok {
 }
 
 spotbugs {
-    toolVersion = '4.10.4'
+    toolVersion = '4.10.5'
     ignoreFailures = true
     showStackTraces = false
     showProgress = true
@@ -160,7 +160,7 @@ spotbugsTest {
 }
 
 checkstyle {
-    toolVersion = '14.1.0'
+    toolVersion = '14.3.0'
     showViolations = false
     ignoreFailures = true
 }
