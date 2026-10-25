@@ -43,8 +43,8 @@ dependencies {
     spotbugsPlugins('jp.skypencil.findbugs.slf4j:bug-pattern:1.5.0')
     spotbugsSlf4j('org.slf4j:slf4j-simple:2.0.20')
 
-    annotationProcessor('com.uber.nullaway:nullaway:0.14.2')
-    errorprone('com.google.errorprone:error_prone_core:2.50.0')
+    annotationProcessor('com.uber.nullaway:nullaway:0.14.3')
+    errorprone('com.google.errorprone:error_prone_core:2.51.0')
     errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.30.0')
     errorprone('tech.picnic.error-prone-support:refaster-runner:0.30.0')
 }
