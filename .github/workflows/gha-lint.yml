@@ -30,18 +30,18 @@ jobs:
           persist-credentials: false
 
       - name: 🔎 Run actionlint
-        uses: reviewdog/action-actionlint@48e36f54d8da326b83ab061aee2cc5e01b5ca46f  # v1.80.6
+        uses: reviewdog/action-actionlint@619a81ec64ff8c0211cd6146eb2b21e8f1d7f440  # v1.81.1
         with:
           reporter: github-pr-review
 
       - name: 🧪 Run yamllint
-        uses: reviewdog/action-yamllint@8f84f0fb670d777d3e584ef50faf60eb61605b2a  # v1.25.3
+        uses: reviewdog/action-yamllint@072d1a6ca6f5a03de10f492f6119fcbc8d47302b  # v1.25.4
         with:
           reporter: github-pr-review
           yamllint_flags: .github
 
       - name: 📝 Run markdownlint
-        uses: reviewdog/action-markdownlint@0f00f9816d25b024975712a1ad4ea03dbf5848a6  # v0.31.7
+        uses: reviewdog/action-markdownlint@f8e8c509d6e706db79bb39c1c506c968f1a66b82  # v0.32.0
         with:
           reporter: github-pr-review
           markdownlint_flags: "**/*.md"
