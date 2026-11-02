@@ -1,2 +1,17 @@
 rootProject.name = 'DestributedFileSystem'
 
+// CodSpeed fork of JMH, used to report benchmark results to CodSpeed.
+// Only wired in when the third-party/codspeed-jvm submodule is checked out.
+def codspeedJmhFork = file('third-party/codspeed-jvm/jmh-fork')
+if (new File(codspeedJmhFork, 'settings.gradle.kts').exists()) {
+    includeBuild(codspeedJmhFork) {
+        dependencySubstitution {
+            substitute module('org.openjdk.jmh:jmh-core') using project(':jmh-core')
+            substitute module('org.openjdk.jmh:jmh-generator-annprocess') using project(':jmh-generator-annprocess')
+            substitute module('org.openjdk.jmh:jmh-generator-bytecode') using project(':jmh-generator-bytecode')
+            substitute module('org.openjdk.jmh:jmh-generator-reflection') using project(':jmh-generator-reflection')
+            substitute module('org.openjdk.jmh:jmh-generator-asm') using project(':jmh-generator-asm')
+        }
+    }
+}
+
