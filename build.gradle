@@ -12,6 +12,7 @@ plugins {
     id "org.sonarqube" version "7.5.0.8588"
     id "io.freefair.lombok" version "9.8.3"
     id "nebula.lint" version "21.3.0"
+    id "me.champeau.jmh" version "0.7.3"
 }
 
 sonarqube {
@@ -132,6 +133,17 @@ jacocoTestReport {
         xml.required = true
         html.required = true
     }
+}
+
+jmh {
+    // Resolved to the CodSpeed JMH fork through the composite build in settings.gradle
+    jmhVersion = '0.2.1'
+    warmupIterations = 2
+    warmup = '1s'
+    iterations = 3
+    timeOnIteration = '1s'
+    fork = 1
+    forceGC = true
 }
 
 lombok {
