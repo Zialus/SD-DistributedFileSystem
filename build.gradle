@@ -136,8 +136,9 @@ jacocoTestReport {
 }
 
 jmh {
-    // Resolved to the CodSpeed JMH fork through the composite build in settings.gradle
-    jmhVersion = '0.2.1'
+    // When the third-party/codspeed-jvm submodule is checked out, JMH is resolved to the
+    // CodSpeed fork through the composite build in settings.gradle. Otherwise upstream JMH is used.
+    jmhVersion = file('third-party/codspeed-jvm/jmh-fork/settings.gradle.kts').exists() ? '0.2.1' : '1.37'
     warmupIterations = 2
     warmup = '1s'
     iterations = 3
