@@ -4,6 +4,9 @@
     "config:best-practices",
     ":labels(dependencies)"
   ],
+  "automerge": true,
+  "platformAutomerge": false,
+  "ignoreTests": false,
   "packageRules": [
     {
       "description": "Group Docker patch updates",
