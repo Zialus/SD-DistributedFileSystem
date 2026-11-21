@@ -6,28 +6,5 @@
   ],
   "automerge": true,
   "platformAutomerge": false,
-  "ignoreTests": false,
-  "packageRules": [
-    {
-      "description": "Group Docker patch updates",
-      "matchManagers": [
-        "dockerfile",
-        "docker-compose"
-      ],
-      "matchUpdateTypes": ["patch"],
-      "groupName": "docker patch updates"
-    },
-    {
-      "description": "Group Maven patch updates",
-      "matchManagers": ["maven"],
-      "matchUpdateTypes": ["patch"],
-      "groupName": "maven patch updates"
-    },
-    {
-      "description": "Group GitHub Actions patch updates",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["patch"],
-      "groupName": "github-actions patch updates"
-    }
-  ]
+  "ignoreTests": false
 }
